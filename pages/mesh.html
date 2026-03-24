@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesh Communication</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/mesh.css">
+</head>
+<body>
+  <main class="page page-mesh">
+    <section class="page-grid mesh-layout">
+      <div class="page-copy">
+        <p class="eyebrow">Core Advantage</p>
+        <h2>Mesh Communication</h2>
+        <p class="lead">
+          Multiple communication paths keep the system stable in complex buildings.
+        </p>
+        <div class="mesh-controls" role="tablist" aria-label="Mesh demo mode">
+          <button class="mode-button active" data-mode="normal" role="tab" aria-selected="true">Normal Mode</button>
+          <button class="mode-button" data-mode="blocked" role="tab" aria-selected="false">Path Blocked</button>
+          <button class="mode-button" data-mode="recovery" role="tab" aria-selected="false">Auto Recovery</button>
+        </div>
+        <div class="status-panel">
+          <p class="eyebrow">Current state</p>
+          <h3 id="mesh-status-title">Default route is active</h3>
+          <p id="mesh-status-copy">
+            Signal follows the primary path from detector to panel through the mesh network.
+          </p>
+        </div>
+      </div>
+
+      <div class="visual-card mesh-stage">
+        <div class="mesh-legend">
+          <span><i class="legend-dot leader"></i> Leader</span>
+          <span><i class="legend-dot node"></i> Node</span>
+          <span><i class="legend-dot panel"></i> Panel</span>
+        </div>
+
+        <div class="mesh-network" id="mesh-network">
+          <div class="signal-particle signal-primary"></div>
+          <div class="signal-particle signal-backup"></div>
+
+          <span class="network-line line-primary-a active" id="line-primary-a"></span>
+          <span class="network-line line-primary-b active" id="line-primary-b"></span>
+          <span class="network-line line-backup-a" id="line-backup-a"></span>
+          <span class="network-line line-backup-b" id="line-backup-b"></span>
+          <span class="network-line line-blocked active" id="line-blocked"></span>
+
+          <div class="network-node leader-node"><span class="node-label">Leader</span></div>
+          <div class="network-node node-alpha"><span class="node-label">Node A</span></div>
+          <div class="network-node node-beta"><span class="node-label">Node B</span></div>
+          <div class="network-node node-gamma"><span class="node-label">Node C</span></div>
+          <div class="network-node panel-node"><span class="node-label">Panel</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/mesh-page.js"></script>
+</body>
+</html>

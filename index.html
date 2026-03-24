@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireless Mesh Fire Alarm System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <canvas class="circuit-background" data-circuit-bg aria-hidden="true"></canvas>
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-icon" src="assets/branding/icon.png" alt="Brand icon">
+        <div>
+          <p class="eyebrow">Presentation Framework</p>
+          <p class="brand-name">Wireless Mesh Fire Alarm System</p>
+        </div>
+      </div>
+      <div class="progress-wrap" aria-hidden="true">
+        <div class="progress-bar">
+          <span class="progress-indicator" id="progress-indicator"></span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="side-nav" aria-label="Slide navigation">
+      <button class="nav-dot active" data-target="0" aria-label="Opening"></button>
+      <button class="nav-dot" data-target="1" aria-label="Feature Overview"></button>
+      <button class="nav-dot" data-target="2" aria-label="Mesh Communication"></button>
+    </nav>
+
+    <main class="slides" id="slides">
+      <section class="slide" data-slide="0">
+        <div class="slide-frame-shell">
+          <div class="frame-meta">
+            <p class="frame-index">01</p>
+            <div>
+              <p class="eyebrow">Independent Page File</p>
+              <p class="frame-title">Opening</p>
+            </div>
+          </div>
+          <iframe class="slide-frame" src="pages/opening.html" title="Opening" loading="eager"></iframe>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="1">
+        <div class="slide-frame-shell">
+          <div class="frame-meta">
+            <p class="frame-index">02</p>
+            <div>
+              <p class="eyebrow">Independent Page File</p>
+              <p class="frame-title">Feature Overview</p>
+            </div>
+          </div>
+          <iframe class="slide-frame" src="pages/overview.html" title="Feature Overview" loading="eager"></iframe>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="2">
+        <div class="slide-frame-shell">
+          <div class="frame-meta">
+            <p class="frame-index">03</p>
+            <div>
+              <p class="eyebrow">Independent Page File</p>
+              <p class="frame-title">Mesh Communication</p>
+            </div>
+          </div>
+          <iframe class="slide-frame" src="pages/mesh.html" title="Mesh Communication" loading="eager"></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/circuit-background.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

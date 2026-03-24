@@ -1,0 +1,17 @@
+.overview-layout {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(280px, 0.7fr);
+  align-items: stretch;
+}
+
+.overview-note {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+  .overview-layout {
+    grid-template-columns: 1fr;
+  }
+}

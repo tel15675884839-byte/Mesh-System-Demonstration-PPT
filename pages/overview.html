@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/overview.css">
+</head>
+<body>
+  <main class="page page-overview">
+    <section class="page-grid overview-layout">
+      <div class="page-copy">
+        <p class="eyebrow">Feature Overview</p>
+        <h2>Six core values in one quick view</h2>
+        <p class="lead">
+          A clean summary page you can later rebuild card by card with your own icons and layout.
+        </p>
+      </div>
+
+      <div class="feature-grid" role="list">
+        <button class="feature-card" data-action="goto" data-target="2" role="listitem">
+          <span class="feature-icon icon-distance"></span>
+          <strong>Extended Distance</strong>
+          <span>Up to 500 m</span>
+        </button>
+        <button class="feature-card active" data-action="goto" data-target="2" role="listitem">
+          <span class="feature-icon icon-mesh"></span>
+          <strong>Mesh Communication</strong>
+          <span>Multiple paths</span>
+        </button>
+        <button class="feature-card" type="button" role="listitem">
+          <span class="feature-icon icon-response"></span>
+          <strong>Rapid Response</strong>
+          <span>Fast alarm transmission</span>
+        </button>
+        <button class="feature-card" type="button" role="listitem">
+          <span class="feature-icon icon-reliability"></span>
+          <strong>High Reliability</strong>
+          <span>Two-way communication</span>
+        </button>
+        <button class="feature-card" type="button" role="listitem">
+          <span class="feature-icon icon-battery"></span>
+          <strong>10-Year Battery</strong>
+          <span>Lower maintenance</span>
+        </button>
+        <button class="feature-card" type="button" role="listitem">
+          <span class="feature-icon icon-installation"></span>
+          <strong>Easy Installation</strong>
+          <span>Less cabling</span>
+        </button>
+      </div>
+
+      <aside class="visual-card overview-note">
+        <p class="eyebrow">Framework Note</p>
+        <h3>Each slide is now an independent page</h3>
+        <p>
+          You can replace cards, upload your own image assets, or redesign this page without touching the outer navigation framework.
+        </p>
+        <button class="secondary-button" data-action="goto" data-target="2">Open Mesh Demo</button>
+      </aside>
+    </section>
+  </main>
+
+  <script src="../js/page-messaging.js"></script>
+</body>
+</html>
