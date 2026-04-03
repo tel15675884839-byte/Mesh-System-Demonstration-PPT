@@ -31,13 +31,18 @@ button {
   min-height: 100vh;
   padding: 36px;
   background: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .page-grid {
-  min-height: calc(100vh - 72px);
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
+  gap: 60px;
   align-items: center;
 }
 
@@ -52,8 +57,9 @@ button {
 }
 
 .page-copy h1 {
-  font-size: clamp(3rem, 7vw, 5.8rem);
-  max-width: 10ch;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1.1;
+  max-width: none;
 }
 
 .page-copy h2 {
@@ -82,7 +88,7 @@ button {
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .primary-button,
@@ -138,6 +144,9 @@ button {
   padding: 1px;
   background: linear-gradient(145deg, rgba(112, 240, 255, 0.35), rgba(255, 255, 255, 0.04));
   -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -295,6 +304,7 @@ button {
 }
 
 @media (max-width: 900px) {
+
   html,
   body {
     overflow: auto;

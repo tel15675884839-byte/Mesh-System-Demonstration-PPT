@@ -1,0 +1,11 @@
+/* Feature Page: Extended Distance */
+.page-distance .placeholder-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 440px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-subtle);
+  margin-top: var(--space-xl);
+}

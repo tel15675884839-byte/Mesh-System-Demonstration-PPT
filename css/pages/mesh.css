@@ -1,5 +1,21 @@
 .mesh-layout {
   align-items: stretch;
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 24px 42px;
+}
+
+.page-copy {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  z-index: 6;
+  align-self: start;
+}
+
+.mesh-hero {
+  max-width: 680px;
 }
 
 .mesh-controls {
@@ -22,23 +38,133 @@
   box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.26);
 }
 
+.mode-button-debug {
+  background: rgba(255, 183, 94, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 183, 94, 0.14);
+}
+
+.mode-button-debug.active {
+  background: rgba(255, 183, 94, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(255, 183, 94, 0.28);
+}
+
+.mode-button.is-disabled,
+.mode-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
 .status-panel {
   max-width: 480px;
   padding: 22px 24px;
 }
 
-.mesh-stage {
-  min-height: 560px;
-  padding: 28px;
-  overflow: hidden;
+.mesh-status-panel {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: start;
 }
 
-.mesh-legend {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-  color: var(--page-muted);
-  font-size: 0.92rem;
+.mesh-stage {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  position: relative;
+  min-height: 560px;
+  padding: 0;
+  overflow: hidden;
+  z-index: 2;
+  will-change: transform;
+}
+
+.mesh-layout.is-player-expanded .mesh-stage {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-height: 540px;
+  z-index: 3;
+}
+
+.mesh-layout.is-player-expanded {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  grid-template-rows: auto auto minmax(500px, 1fr);
+  gap: 16px 28px;
+}
+
+.mesh-layout.is-player-expanded .page-copy {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+  align-items: end;
+  gap: 20px 28px;
+}
+
+.mesh-layout.is-player-expanded .mesh-hero {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mesh-layout.is-player-expanded .mesh-controls {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  align-self: start;
+}
+
+.mesh-layout.is-player-expanded .mesh-status-panel {
+  grid-column: 2;
+  grid-row: 2;
+  max-width: none;
+  justify-self: stretch;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.mesh-recovery-switch {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 7;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.mesh-recovery-switch[hidden] {
+  display: none !important;
+}
+
+.mesh-recovery-result {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 50%;
+  background: #ef5a34;
+  color: #fff3ea;
+  font: 700 1.8rem/1 "Space Grotesk", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(239, 90, 52, 0.28);
+  transition: transform 0.16s ease, filter 0.16s ease, box-shadow 0.16s ease;
+}
+
+.mesh-recovery-result:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.mesh-recovery-result:active {
+  transform: translateY(0);
+}
+
+.mesh-recovery-result.active {
+  box-shadow:
+    0 0 0 2px rgba(255, 186, 160, 0.92),
+    0 10px 22px rgba(239, 90, 52, 0.35);
 }
 
 .legend-dot {
@@ -62,173 +188,208 @@
 }
 
 .mesh-network {
-  position: relative;
-  height: 440px;
-  margin-top: 26px;
-}
-
-.network-node {
   position: absolute;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: var(--page-text);
-  font-family: "Space Grotesk", sans-serif;
-  background: linear-gradient(180deg, rgba(32, 201, 255, 0.18), rgba(18, 40, 66, 0.96));
+  inset: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(112, 240, 255, 0.1), transparent 38%),
+    radial-gradient(circle at 82% 18%, rgba(126, 255, 178, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(8, 14, 24, 0.96), rgba(5, 10, 18, 0.92));
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 14px 35px rgba(0, 0, 0, 0.25);
+    inset 0 0 0 1px rgba(143, 216, 255, 0.08),
+    0 18px 50px rgba(0, 0, 0, 0.22);
 }
 
-.leader-node {
-  top: 188px;
-  left: 44px;
-}
-
-.node-alpha {
-  top: 74px;
-  left: 248px;
-}
-
-.node-beta {
-  top: 294px;
-  left: 260px;
-}
-
-.node-gamma {
-  top: 166px;
-  left: 500px;
-}
-
-.panel-node {
-  top: 180px;
-  right: 42px;
-  background: linear-gradient(180deg, rgba(255, 209, 110, 0.2), rgba(56, 43, 9, 0.96));
-}
-
-.node-label {
+.mesh-player-host {
   position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.9rem;
-  color: var(--page-muted);
-  white-space: nowrap;
+  inset: 0;
+  pointer-events: auto;
+  touch-action: none;
 }
 
-.network-line {
+.mesh-zoom-controls {
   position: absolute;
-  display: block;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.1);
-  transform-origin: left center;
+  top: 14px;
+  right: 14px;
+  z-index: 7;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.mesh-zoom-button {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(112, 240, 255, 0.16);
   border-radius: 999px;
-  transition: opacity 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+  background: rgba(4, 12, 20, 0.74);
+  color: #e8f8ff;
+  font: 600 0.95rem/1 "Space Grotesk", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
-.network-line.active {
-  background: linear-gradient(90deg, var(--page-accent), rgba(112, 240, 255, 0.4));
-  box-shadow: 0 0 14px rgba(112, 240, 255, 0.4);
+.mesh-zoom-button:hover {
+  background: rgba(10, 24, 38, 0.88);
+  border-color: rgba(112, 240, 255, 0.32);
+  transform: translateY(-1px);
 }
 
-.network-line.blocked {
-  background: linear-gradient(90deg, rgba(255, 123, 136, 0.9), rgba(255, 123, 136, 0.15));
-  box-shadow: 0 0 12px rgba(255, 123, 136, 0.35);
+.mesh-zoom-button:active {
+  transform: translateY(0);
 }
 
-.network-line.dimmed {
-  opacity: 0.22;
+.mesh-zoom-reset {
+  min-width: 70px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.line-primary-a {
-  width: 196px;
-  top: 218px;
-  left: 118px;
-  transform: rotate(-28deg);
+.mesh-zoom-expand {
+  min-width: 88px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.line-primary-b {
-  width: 214px;
-  top: 168px;
-  left: 332px;
-  transform: rotate(19deg);
+.page-copy,
+.mesh-status-panel {
+  transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
 }
 
-.line-backup-a {
-  width: 188px;
-  top: 244px;
-  left: 118px;
-  transform: rotate(29deg);
-}
-
-.line-backup-b {
-  width: 210px;
-  top: 300px;
-  left: 332px;
-  transform: rotate(-34deg);
-}
-
-.line-blocked {
-  width: 182px;
-  top: 208px;
-  right: 110px;
-  transform: rotate(-6deg);
-}
-
-.signal-particle {
+.mesh-transition-layer {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.mesh-player-stage,
+.mesh-player-icons {
+  position: absolute;
+  inset: 0;
+}
+
+.mesh-player-canvas,
+.mesh-player-host canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mesh-player-icons {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-player-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(120, 210, 255, 0.32));
+  will-change: transform, left, top;
+}
+
+.mesh-player-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  max-width: min(92%, 460px);
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(143, 216, 255, 0.12);
+  background: rgba(6, 12, 20, 0.78);
+  color: #dff4ff;
+  text-align: center;
+  line-height: 1.45;
+  transform: translate(-50%, -50%);
   opacity: 0;
+  transition: opacity 0.18s ease, border-color 0.18s ease;
+  pointer-events: none;
 }
 
-.signal-primary {
-  background: radial-gradient(circle, #d8fbff 0%, var(--page-accent) 60%, rgba(112, 240, 255, 0) 100%);
-  box-shadow: 0 0 22px rgba(112, 240, 255, 0.9);
-}
-
-.signal-backup {
-  background: radial-gradient(circle, #f2fff8 0%, var(--page-accent-warm) 60%, rgba(126, 255, 178, 0) 100%);
-  box-shadow: 0 0 22px rgba(126, 255, 178, 0.85);
-}
-
-.mesh-network[data-mode="normal"] .signal-primary,
-.mesh-network[data-mode="blocked"] .signal-primary,
-.mesh-network[data-mode="recovery"] .signal-backup {
+.mesh-player-status.is-visible {
   opacity: 1;
 }
 
-.mesh-network[data-mode="normal"] .signal-primary {
-  animation: signalNormal 3.8s linear infinite;
+.mesh-player-status.is-error {
+  border-color: rgba(255, 122, 122, 0.28);
+  color: #ffdada;
 }
 
-.mesh-network[data-mode="blocked"] .signal-primary {
-  animation: signalBlocked 2.3s linear infinite;
+.mesh-player-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  max-width: min(92%, 480px);
+  padding: 16px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  background: rgba(6, 12, 20, 0.84);
+  color: #e4f5ff;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
+  text-align: center;
+  line-height: 1.45;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
 }
 
-.mesh-network[data-mode="recovery"] .signal-backup {
-  animation: signalRecovery 3.4s linear infinite;
+.mesh-player-message::before {
+  content: "Player";
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(143, 216, 255, 0.82);
 }
 
-@keyframes signalNormal {
-  0% { transform: translate(82px, 226px); }
-  35% { transform: translate(270px, 120px); }
-  68% { transform: translate(520px, 200px); }
-  100% { transform: translate(682px, 226px); }
+.mesh-player-message[data-kind="loading"]::before {
+  color: rgba(112, 240, 255, 0.95);
 }
 
-@keyframes signalBlocked {
-  0% { transform: translate(82px, 226px); opacity: 1; }
-  70% { transform: translate(520px, 200px); opacity: 1; }
-  100% { transform: translate(560px, 205px); opacity: 0; }
+.mesh-player-message[data-kind="error"]::before {
+  color: #ff9a9a;
 }
 
-@keyframes signalRecovery {
-  0% { transform: translate(82px, 226px); }
-  32% { transform: translate(282px, 328px); }
-  68% { transform: translate(520px, 202px); }
-  100% { transform: translate(682px, 226px); }
+.mesh-stage.is-loading .mesh-player-message {
+  border-color: rgba(112, 240, 255, 0.28);
+  background: rgba(7, 18, 30, 0.9);
+}
+
+.mesh-stage.is-error .mesh-player-message {
+  border-color: rgba(255, 122, 122, 0.34);
+  background: rgba(36, 12, 16, 0.92);
+  color: #ffdada;
+}
+
+.mesh-stage.is-loading .mesh-player-host {
+  filter: saturate(0.94) brightness(0.97);
+}
+
+.mesh-stage.is-error .mesh-player-host {
+  filter: saturate(0.85) brightness(0.92);
+}
+
+.mesh-stage.is-loading .mesh-player-host::after,
+.mesh-stage.is-error .mesh-player-host::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 38%, rgba(0, 0, 0, 0.12));
+}
+
+.mesh-player-message[hidden] {
+  display: none;
 }

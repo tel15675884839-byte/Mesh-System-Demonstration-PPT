@@ -10,8 +10,49 @@
   justify-content: flex-end;
 }
 
+.overview-feature-grid {
+  grid-template-areas:
+    "mesh reliability"
+    "response distance"
+    "battery installation";
+}
+
+.feature-distance {
+  grid-area: distance;
+}
+
+.feature-mesh {
+  grid-area: mesh;
+}
+
+.feature-response {
+  grid-area: response;
+}
+
+.feature-reliability {
+  grid-area: reliability;
+}
+
+.feature-battery {
+  grid-area: battery;
+}
+
+.feature-installation {
+  grid-area: installation;
+}
+
 @media (max-width: 1100px) {
   .overview-layout {
     grid-template-columns: 1fr;
+  }
+
+  .overview-feature-grid {
+    grid-template-areas:
+      "mesh"
+      "reliability"
+      "response"
+      "distance"
+      "battery"
+      "installation";
   }
 }
