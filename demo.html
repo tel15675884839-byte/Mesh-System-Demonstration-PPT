@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态赛博朋克信号网络背景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #030a0d;
+            /* 深邃的暗青/黑色背景 */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="networkCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let dataClusters = [];
+
+        // 鼠标对象
+        const mouse = {
+            x: null,
+            y: null,
+            radius: 180 // 鼠标交互的影响半径
+        };
+
+        // 主题颜色配置
+        const themeColor = '0, 255, 204'; // 青色/Neon Cyan
+
+        // 初始化Canvas尺寸
+        function initSize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            initSize();
+            initScene();
+        });
+
+        // 监听鼠标移动
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        // 监听鼠标移出屏幕
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // 背景故障数据块类 (模拟视频中背景闪烁的条纹矩阵)
+        class DataCluster {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.width = Math.random() * 60 + 20;
+                this.height = Math.random() * 40 + 20;
+                this.opacity = Math.random() * 0.3;
+                this.lines = [];
+                // 预生成区块内的横线
+                let linesCount = Math.floor(Math.random() * 5) + 3;
+                for (let i = 0; i < linesCount; i++) {
+                    this.lines.push({
+                        yOff: Math.random() * this.height,
+                        width: Math.random() * this.width,
+                        xOff: Math.random() * 10
+                    });
+                }
+            }
+
+            draw() {
+                // 随机闪烁效果
+                if (Math.random() < 0.05) {
+                    this.opacity = Math.random() * 0.4;
+                }
+
+                ctx.save();
+                ctx.fillStyle = `rgba(${themeColor}, ${this.opacity})`;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = `rgba(${themeColor}, 0.5)`;
+
+                this.lines.forEach(line => {
+                    ctx.fillRect(this.x + line.xOff, this.y + line.yOff, line.width, 2);
+                });
+                ctx.restore();
+            }
+
+            update() {
+                // 缓慢漂移
+                this.x -= 0.2;
+                if (this.x < -100) this.x = width + 50;
+                this.draw();
+            }
+        }
+
+        // 交互节点（粒子）类
+        class Node {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.5; // 水平速度
+                this.vy = (Math.random() - 0.5) * 1.5; // 垂直速度
+                this.radius = Math.random() * 2 + 1;
+                // 为节点生成一个随机的标号 (模拟视频中节点旁边的数字)
+                this.label = (Math.random() * 99).toFixed(2);
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${themeColor}, 0.8)`;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = `rgba(${themeColor}, 1)`;
+                ctx.fill();
+
+                // 绘制节点旁边的微小数字标签
+                ctx.font = "10px Courier New";
+                ctx.fillStyle = `rgba(${themeColor}, 0.5)`;
+                ctx.shadowBlur = 0; // 关闭文字的过度发光以保持清晰
+                ctx.fillText(this.label, this.x + 6, this.y - 6);
+            }
+
+            update() {
+                // 边界反弹
+                if (this.x > width || this.x < 0) this.vx = -this.vx;
+                if (this.y > height || this.y < 0) this.vy = -this.vy;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // 鼠标引力/排斥计算 (当鼠标靠近时)
+                if (mouse.x != null && mouse.y != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius) {
+                        // 吸引点靠近鼠标 (稍微改变速度向量)
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouse.radius - distance) / mouse.radius; // 越近力越大
+
+                        this.x += forceDirectionX * force * 1.5;
+                        this.y += forceDirectionY * force * 1.5;
+                    }
+                }
+
+                this.draw();
+            }
+        }
+
+        // 初始化场景
+        function initScene() {
+            particles = [];
+            dataClusters = [];
+
+            // 生成背景数据簇 (密度减少约30%)
+            let clusterCount = Math.floor(((width * height) / 30000) * 0.7);
+            for (let i = 0; i < clusterCount; i++) {
+                dataClusters.push(new DataCluster());
+            }
+
+            // 生成网络节点 (密度减少约30%)
+            let nodeCount = Math.floor(((width * height) / 12000) * 0.7);
+            // 限制最大和最小节点数保证性能和效果 (对应下调了30%的限制)
+            nodeCount = Math.max(28, Math.min(nodeCount, 105));
+
+            for (let i = 0; i < nodeCount; i++) {
+                particles.push(new Node());
+            }
+        }
+
+        // 连线逻辑 (画网)
+        function connectParticles() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // 如果两个点之间的距离小于 120，则连线
+                    if (distance < 120) {
+                        // 根据距离计算透明度，越近越亮
+                        let opacity = 1 - (distance / 120);
+
+                        // 如果这两个点同时靠近鼠标，使其更加高亮（形成视频中鼠标划过的明显多边形聚集效果）
+                        if (mouse.x != null) {
+                            let distToMouseA = Math.sqrt(Math.pow(mouse.x - particles[a].x, 2) + Math.pow(mouse.y - particles[a].y, 2));
+                            let distToMouseB = Math.sqrt(Math.pow(mouse.x - particles[b].x, 2) + Math.pow(mouse.y - particles[b].y, 2));
+                            if (distToMouseA < mouse.radius && distToMouseB < mouse.radius) {
+                                opacity += 0.5; // 鼠标区域内连线加亮
+                                ctx.lineWidth = 1.5;
+                            } else {
+                                ctx.lineWidth = 0.5;
+                            }
+                        } else {
+                            ctx.lineWidth = 0.5;
+                        }
+
+                        ctx.strokeStyle = `rgba(${themeColor}, ${opacity * 0.8})`;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+
+                        // 发光线段特效
+                        ctx.shadowBlur = 5;
+                        ctx.shadowColor = `rgba(${themeColor}, ${opacity})`;
+
+                        ctx.stroke();
+                        ctx.shadowBlur = 0; // 重置shadow
+                    }
+                }
+
+                // 节点直接连接到鼠标
+                if (mouse.x != null && mouse.y != null) {
+                    let dx = particles[a].x - mouse.x;
+                    let dy = particles[a].y - mouse.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius) {
+                        let opacity = 1 - (distance / mouse.radius);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.5})`; // 鼠标连线用偏白色
+                        ctx.setLineDash([5, 5]); // 鼠标连接线用虚线模拟扫描信号
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                        ctx.setLineDash([]); // 恢复实线
+                    }
+                }
+            }
+        }
+
+        // 动画主循环
+        function animate() {
+            requestAnimationFrame(animate);
+            // 每一帧清空画布，但保留一点点上一帧的残影，增加运动拖尾和光晕感
+            ctx.fillStyle = 'rgba(2, 8, 10, 0.5)';
+            ctx.fillRect(0, 0, width, height);
+
+            // 更新背景故障块
+            dataClusters.forEach(cluster => cluster.update());
+
+            // 绘制连线
+            connectParticles();
+
+            // 更新前景节点
+            particles.forEach(particle => particle.update());
+        }
+
+        // 启动
+        initSize();
+        initScene();
+        animate();
+    </script>
+</body>
+
+</html>
