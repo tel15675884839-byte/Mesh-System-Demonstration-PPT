@@ -4,12 +4,6 @@
     return;
   }
 
-  const stage = document.querySelector(".distance-stage");
-  const modeElement = document.getElementById("distance-stage-mode");
-  const statusTitle = document.getElementById("distance-status-title");
-  const statusCopy = document.getElementById("distance-status-copy");
-  const sceneButtons = Array.from(document.querySelectorAll(".scene-toggle"));
-  const scenes = Array.from(document.querySelectorAll(".distance-scene"));
   const sceneMeta = {
     open: {
       mode: "OPEN AREA",
@@ -22,9 +16,28 @@
       copy: "Signal advances hop-by-hop through nodes, reaching up to 16 km."
     }
   };
+  const sceneNames = Object.keys(sceneMeta);
+  const stage = page.querySelector(".distance-stage");
+  const modeElement = page.querySelector("#distance-stage-mode");
+  const statusTitle = page.querySelector("#distance-status-title");
+  const statusCopy = page.querySelector("#distance-status-copy");
+  const sceneButtons = Array.from(page.querySelectorAll(".scene-toggle"));
+  const scenes = Array.from(page.querySelectorAll(".distance-scene"));
   const reducedMotionQuery = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
+
+  const hasRequiredScenes = sceneNames.every(function (sceneName) {
+    return !!page.querySelector('.distance-scene[data-scene="' + sceneName + '"]');
+  });
+  const hasRequiredButtons = sceneNames.every(function (sceneName) {
+    return !!page.querySelector('.scene-toggle[data-scene-target="' + sceneName + '"]');
+  });
+
+  if (!stage || !modeElement || !statusTitle || !statusCopy || !hasRequiredScenes || !hasRequiredButtons) {
+    console.warn("Distance page controller skipped: required elements are missing.");
+    return;
+  }
 
   function setReducedMotionClass() {
     page.classList.toggle("reduce-motion", !!(reducedMotionQuery && reducedMotionQuery.matches));
@@ -35,22 +48,23 @@
   }
 
   function applyScene(sceneName) {
-    const nextSceneName = sceneMeta[sceneName] ? sceneName : "open";
-    const meta = sceneMeta[nextSceneName];
-    if (!meta || !stage) {
+    const next = sceneName;
+    if (!sceneMeta[next] || !stage) {
+      console.warn("Distance page controller ignored unknown scene key:", next);
       return;
     }
+    const meta = sceneMeta[next];
 
-    stage.dataset.scene = nextSceneName;
+    stage.dataset.scene = next;
 
     scenes.forEach(function (scene) {
-      const isActive = scene.dataset.scene === nextSceneName;
+      const isActive = scene.dataset.scene === next;
       scene.classList.toggle("is-visible", isActive);
       scene.setAttribute("aria-hidden", String(!isActive));
     });
 
     sceneButtons.forEach(function (button) {
-      const isActive = getSceneTarget(button) === nextSceneName;
+      const isActive = getSceneTarget(button) === next;
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-pressed", String(isActive));
     });
@@ -92,7 +106,13 @@
     button.addEventListener("click", handleToggleClick);
   });
 
-  applyScene((stage && stage.dataset && stage.dataset.scene) || "open");
+  const initialSceneName = stage.dataset.scene;
+  if (!sceneMeta[initialSceneName]) {
+    console.warn("Distance page controller skipped: invalid initial scene key.", initialSceneName);
+    return;
+  }
+
+  applyScene(initialSceneName);
 
   window.__distancePageReady = true;
 }());
