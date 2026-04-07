@@ -298,7 +298,7 @@
 .scene-link {
   left: 18%;
   right: 18%;
-  top: 53%;
+  top: 50%;
   height: 4px;
   border-radius: 999px;
   z-index: 2;
@@ -415,7 +415,7 @@
 
 .pulse-open {
   left: 12%;
-  top: 53%;
+  top: 50%;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -491,7 +491,7 @@
   position: absolute;
   left: 12%;
   right: 10%;
-  top: 53%;
+  top: 50%;
   height: 4px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(15, 235, 198, 0.14), rgba(15, 235, 198, 0.9), rgba(112, 240, 255, 0.26));
@@ -501,7 +501,7 @@
 }
 
 .relay-hop {
-  top: 53%;
+  top: 50%;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -547,7 +547,7 @@
 .relay-link {
   left: 12%;
   right: 10%;
-  top: 53%;
+  top: 50%;
   background: linear-gradient(90deg, rgba(15, 235, 198, 0.22), rgba(15, 235, 198, 0.94), rgba(112, 240, 255, 0.34));
   box-shadow:
     0 0 18px rgba(15, 235, 198, 0.38),
@@ -556,7 +556,7 @@
 
 .pulse-relay {
   left: 12%;
-  top: 53%;
+  top: 50%;
   width: 12px;
   height: 12px;
   border-radius: 50%;
