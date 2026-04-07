@@ -19,15 +19,15 @@
         <p class="lead">
           Achieve up to 500 meters of reliable coverage extending standard limitations.
         </p>
-        <ul class="distance-key-lines" aria-label="Distance capability highlights">
+        <ul class="distance-keylines" aria-label="Distance capability highlights">
           <li>Open-area link up to 500 m</li>
           <li>Node-to-node relay up to 16 km</li>
         </ul>
         <div class="distance-scene-toggle" role="group" aria-label="Distance scene switch">
-          <button type="button" data-scene-target="open" aria-pressed="true">Open Area 500m</button>
-          <button type="button" data-scene-target="relay" aria-pressed="false">Mesh Relay 16km</button>
+          <button type="button" class="scene-toggle is-active" data-scene-target="open" aria-pressed="true">Open Area 500m</button>
+          <button type="button" class="scene-toggle" data-scene-target="relay" aria-pressed="false">Mesh Relay 16km</button>
         </div>
-        <div class="status-panel distance-status-panel" style="margin-top: 2rem;">
+        <div class="status-panel distance-status-panel distance-status-panel-spaced">
           <p class="eyebrow">Scene Status</p>
           <h3 id="distance-status-title">Open area direct link established</h3>
           <p id="distance-status-copy">Two nodes maintain a stable open-area connection at extended range.</p>
@@ -37,15 +37,15 @@
       <div class="visual-card distance-stage" data-scene="open" aria-label="Extended distance cinematic stage">
         <span class="distance-stage-mode" id="distance-stage-mode">OPEN AREA</span>
         <div class="distance-cinematic-bg" aria-hidden="true"></div>
-        <section class="distance-scene distance-scene-open" data-scene="open" aria-label="Open area scene">
-          <div class="distance-scene-ruler" aria-hidden="true"></div>
+        <section class="distance-scene distance-scene-open scene-open is-visible" data-scene="open" aria-label="Open area scene">
+          <div class="scene-ruler" aria-hidden="true"></div>
           <div class="distance-scene-link" aria-hidden="true"></div>
           <div class="distance-scene-pulse" aria-hidden="true"></div>
           <div class="distance-scene-nodes" aria-hidden="true"></div>
           <p class="distance-scene-metric">500m</p>
         </section>
-        <section class="distance-scene distance-scene-relay" data-scene="relay" aria-label="Mesh relay scene">
-          <div class="distance-scene-relay-chain" aria-hidden="true"></div>
+        <section class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene">
+          <div class="relay-chain" aria-hidden="true"></div>
           <div class="distance-scene-link" aria-hidden="true"></div>
           <div class="distance-scene-pulse" aria-hidden="true"></div>
           <div class="distance-scene-nodes" aria-hidden="true"></div>
