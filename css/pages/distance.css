@@ -199,9 +199,7 @@
   border-radius: 24px;
   opacity: 0;
   transform: translateY(12px) scale(0.98);
-  transition:
-    opacity 0.55s ease,
-    transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 220ms ease, transform 380ms ease;
   pointer-events: none;
   overflow: hidden;
 }
@@ -399,7 +397,7 @@
   transform: translate3d(-50%, -50%, 0);
   background: radial-gradient(circle, rgba(234, 255, 255, 0.98), rgba(112, 240, 255, 0.95) 45%, rgba(112, 240, 255, 0) 75%);
   filter: drop-shadow(0 0 16px rgba(112, 240, 255, 0.92));
-  animation: open-pulse-travel 3.6s linear infinite;
+  animation: open-pulse-travel 4.5s linear infinite;
 }
 
 .node-open-a {
@@ -535,7 +533,7 @@
   transform: translate3d(-50%, -50%, 0);
   background: radial-gradient(circle, rgba(235, 255, 252, 0.98), rgba(15, 235, 198, 0.96) 50%, rgba(15, 235, 198, 0) 76%);
   filter: drop-shadow(0 0 16px rgba(15, 235, 198, 0.9));
-  animation: relay-pulse-travel 4.4s linear infinite;
+  animation: relay-pulse-travel 5.5s linear infinite;
 }
 
 .node-relay-a {
