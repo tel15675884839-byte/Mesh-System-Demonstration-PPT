@@ -1,5 +1,9 @@
 /* Feature Page: Extended Distance */
 .page-distance {
+  --page-bg:
+    radial-gradient(circle at 18% 16%, rgba(18, 62, 92, 0.22), transparent 38%),
+    radial-gradient(circle at 80% 78%, rgba(10, 116, 93, 0.14), transparent 34%),
+    linear-gradient(180deg, #071425 0%, #030b15 100%);
   --distance-open: rgba(112, 240, 255, 0.96);
   --distance-open-soft: rgba(112, 240, 255, 0.18);
   --distance-relay: rgba(15, 235, 198, 0.96);
@@ -67,6 +71,9 @@
 
 .scene-toggle {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(112, 240, 255, 0.14);
   border-radius: 999px;
   padding: 12px 16px;
@@ -117,8 +124,9 @@
 }
 
 .distance-stage {
-  grid-area: stage;
   position: relative;
+  width: 100%;
+  min-width: 0;
   min-height: 560px;
   padding: 24px;
   overflow: hidden;
