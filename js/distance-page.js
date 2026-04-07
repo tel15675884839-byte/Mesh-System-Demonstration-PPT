@@ -43,6 +43,10 @@
     page.classList.toggle("reduce-motion", !!(reducedMotionQuery && reducedMotionQuery.matches));
   }
 
+  function setPageHiddenClass() {
+    page.classList.toggle("is-hidden", document.hidden);
+  }
+
   function getSceneTarget(button) {
     return button && button.dataset ? button.dataset.sceneTarget : "";
   }
@@ -89,6 +93,7 @@
   }
 
   setReducedMotionClass();
+  setPageHiddenClass();
 
   if (reducedMotionQuery) {
     const onMotionChange = function () {
@@ -101,6 +106,8 @@
       reducedMotionQuery.addListener(onMotionChange);
     }
   }
+
+  document.addEventListener("visibilitychange", setPageHiddenClass);
 
   sceneButtons.forEach(function (button) {
     button.addEventListener("click", handleToggleClick);

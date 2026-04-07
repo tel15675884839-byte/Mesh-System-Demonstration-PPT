@@ -214,6 +214,15 @@
   animation: node-breathe 5.5s ease-in-out infinite;
 }
 
+.distance-scene:not(.is-visible) * {
+  animation-play-state: paused;
+}
+
+.page-distance.is-hidden .distance-cinematic-bg,
+.page-distance.is-hidden .distance-scene * {
+  animation-play-state: paused !important;
+}
+
 .distance-scene::before {
   content: "";
   position: absolute;
@@ -675,6 +684,15 @@
     opacity: 1;
     box-shadow: 0 0 20px rgba(15, 235, 198, 0.92);
   }
+}
+
+.page-distance.reduce-motion .distance-cinematic-bg,
+.page-distance.reduce-motion .scene-open .scene-ruler .ruler-track,
+.page-distance.reduce-motion .pulse-open,
+.page-distance.reduce-motion .pulse-relay,
+.page-distance.reduce-motion .relay-hop,
+.page-distance.reduce-motion .distance-scene.is-visible .scene-node {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
