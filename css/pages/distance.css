@@ -333,12 +333,7 @@
 }
 
 .scene-node::before {
-  content: "";
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(112, 240, 255, 0.84), rgba(15, 235, 198, 0.94));
-  box-shadow: 0 0 18px rgba(112, 240, 255, 0.55);
+  content: none;
 }
 
 .scene-node::after {
@@ -364,8 +359,8 @@
 .scene-node .node-icon {
   position: relative;
   z-index: 2;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   opacity: 0.92;
   filter: drop-shadow(0 0 12px rgba(112, 240, 255, 0.36));
@@ -376,8 +371,8 @@
 }
 
 .scene-node.is-device .node-icon {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   filter: drop-shadow(0 0 12px rgba(15, 235, 198, 0.38));
 }
 
@@ -390,7 +385,7 @@
 }
 
 .scene-open .scene-node::before {
-  background: linear-gradient(135deg, rgba(112, 240, 255, 0.88), rgba(15, 235, 198, 0.92));
+  content: none;
 }
 
 .scene-open .scene-node {
@@ -471,7 +466,7 @@
 }
 
 .scene-relay .scene-node::before {
-  background: linear-gradient(135deg, rgba(15, 235, 198, 0.88), rgba(112, 240, 255, 0.9));
+  content: none;
 }
 
 .scene-relay .scene-node {
@@ -814,8 +809,7 @@
   }
 
   .scene-node::before {
-    width: 22px;
-    height: 22px;
+    content: none;
   }
 
   .scene-node span {
