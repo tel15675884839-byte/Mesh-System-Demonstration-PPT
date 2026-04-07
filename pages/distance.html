@@ -19,10 +19,10 @@
         <p class="lead">
           Achieve up to 500 meters of reliable coverage extending standard limitations.
         </p>
-        <ul class="distance-keylines" aria-label="Distance capability highlights">
-          <li>Open-area link up to 500 m</li>
-          <li>Node-to-node relay up to 16 km</li>
-        </ul>
+        <div class="distance-keylines" aria-label="Distance capability highlights">
+          <p>Open-area link up to 500 m</p>
+          <p>Node-to-node relay up to 16 km</p>
+        </div>
         <div class="distance-scene-toggle" role="group" aria-label="Distance scene switch">
           <button type="button" class="scene-toggle is-active" data-scene-target="open" aria-controls="distance-scene-open" aria-pressed="true">Open Area 500m</button>
           <button type="button" class="scene-toggle" data-scene-target="relay" aria-controls="distance-scene-relay" aria-pressed="false">Mesh Relay 16km</button>
@@ -45,8 +45,8 @@
           </div>
           <div class="scene-link open-link" aria-hidden="true"></div>
           <div class="signal-pulse pulse-open" aria-hidden="true"></div>
-          <div class="scene-node node-open-a" aria-hidden="true"></div>
-          <div class="scene-node node-open-b" aria-hidden="true"></div>
+          <div class="scene-node node-open-a" aria-hidden="true"><span>Node A</span></div>
+          <div class="scene-node node-open-b" aria-hidden="true"><span>Node B</span></div>
           <p class="scene-metric metric-open">500m</p>
         </section>
         <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene" aria-hidden="true">
@@ -59,8 +59,8 @@
           </div>
           <div class="scene-link relay-link" aria-hidden="true"></div>
           <div class="signal-pulse pulse-relay" aria-hidden="true"></div>
-          <div class="scene-node node-relay-a" aria-hidden="true"></div>
-          <div class="scene-node node-relay-z" aria-hidden="true"></div>
+          <div class="scene-node node-relay-a" aria-hidden="true"><span>Leader</span></div>
+          <div class="scene-node node-relay-z" aria-hidden="true"><span>Terminal</span></div>
           <p class="scene-metric metric-relay">Up to 16 km</p>
         </section>
       </div>
