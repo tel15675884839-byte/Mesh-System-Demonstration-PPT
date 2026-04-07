@@ -1,0 +1,26 @@
+=D:\Users\30741\Desktop\Mesh html\.superpowers\brainstorm\45352-1775555478 : The term '=D:\Users\30741\Desktop\Mesh 
+html\.superpowers\brainstorm\45352-1775555478' is not recognized as the name of a cmdlet, function, script file, or 
+operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try 
+again.
+At line:1 char:1
++ ='D:\Users\30741\Desktop\Mesh html\.superpowers\brainstorm\45352-1775 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (=D:\Users\30741...5352-1775555478:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+=127.0.0.1 : The term '=127.0.0.1' is not recognized as the name of a cmdlet, function, script file, or operable 
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:79
++ ...  html\.superpowers\brainstorm\45352-1775555478'; ='127.0.0.1'; ='loca ...
++                                                      ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (=127.0.0.1:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+=localhost : The term '=localhost' is not recognized as the name of a cmdlet, function, script file, or operable 
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:93
++ ... wers\brainstorm\45352-1775555478'; ='127.0.0.1'; ='localhost'; node ' ...
++                                                      ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (=localhost:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

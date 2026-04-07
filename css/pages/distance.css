@@ -1,9 +1,5 @@
 /* Feature Page: Extended Distance */
 .page-distance {
-  --page-bg:
-    radial-gradient(circle at 18% 16%, rgba(18, 62, 92, 0.22), transparent 38%),
-    radial-gradient(circle at 80% 78%, rgba(10, 116, 93, 0.14), transparent 34%),
-    linear-gradient(180deg, #071425 0%, #030b15 100%);
   --distance-open: rgba(112, 240, 255, 0.96);
   --distance-open-soft: rgba(112, 240, 255, 0.18);
   --distance-relay: rgba(15, 235, 198, 0.96);
@@ -132,11 +128,6 @@
   overflow: hidden;
   isolation: isolate;
   container-type: inline-size;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(20, 64, 92, 0.28), transparent 38%),
-    radial-gradient(circle at 82% 78%, rgba(10, 108, 87, 0.22), transparent 34%),
-    linear-gradient(180deg, rgba(4, 13, 24, 0.88), rgba(2, 8, 18, 0.96));
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
 }
 
 .distance-cinematic-bg,
@@ -149,10 +140,10 @@
 
 .distance-cinematic-bg {
   background:
-    radial-gradient(circle at 30% 30%, rgba(112, 240, 255, 0.16), transparent 28%),
-    radial-gradient(circle at 70% 72%, rgba(15, 235, 198, 0.12), transparent 26%),
+    radial-gradient(circle at 30% 30%, rgba(112, 240, 255, 0.08), transparent 28%),
+    radial-gradient(circle at 70% 72%, rgba(15, 235, 198, 0.06), transparent 26%),
     linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 40%);
-  opacity: 0.85;
+  opacity: 0.45;
   animation: stage-breath 8s ease-in-out infinite;
 }
 

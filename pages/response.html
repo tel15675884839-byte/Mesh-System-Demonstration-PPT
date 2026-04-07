@@ -11,29 +11,87 @@
   <link rel="stylesheet" href="../css/pages/response.css">
 </head>
 <body>
-  <main class="page page-response">
+  <main class="page page-response" data-stage="accumulation">
     <section class="page-grid response-layout">
       <div class="page-copy">
         <p class="eyebrow">Core Advantage</p>
         <h2>Rapid Response</h2>
         <p class="lead">
-          Fast alarm transmission ensures early warning under emergency conditions.
+          Built on years of wireless R&amp;D and efficient algorithms.
         </p>
-        <div class="status-panel" style="margin-top: 2rem;">
-          <p class="eyebrow">Draft Status</p>
-          <h3>Framework Prepared</h3>
-          <p>This is an independent drafted page. You can customize the content and replace the visual placeholder as needed.</p>
+        <ol class="response-timeline" aria-label="Performance pipeline timeline">
+          <li class="response-timeline-item is-active" data-timeline-stage="accumulation" aria-current="step">
+            <span class="response-timeline-index">01</span>
+            <div>
+              <h3>R&amp;D Accumulation</h3>
+              <p>Mature wireless baseline.</p>
+            </div>
+          </li>
+          <li class="response-timeline-item" data-timeline-stage="optimization">
+            <span class="response-timeline-index">02</span>
+            <div>
+              <h3>Algorithm Optimization</h3>
+              <p>Faster and cleaner routing.</p>
+            </div>
+          </li>
+          <li class="response-timeline-item" data-timeline-stage="delivery">
+            <span class="response-timeline-index">03</span>
+            <div>
+              <h3>Rapid + Stable Delivery</h3>
+              <p>Consistent panel arrival.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="status-panel response-status-panel">
+          <p class="eyebrow">Pipeline State</p>
+          <h3 id="response-status-title">R&amp;D baseline synced</h3>
+          <p id="response-status-copy">Network readiness is primed for dependable transmission.</p>
         </div>
       </div>
 
-      <div class="visual-card placeholder-stage">
-        <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
-          <span style="font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.05em;">[ Visual Demo Area for Rapid Response ]</span>
+      <div class="visual-card response-stage" aria-label="Rapid response animation stage">
+        <div class="response-network" aria-hidden="true">
+          <div class="route-track"></div>
+          <div class="route-track-backup"></div>
+          <div class="pulse-layer">
+            <span class="route-pulse pulse-a"></span>
+            <span class="route-pulse pulse-b"></span>
+            <span class="route-pulse pulse-c"></span>
+            <span class="route-pulse pulse-d"></span>
+          </div>
+          <div class="network-node node-detector">
+            <span class="node-core"></span>
+            <span class="node-label">Detector</span>
+          </div>
+          <div class="network-node node-mesh">
+            <span class="node-core"></span>
+            <span class="node-label">Mesh Node</span>
+          </div>
+          <div class="network-node node-panel">
+            <span class="node-core"></span>
+            <span class="node-label">Panel</span>
+          </div>
+          <div class="network-node node-support">
+            <span class="node-core"></span>
+            <span class="node-label">Support Path</span>
+          </div>
         </div>
+        <div class="response-kpis" aria-label="Signal quality indicators">
+          <span class="response-kpi">Path Confidence</span>
+          <span class="response-kpi">Delivery Integrity</span>
+          <span class="response-kpi">Algorithm Tuned</span>
+        </div>
+      </div>
+
+      <div class="response-outcomes" aria-label="Rapid response outcomes">
+        <div class="response-chip">Fast Transmission</div>
+        <div class="response-chip">Stable Routing</div>
+        <div class="response-chip">Reliable Delivery</div>
       </div>
     </section>
   </main>
 
   <script src="../js/page-messaging.js"></script>
+  <script src="../js/response-page.js"></script>
 </body>
 </html>

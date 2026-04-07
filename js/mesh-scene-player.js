@@ -119,24 +119,7 @@
     return "d:" + String(nodeId || "") + "|" + String(deviceId || "");
   }
   function getDisconnectedLinkPoints(start, end, isNodeLink, config) {
-    const direction = end.clone().sub(start);
-    const distanceValue = Math.max(0.001, direction.length());
-    const zigzagInterval = THREE.MathUtils.clamp(Number(config.disconnectedLinkZigzagInterval) || 8, 2, 24);
-    const zigzagCount = THREE.MathUtils.clamp(Math.ceil(distanceValue / zigzagInterval), 4, 24);
-    const amplitudeScale = THREE.MathUtils.clamp(Number(config.disconnectedLinkZigzagAmplitude) || 1, 0.5, 2.5);
-    const baseAmplitude = THREE.MathUtils.clamp(distanceValue * (isNodeLink ? 0.08 : 0.11), 1.4, isNodeLink ? 5.4 : 4.6);
-    const amplitude = baseAmplitude * amplitudeScale;
-    const points = [];
-
-    for (let i = 0; i <= zigzagCount; i += 1) {
-      const t = i / zigzagCount;
-      const point = start.clone().lerp(end, t);
-      if (i !== 0 && i !== zigzagCount) {
-        point.y += (i % 2 === 0 ? 1 : -1) * amplitude;
-      }
-      points.push(point);
-    }
-    return points;
+    return window.LinkEffects.getStraightLinkPoints(start, end);
   }
   function normalizeView(rawView, fallbackView) {
     const fallback = fallbackView || DEFAULT_FALLBACK_VIEW;
@@ -329,6 +312,7 @@
       this.container = resolveContainer(this.options.container);
       this.statePaths = normalizeStatePaths(this.options);
       this.stateData = isObject(this.options.stateData) ? this.options.stateData : {};
+      this.globalConfigOverride = isObject(this.options.globalConfigOverride) ? this.options.globalConfigOverride : null;
       this.iconBasePath = this.options.iconBasePath || DEFAULT_ICON_BASE_PATH;
       this.fallbackView = normalizeView(this.options.fallbackView, DEFAULT_FALLBACK_VIEW);
       this.initialMode = STATE_ORDER.includes(this.options.initialMode) ? this.options.initialMode : "normal";
@@ -725,7 +709,11 @@
     _buildState(mode, raw) {
       if (!isObject(raw)) throw new Error("Invalid state payload for " + mode);
 
-      const config = normalizeConfig(raw.config);
+      const rawConfig = isObject(raw.config) ? raw.config : {};
+      const mergedConfig = this.globalConfigOverride
+        ? Object.assign({}, rawConfig, this.globalConfigOverride)
+        : rawConfig;
+      const config = normalizeConfig(mergedConfig);
       const view = normalizeView(raw.view, this.fallbackView);
       const nodesInput = Array.isArray(raw.nodes) ? raw.nodes : [];
       const devicesInput = Array.isArray(raw.devices) ? raw.devices : [];
@@ -960,26 +948,9 @@
       if (!link) return null;
       if (link.breakMarkerEl) return link.breakMarkerEl;
       const marker = document.createElement("div");
-      marker.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.8 9.2a11 11 0 0 1 14.4 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7.8 12.4a7 7 0 0 1 8.4 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M10.7 15.7a3 3 0 0 1 2.6 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="18.4" r="1.4" fill="currentColor"/><path d="M5.6 18.6L18.8 5.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-      marker.style.position = "absolute";
-      marker.style.width = "56px";
-      marker.style.height = "56px";
-      marker.style.marginLeft = "-28px";
-      marker.style.marginTop = "-28px";
+      marker.className = "mesh-player-link-break-marker";
+      marker.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7L17 17" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><path d="M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
       marker.style.display = "none";
-      marker.style.alignItems = "center";
-      marker.style.justifyContent = "center";
-      marker.style.borderRadius = "50%";
-      marker.style.background = "radial-gradient(circle at center, rgba(255, 72, 72, 0.22), rgba(16, 6, 8, 0.8))";
-      marker.style.boxShadow = "0 0 0 1px rgba(255, 120, 120, 0.45), 0 0 20px rgba(255, 74, 74, 0.36)";
-      marker.style.color = "#ff8e8e";
-      marker.style.pointerEvents = "none";
-      marker.style.zIndex = "9";
-      const svg = marker.querySelector("svg");
-      if (svg) {
-        svg.style.width = "30px";
-        svg.style.height = "30px";
-      }
       this.overlayLayer.appendChild(marker);
       link.breakMarkerEl = marker;
       return marker;

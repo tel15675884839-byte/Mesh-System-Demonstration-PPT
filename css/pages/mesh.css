@@ -22,7 +22,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin: 28px 0 24px;
+  margin: 24px 0 24px;
 }
 
 .mode-button {
@@ -79,24 +79,24 @@
 
 .mesh-layout.is-player-expanded .mesh-stage {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 2;
   min-height: 540px;
   z-index: 3;
 }
 
 .mesh-layout.is-player-expanded {
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  grid-template-rows: auto auto minmax(500px, 1fr);
-  gap: 16px 28px;
+  grid-template-rows: auto minmax(500px, 1fr);
+  gap: 14px 24px;
 }
 
 .mesh-layout.is-player-expanded .page-copy {
   grid-column: 1 / -1;
   grid-row: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
-  align-items: end;
-  gap: 20px 28px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: start;
+  gap: 16px 24px;
 }
 
 .mesh-layout.is-player-expanded .mesh-hero {
@@ -107,7 +107,7 @@
 }
 
 .mesh-layout.is-player-expanded .mesh-controls {
-  margin: 0;
+  margin: -4px 0 32px 0;
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -117,11 +117,11 @@
 
 .mesh-layout.is-player-expanded .mesh-status-panel {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 1;
   max-width: none;
   justify-self: stretch;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 68px;
 }
 
 .mesh-recovery-switch {
@@ -297,6 +297,84 @@
   will-change: transform, left, top;
 }
 
+.mesh-player-link-break-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(255, 152, 116, 0.98);
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 45%, rgba(122, 28, 14, 0.96), rgba(58, 12, 8, 0.94) 72%);
+  color: #ffd0b2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 16px rgba(255, 119, 72, 0.52), 0 0 34px rgba(255, 89, 78, 0.26);
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 0 0 10px rgba(255, 194, 152, 0.56);
+  animation: mesh-player-link-break-pulse 1.15s ease-in-out infinite;
+}
+
+.mesh-player-link-break-marker::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(255, 132, 96, 0.44);
+  border-radius: inherit;
+  box-shadow: 0 0 22px rgba(255, 102, 82, 0.22);
+  animation: mesh-player-link-break-ring 1.8s ease-out infinite;
+}
+
+.mesh-player-link-break-marker::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  right: -11px;
+  bottom: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 185, 146, 0.82), rgba(255, 88, 88, 0));
+  transform: rotate(42deg);
+  box-shadow: 0 0 10px rgba(255, 118, 82, 0.34);
+}
+
+.mesh-player-link-break-marker svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(255, 194, 152, 0.38));
+}
+
+@keyframes mesh-player-link-break-pulse {
+  0%, 100% {
+    opacity: 0.88;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes mesh-player-link-break-ring {
+  0% {
+    opacity: 0.68;
+    transform: scale(0.88);
+  }
+  70% {
+    opacity: 0.18;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.16);
+  }
+}
+
 .mesh-player-status {
   position: absolute;
   left: 50%;
@@ -393,3 +471,9 @@
 .mesh-player-message[hidden] {
   display: none;
 }
+
+
+
+
+
+

@@ -18,7 +18,7 @@
     }
   };
 
-  const ASSET_VERSION = "20260403q";
+  const ASSET_VERSION = "20260407c";
 
   function withVersion(path) {
     return path + "?v=" + ASSET_VERSION;
@@ -31,6 +31,8 @@
     recovery1: LOCKED_STATE_BASE_PATH + "/recovery-1.json",
     recovery2: LOCKED_STATE_BASE_PATH + "/recovery-2.json"
   };
+  const DEMO_SCENE_STORAGE_KEY = "mesh_demo_scene_v1";
+  const DEMO_SCENE_STORAGE_VERSION = 1;
 
   const diagnosticStateData = {
     diagnostic: {
@@ -98,6 +100,37 @@
 
   function getPlayerStateDataForSelection() {
     return Object.assign({}, diagnosticStateData);
+  }
+
+  function isRecord(value) {
+    return !!value && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function readDemoSceneSnapshot() {
+    try {
+      const raw = window.localStorage.getItem(DEMO_SCENE_STORAGE_KEY);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw);
+      if (!isRecord(parsed)) {
+        return null;
+      }
+      if (typeof parsed.version === "number" && parsed.version !== DEMO_SCENE_STORAGE_VERSION) {
+        return null;
+      }
+      return parsed;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function getDemoConfigOverride() {
+    const snapshot = readDemoSceneSnapshot();
+    if (!snapshot || !isRecord(snapshot.config)) {
+      return null;
+    }
+    return snapshot.config;
   }
 
   const dependencyScripts = [
@@ -562,6 +595,7 @@
       const iconBasePath = await resolvedIconBasePathPromise;
       const selectedStatePaths = getStatePathsForSelection(recoveryResult);
       const selectedStateData = getPlayerStateDataForSelection(recoveryResult);
+      const demoConfigOverride = getDemoConfigOverride();
 
       if (typeof window.MeshScenePlayer !== "function") {
         throw new Error("MeshScenePlayer is unavailable.");
@@ -571,6 +605,7 @@
         container: meshPlayerHost,
         statePaths: selectedStatePaths,
         stateData: selectedStateData,
+        globalConfigOverride: demoConfigOverride,
         iconBasePath: iconBasePath,
         fallbackView: {
           camera: { x: 0, y: 24, z: 88 },
@@ -1031,6 +1066,19 @@
     if (layoutFlipAnimations.length > 0 || particleCanvas) {
       cancelExpandTransition();
     }
+  });
+
+  window.addEventListener("storage", function (event) {
+    if (!event || event.key !== DEMO_SCENE_STORAGE_KEY) {
+      return;
+    }
+    if (mode === "diagnostic") {
+      return;
+    }
+    resetPlayerInstance();
+    applyMeshMode(mode).catch(function () {
+      return null;
+    });
   });
 
   setStatus(mode);
