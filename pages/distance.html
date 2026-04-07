@@ -38,28 +38,27 @@
             <span class="ruler-end">500m</span>
           </div>
           <div class="scene-link open-link" aria-hidden="true">
-            <svg class="open-arc-svg" viewBox="0 0 100 24" preserveAspectRatio="none" role="presentation" aria-hidden="true">
-              <path class="open-arc-path open-arc-path-left" d="M 19 18 Q 34.5 2 50 18"></path>
-              <path class="open-arc-path open-arc-path-right" d="M 50 18 Q 66.5 2 83 18"></path>
+            <svg class="open-arc-svg" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" aria-hidden="true">
+              <path class="open-arc-path open-arc-path-upper" d="M 18 50 Q 56 32 83 35"></path>
+              <path class="open-arc-path open-arc-path-lower" d="M 18 50 Q 58 66 83 62"></path>
             </svg>
           </div>
-          <div class="signal-pulse pulse-open pulse-open-left" aria-hidden="true"></div>
-          <div class="signal-pulse pulse-open pulse-open-left pulse-open-left-delayed" aria-hidden="true"></div>
-          <div class="signal-pulse pulse-open pulse-open-right" aria-hidden="true"></div>
-          <div class="signal-pulse pulse-open pulse-open-right pulse-open-right-delayed" aria-hidden="true"></div>
-          <div class="scene-node node-open-left-device is-device" aria-hidden="true">
-            <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
-            <span>Device</span>
-          </div>
-          <div class="scene-node node-open-node" aria-hidden="true">
+          <div class="signal-pulse pulse-open pulse-open-upper" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-upper pulse-open-upper-delayed" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-lower" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-lower pulse-open-lower-delayed" aria-hidden="true"></div>
+          <div class="scene-node node-open-left-node" aria-hidden="true">
             <img class="node-icon" src="../assets/icons/node.svg" alt="">
             <span>Node</span>
           </div>
-          <div class="scene-node node-open-right-device is-device" aria-hidden="true">
+          <div class="scene-node node-open-right-top is-device" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
+            <span>Device</span>
+          </div>
+          <div class="scene-node node-open-right-bottom is-device" aria-hidden="true">
             <img class="node-icon" src="../assets/icons/sounder.svg" alt="">
             <span>Device</span>
           </div>
-          <p class="scene-metric metric-open">500m</p>
         </section>
         <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene" aria-hidden="true">
           <div class="relay-chain" aria-hidden="true">
