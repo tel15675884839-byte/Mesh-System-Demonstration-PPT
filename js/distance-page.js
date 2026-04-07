@@ -7,8 +7,8 @@
   const sceneMeta = {
     open: {
       mode: "OPEN AREA",
-      title: "Open area node chain established",
-      copy: "Node A relays through Node B to the end device across open-area distance."
+      title: "Center node relay established",
+      copy: "Two end devices exchange signals through the center node across open-area distance."
     },
     relay: {
       mode: "MESH RELAY",

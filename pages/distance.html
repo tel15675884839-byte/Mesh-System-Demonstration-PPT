@@ -29,8 +29,8 @@
         </div>
         <div class="status-panel distance-status-panel distance-status-panel-spaced" aria-live="polite">
           <p class="eyebrow">Scene Status</p>
-          <h3 id="distance-status-title">Open area node chain established</h3>
-          <p id="distance-status-copy">Node A relays through Node B to the end device across open-area distance.</p>
+          <h3 id="distance-status-title">Center node relay established</h3>
+          <p id="distance-status-copy">Two end devices exchange signals through the center node across open-area distance.</p>
         </div>
       </div>
 
@@ -43,18 +43,26 @@
             <span class="ruler-track"></span>
             <span class="ruler-end">500m</span>
           </div>
-          <div class="scene-link open-link" aria-hidden="true"></div>
-          <div class="signal-pulse pulse-open" aria-hidden="true"></div>
-          <div class="scene-node node-open-a" aria-hidden="true">
-            <img class="node-icon" src="../assets/icons/node.svg" alt="">
-            <span>Node A</span>
+          <div class="scene-link open-link" aria-hidden="true">
+            <svg class="open-arc-svg" viewBox="0 0 100 24" preserveAspectRatio="none" role="presentation" aria-hidden="true">
+              <path class="open-arc-path open-arc-path-left" d="M 19 18 Q 34.5 6 50 18"></path>
+              <path class="open-arc-path open-arc-path-right" d="M 50 18 Q 66.5 6 83 18"></path>
+            </svg>
           </div>
-          <div class="scene-node node-open-b" aria-hidden="true">
-            <img class="node-icon" src="../assets/icons/node.svg" alt="">
-            <span>Node B</span>
-          </div>
-          <div class="scene-node node-open-device is-device" aria-hidden="true">
+          <div class="signal-pulse pulse-open pulse-open-left" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-left pulse-open-left-delayed" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-right" aria-hidden="true"></div>
+          <div class="signal-pulse pulse-open pulse-open-right pulse-open-right-delayed" aria-hidden="true"></div>
+          <div class="scene-node node-open-left-device is-device" aria-hidden="true">
             <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
+            <span>Device</span>
+          </div>
+          <div class="scene-node node-open-node" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/node.svg" alt="">
+            <span>Node</span>
+          </div>
+          <div class="scene-node node-open-right-device is-device" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/sounder.svg" alt="">
             <span>Device</span>
           </div>
           <p class="scene-metric metric-open">500m</p>
