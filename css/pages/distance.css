@@ -361,6 +361,26 @@
   text-transform: uppercase;
 }
 
+.scene-node .node-icon {
+  position: relative;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 12px rgba(112, 240, 255, 0.36));
+}
+
+.scene-node.is-device::before {
+  background: linear-gradient(135deg, rgba(15, 235, 198, 0.84), rgba(112, 240, 255, 0.82));
+}
+
+.scene-node.is-device .node-icon {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 12px rgba(15, 235, 198, 0.38));
+}
+
 .scene-metric {
   z-index: 4;
   margin: 0;
@@ -390,6 +410,8 @@
 }
 
 .open-link {
+  left: 12%;
+  right: 10%;
   background: linear-gradient(90deg, rgba(112, 240, 255, 0.24), rgba(112, 240, 255, 0.92), rgba(15, 235, 198, 0.88));
   box-shadow:
     0 0 18px rgba(112, 240, 255, 0.42),
@@ -397,7 +419,7 @@
 }
 
 .pulse-open {
-  left: 18%;
+  left: 12%;
   top: 53%;
   width: 14px;
   height: 14px;
@@ -409,12 +431,17 @@
 }
 
 .node-open-a {
-  left: 12%;
+  left: 10%;
   top: 40%;
 }
 
 .node-open-b {
-  right: 12%;
+  left: 44%;
+  top: 40%;
+}
+
+.node-open-device {
+  right: 8%;
   top: 40%;
 }
 
@@ -467,8 +494,8 @@
 .relay-chain::before {
   content: "";
   position: absolute;
-  left: 14%;
-  right: 14%;
+  left: 12%;
+  right: 10%;
   top: 53%;
   height: 4px;
   border-radius: 999px;
@@ -499,32 +526,32 @@
 }
 
 .hop-1 {
-  left: 18%;
+  left: 16%;
 }
 
 .hop-2 {
-  left: 34%;
+  left: 32%;
   animation-delay: 0.2s;
 }
 
 .hop-3 {
-  left: 50%;
+  left: 48%;
   animation-delay: 0.4s;
 }
 
 .hop-4 {
-  left: 66%;
+  left: 64%;
   animation-delay: 0.6s;
 }
 
 .hop-5 {
-  left: 82%;
+  left: 80%;
   animation-delay: 0.8s;
 }
 
 .relay-link {
-  left: 16%;
-  right: 16%;
+  left: 12%;
+  right: 10%;
   top: 53%;
   background: linear-gradient(90deg, rgba(15, 235, 198, 0.22), rgba(15, 235, 198, 0.94), rgba(112, 240, 255, 0.34));
   box-shadow:
@@ -533,7 +560,7 @@
 }
 
 .pulse-relay {
-  left: 16%;
+  left: 12%;
   top: 53%;
   width: 12px;
   height: 12px;
@@ -546,12 +573,17 @@
 
 .node-relay-a {
   left: 10%;
+  top: 57%;
+}
+
+.node-relay-b {
+  left: 44%;
   top: 41%;
 }
 
-.node-relay-z {
-  right: 10%;
-  top: 41%;
+.node-relay-device {
+  right: 8%;
+  top: 57%;
 }
 
 .metric-relay {
@@ -621,7 +653,7 @@
 
   52% {
     opacity: 1;
-    transform: translate3d(calc(-50% + 32cqw), -50%, 0) scale(1);
+    transform: translate3d(calc(-50% + 39cqw), -50%, 0) scale(1);
   }
 
   92% {
@@ -630,7 +662,7 @@
 
   100% {
     opacity: 0;
-    transform: translate3d(calc(-50% + 64cqw), -50%, 0) scale(1.16);
+    transform: translate3d(calc(-50% + 78cqw), -50%, 0) scale(1.16);
   }
 }
 
@@ -657,7 +689,7 @@
   }
 
   74% {
-    transform: translate3d(calc(-50% + 66cqw), -50%, 0) scale(1.06);
+    transform: translate3d(calc(-50% + 62cqw), -50%, 0) scale(1.06);
   }
 
   92% {
@@ -666,7 +698,7 @@
 
   100% {
     opacity: 0;
-    transform: translate3d(calc(-50% + 70cqw), -50%, 0) scale(1.18);
+    transform: translate3d(calc(-50% + 76cqw), -50%, 0) scale(1.18);
   }
 }
 
@@ -793,7 +825,9 @@
   .node-open-a,
   .node-open-b,
   .node-relay-a,
-  .node-relay-z {
+  .node-relay-b,
+  .node-relay-device,
+  .node-open-device {
     top: 42%;
   }
 

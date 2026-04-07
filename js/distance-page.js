@@ -7,13 +7,13 @@
   const sceneMeta = {
     open: {
       mode: "OPEN AREA",
-      title: "Open area direct link established",
-      copy: "Two nodes maintain a stable open-area connection at extended range."
+      title: "Open area node chain established",
+      copy: "Node A relays through Node B to the end device across open-area distance."
     },
     relay: {
       mode: "MESH RELAY",
       title: "Relay chain extends total coverage",
-      copy: "Signal advances hop-by-hop through nodes, reaching up to 16 km."
+      copy: "Nodes and end devices are arranged in staged relays to reach up to 16 km."
     }
   };
   const sceneNames = Object.keys(sceneMeta);

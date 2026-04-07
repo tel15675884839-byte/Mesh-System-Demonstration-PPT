@@ -29,8 +29,8 @@
         </div>
         <div class="status-panel distance-status-panel distance-status-panel-spaced" aria-live="polite">
           <p class="eyebrow">Scene Status</p>
-          <h3 id="distance-status-title">Open area direct link established</h3>
-          <p id="distance-status-copy">Two nodes maintain a stable open-area connection at extended range.</p>
+          <h3 id="distance-status-title">Open area node chain established</h3>
+          <p id="distance-status-copy">Node A relays through Node B to the end device across open-area distance.</p>
         </div>
       </div>
 
@@ -45,8 +45,18 @@
           </div>
           <div class="scene-link open-link" aria-hidden="true"></div>
           <div class="signal-pulse pulse-open" aria-hidden="true"></div>
-          <div class="scene-node node-open-a" aria-hidden="true"><span>Node A</span></div>
-          <div class="scene-node node-open-b" aria-hidden="true"><span>Node B</span></div>
+          <div class="scene-node node-open-a" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/node.svg" alt="">
+            <span>Node A</span>
+          </div>
+          <div class="scene-node node-open-b" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/node.svg" alt="">
+            <span>Node B</span>
+          </div>
+          <div class="scene-node node-open-device is-device" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
+            <span>Device</span>
+          </div>
           <p class="scene-metric metric-open">500m</p>
         </section>
         <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene" aria-hidden="true">
@@ -59,8 +69,18 @@
           </div>
           <div class="scene-link relay-link" aria-hidden="true"></div>
           <div class="signal-pulse pulse-relay" aria-hidden="true"></div>
-          <div class="scene-node node-relay-a" aria-hidden="true"><span>Leader</span></div>
-          <div class="scene-node node-relay-z" aria-hidden="true"><span>Terminal</span></div>
+          <div class="scene-node node-relay-a" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/node.svg" alt="">
+            <span>Node A</span>
+          </div>
+          <div class="scene-node node-relay-b" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/node.svg" alt="">
+            <span>Node B</span>
+          </div>
+          <div class="scene-node node-relay-device is-device" aria-hidden="true">
+            <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
+            <span>Device</span>
+          </div>
           <p class="scene-metric metric-relay">Up to 16 km</p>
         </section>
       </div>
