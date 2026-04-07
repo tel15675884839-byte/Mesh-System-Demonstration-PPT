@@ -9,12 +9,15 @@
 }
 
 .page-distance .distance-layout {
-  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
-  gap: 20px 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+  grid-template-rows: auto auto;
+  gap: 24px 42px;
   align-items: stretch;
 }
 
 .page-distance .page-copy {
+  grid-column: 1;
+  grid-row: 1;
   align-self: start;
 }
 
@@ -58,11 +61,19 @@
   background: linear-gradient(180deg, var(--distance-relay), rgba(112, 240, 255, 0.32));
 }
 
+.distance-controls-panel {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  display: grid;
+  gap: 16px;
+}
+
 .distance-scene-toggle {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 0;
 }
 
 .scene-toggle {
@@ -111,8 +122,10 @@
 }
 
 .distance-status-panel {
-  margin-top: 18px;
+  margin-top: 0;
   padding: 18px 20px;
+  width: 100%;
+  max-width: none;
 }
 
 .distance-status-panel h3 {
@@ -120,10 +133,12 @@
 }
 
 .distance-stage {
+  grid-column: 1 / -1;
+  grid-row: 2;
   position: relative;
   width: 100%;
   min-width: 0;
-  min-height: 640px;
+  min-height: 700px;
   padding: 24px;
   overflow: hidden;
   isolation: isolate;
@@ -795,11 +810,24 @@
 @media (max-width: 960px) {
   .page-distance .distance-layout {
     grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-rows: auto auto auto;
+    gap: 22px;
+  }
+
+  .page-distance .page-copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .distance-controls-panel {
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .distance-stage {
-    min-height: 520px;
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 560px;
   }
 
   .distance-scene {
@@ -830,7 +858,7 @@
   }
 
   .distance-stage {
-    min-height: 430px;
+    min-height: 450px;
     padding: 16px;
   }
 
