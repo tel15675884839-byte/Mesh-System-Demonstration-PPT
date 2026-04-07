@@ -9,13 +9,13 @@
 }
 
 .page-distance .distance-layout {
-  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
-  gap: 36px 44px;
-  align-items: center;
+  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
+  gap: 20px 28px;
+  align-items: stretch;
 }
 
 .page-distance .page-copy {
-  align-self: center;
+  align-self: start;
 }
 
 .page-distance .page-copy h2 {
@@ -123,7 +123,7 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  min-height: 560px;
+  min-height: 640px;
   padding: 24px;
   overflow: hidden;
   isolation: isolate;
@@ -799,7 +799,7 @@
   }
 
   .distance-stage {
-    min-height: 420px;
+    min-height: 520px;
   }
 
   .distance-scene {
@@ -830,7 +830,7 @@
   }
 
   .distance-stage {
-    min-height: 380px;
+    min-height: 430px;
     padding: 16px;
   }
 

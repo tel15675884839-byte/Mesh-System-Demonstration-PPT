@@ -34,7 +34,7 @@
     return !!page.querySelector('.scene-toggle[data-scene-target="' + sceneName + '"]');
   });
 
-  if (!stage || !modeElement || !statusTitle || !statusCopy || !hasRequiredScenes || !hasRequiredButtons) {
+  if (!stage || !modeElement || !hasRequiredScenes || !hasRequiredButtons) {
     console.warn("Distance page controller skipped: required elements are missing.");
     return;
   }
