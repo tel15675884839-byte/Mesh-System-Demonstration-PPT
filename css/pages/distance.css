@@ -420,10 +420,14 @@
   bottom: 27%;
 }
 
+.scene-open {
+  --open-link-center-y: 58%;
+}
+
 .open-link {
   left: 0;
   right: 0;
-  top: calc(50% - 18px);
+  top: calc(var(--open-link-center-y) - 18px);
   height: 36px;
   background: none;
   box-shadow: none;
@@ -454,7 +458,7 @@
 }
 
 .pulse-open {
-  top: 50%;
+  top: var(--open-link-center-y);
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -483,17 +487,17 @@
 
 .node-open-left-device {
   left: 10%;
-  top: 41%;
+  top: calc(var(--open-link-center-y) - (var(--node-size) / 2));
 }
 
 .node-open-node {
   left: calc(50% - (var(--node-size) / 2));
-  top: 41%;
+  top: calc(var(--open-link-center-y) - (var(--node-size) / 2));
 }
 
 .node-open-right-device {
   right: 8%;
-  top: 41%;
+  top: calc(var(--open-link-center-y) - (var(--node-size) / 2));
 }
 
 .metric-open {
@@ -902,6 +906,12 @@
   .node-relay-b,
   .node-relay-device {
     top: 42%;
+  }
+
+  .node-open-left-device,
+  .node-open-node,
+  .node-open-right-device {
+    top: calc(var(--open-link-center-y) - (var(--node-size) / 2));
   }
 
   .metric-open {
