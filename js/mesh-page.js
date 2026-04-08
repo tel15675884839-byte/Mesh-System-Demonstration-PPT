@@ -1,19 +1,21 @@
 (function () {
   const meshStates = {
     normal: {
-      title: "Default route is active",
-      copy: "Signal follows the primary path from detector to panel through the mesh network."
+      title: "Multiple paths ready",
+      copy: "The default route carries the signal while backup relays stay available."
     },
     blocked: {
-      title: "Primary route is interrupted",
-      copy: "One link becomes unavailable, so the transmission is visibly interrupted before reaching the panel."
+      title: "Primary link lost",
+      copy: "One hop is removed, so the break is obvious before the message reaches the panel."
     },
     recovery: {
-      title: "Backup path recovers communication",
-      copy: "The mesh network reroutes through a secondary path automatically to maintain stable delivery."
+      title: "Auto recovery active",
+      copy: function (result) {
+        return "Backup route " + result + " reroutes around the failed link and keeps the panel connected.";
+      }
     },
     diagnostic: {
-      title: "Built-in 3D diagnostic scene",
+      title: "3D player check",
       copy: "This mode bypasses JSON files and renders a hardcoded scene so we can verify the player itself is working."
     }
   };
@@ -180,17 +182,14 @@
     "../Mesh System Demonstration/release/MeshDemo-portable/assets/icons/"
   ];
 
+  const page = document.querySelector(".page-mesh");
+  const introTrigger = document.getElementById("mesh-intro-trigger");
+  const introTitle = page ? page.querySelector(".mesh-intro-title") : null;
+  const heroTitle = page ? page.querySelector(".mesh-hero h2") : null;
   const meshStage = document.querySelector(".mesh-stage");
-  const meshLayout = document.querySelector(".mesh-layout");
-  const meshHero = document.querySelector(".mesh-hero");
-  const meshControls = document.querySelector(".mesh-controls");
-  const meshStatusPanel = document.querySelector(".mesh-status-panel");
   const meshPlayerHost = document.getElementById("mesh-player-host");
   const meshPlayerMessage = document.getElementById("mesh-player-message");
-  const zoomResetButton = document.getElementById("mesh-zoom-reset");
-  const expandToggleButton = document.getElementById("mesh-expand-toggle");
   const titleElement = document.getElementById("mesh-status-title");
-  const copyElement = document.getElementById("mesh-status-copy");
   const buttons = Array.from(document.querySelectorAll(".mode-button"));
   const recoverySwitch = document.getElementById("mesh-recovery-switch");
   const recoveryResultButtons = Array.from(document.querySelectorAll(".mesh-recovery-result"));
@@ -202,16 +201,12 @@
   let diagnosticScene = null;
   let resolvedIconBasePathPromise = null;
   let playerRecoveryResult = null;
-  let isPlayerExpanded = false;
-  let stageFlipAnimation = null;
-  let layoutFlipAnimations = [];
-  let particleCanvas = null;
-  let particleFrame = 0;
-  let resizeDispatchTimer = 0;
-  let transitionToken = 0;
+  let revealSyncTimeout = 0;
+  let titleTransitionTimeout = 0;
 
-  const TRANSITION_DURATION = 680;
-  const EASING_CURVE = "cubic-bezier(0.22, 1, 0.36, 1)";
+  const TITLE_TRANSITION_DURATION = 840;
+  const searchParams = new URLSearchParams(window.location.search);
+  const forceRevealOnLoad = searchParams.get("reveal") === "1";
   const prefersReducedMotion = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
@@ -238,16 +233,11 @@
 
   function setStatus(modeName) {
     const state = meshStates[modeName];
-    if (!state || !titleElement || !copyElement) {
+    if (!state || !titleElement) {
       return;
     }
 
-    if (modeName === "recovery") {
-      titleElement.textContent = state.title + " (Result " + recoveryResult + ")";
-    } else {
-      titleElement.textContent = state.title;
-    }
-    copyElement.textContent = state.copy;
+    titleElement.textContent = state.title;
   }
 
   function setModeButtons(activeMode) {
@@ -268,7 +258,7 @@
     const visible = activeMode === "recovery";
     recoverySwitch.hidden = !visible;
     recoverySwitch.setAttribute("aria-hidden", String(!visible));
-    recoverySwitch.style.display = visible ? "inline-flex" : "none";
+    recoverySwitch.style.display = visible ? "inline-grid" : "none";
     recoverySwitch.style.pointerEvents = visible ? "auto" : "none";
   }
 
@@ -750,290 +740,103 @@
     await applyMeshMode("recovery");
   }
 
-  function resetView() {
-    try {
-      if (mode === "diagnostic" && diagnosticScene && diagnosticScene.initialView) {
-        diagnosticScene.camera.position.copy(diagnosticScene.initialView.position);
-        if (diagnosticScene.controls) {
-          diagnosticScene.controls.target.copy(diagnosticScene.initialView.target);
-          diagnosticScene.controls.update();
-        } else {
-          diagnosticScene.camera.lookAt(diagnosticScene.initialView.target);
-        }
-        diagnosticScene.renderer.render(diagnosticScene.scene, diagnosticScene.camera);
-        return;
-      }
-
-      if (!player) {
-        return;
-      }
-
-      if (typeof player.resetView === "function") {
-        player.resetView();
-      } else if (typeof player.resetZoom === "function") {
-        player.resetZoom();
-      }
-    } catch (error) {
-      setMessage(
-        "Failed to reset view. " + (error && error.message ? error.message : String(error)),
-        "error"
-      );
-    }
-  }
-
-  function setExpandButtonState(expanded) {
-    if (!expandToggleButton) {
-      return;
-    }
-    expandToggleButton.textContent = expanded ? "Restore" : "Expand";
-    expandToggleButton.setAttribute("aria-pressed", String(expanded));
-  }
-
   function shouldReduceMotion() {
     return !!(prefersReducedMotion && prefersReducedMotion.matches);
   }
 
-  function clearElementTransforms() {
-    [meshStage, meshHero, meshControls, meshStatusPanel].forEach(function (element) {
-      if (element) {
-        element.style.transform = "";
-      }
-    });
+  function setRevealState(isRevealed) {
+    if (!page) {
+      return;
+    }
+    page.classList.toggle("is-revealed", !!isRevealed);
+    if (introTrigger) {
+      introTrigger.setAttribute("aria-expanded", String(!!isRevealed));
+    }
   }
 
-  function stopParticleTransition() {
-    if (particleFrame) {
-      window.cancelAnimationFrame(particleFrame);
-      particleFrame = 0;
-    }
-    if (particleCanvas && particleCanvas.parentNode) {
-      particleCanvas.parentNode.removeChild(particleCanvas);
-    }
-    particleCanvas = null;
+  function syncStageAfterReveal() {
+    window.dispatchEvent(new Event("resize"));
   }
 
-  function cancelExpandTransition() {
-    transitionToken += 1;
-    if (stageFlipAnimation) {
-      stageFlipAnimation.cancel();
-      stageFlipAnimation = null;
+  function schedulePostRevealSync() {
+    if (revealSyncTimeout) {
+      window.clearTimeout(revealSyncTimeout);
     }
-    layoutFlipAnimations.forEach(function (animation) {
-      if (animation && typeof animation.cancel === "function") {
-        animation.cancel();
-      }
-    });
-    layoutFlipAnimations = [];
-    if (resizeDispatchTimer) {
-      window.clearTimeout(resizeDispatchTimer);
-      resizeDispatchTimer = 0;
-    }
-    stopParticleTransition();
-    clearElementTransforms();
+    window.requestAnimationFrame(syncStageAfterReveal);
+    revealSyncTimeout = window.setTimeout(function () {
+      syncStageAfterReveal();
+      revealSyncTimeout = 0;
+    }, 760);
   }
 
-  function createFlipAnimation(element, firstRect, lastRect, duration) {
-    if (!element || !firstRect || !lastRect) {
-      return null;
+  function clearTitleAnimationState() {
+    if (titleTransitionTimeout) {
+      window.clearTimeout(titleTransitionTimeout);
+      titleTransitionTimeout = 0;
+    }
+    if (!page) {
+      return;
+    }
+    page.classList.remove("is-title-transitioning", "is-title-transition-complete", "is-measuring-reveal");
+    page.style.removeProperty("--mesh-intro-title-dx");
+    page.style.removeProperty("--mesh-intro-title-dy");
+    page.style.removeProperty("--mesh-intro-title-scale");
+  }
+
+  function measureTitleTransition() {
+    if (!page || !introTitle || !heroTitle) {
+      return;
     }
 
-    const deltaX = firstRect.left - lastRect.left;
-    const deltaY = firstRect.top - lastRect.top;
-    const scaleX = firstRect.width / Math.max(lastRect.width, 1);
-    const scaleY = firstRect.height / Math.max(lastRect.height, 1);
+    const introRect = introTitle.getBoundingClientRect();
+    page.classList.add("is-measuring-reveal");
+    const heroRect = heroTitle.getBoundingClientRect();
+    page.classList.remove("is-measuring-reveal");
 
-    if (Math.abs(deltaX) < 0.2 && Math.abs(deltaY) < 0.2 && Math.abs(scaleX - 1) < 0.001 && Math.abs(scaleY - 1) < 0.001) {
-      return null;
+    const introCenterX = introRect.left + (introRect.width / 2);
+    const introCenterY = introRect.top + (introRect.height / 2);
+    const heroCenterX = heroRect.left + (heroRect.width / 2);
+    const heroCenterY = heroRect.top + (heroRect.height / 2);
+    const scale = heroRect.width / Math.max(introRect.width, 1);
+
+    page.style.setProperty("--mesh-intro-title-dx", (heroCenterX - introCenterX) + "px");
+    page.style.setProperty("--mesh-intro-title-dy", (heroCenterY - introCenterY) + "px");
+    page.style.setProperty("--mesh-intro-title-scale", String(scale));
+  }
+
+  function revealStage() {
+    if (!page || page.classList.contains("is-revealed")) {
+      return;
     }
 
-    return element.animate(
-      [
-        {
-          transformOrigin: "top left",
-          transform: "translate(" + deltaX + "px, " + deltaY + "px) scale(" + scaleX + ", " + scaleY + ")"
-        },
-        {
-          transformOrigin: "top left",
-          transform: "translate(0, 0) scale(1, 1)"
+    clearTitleAnimationState();
+    if (!shouldReduceMotion()) {
+      measureTitleTransition();
+      page.classList.add("is-title-transitioning");
+      titleTransitionTimeout = window.setTimeout(function () {
+        if (!page) {
+          return;
         }
-      ],
-      {
-        duration: duration,
-        easing: EASING_CURVE,
-        fill: "both"
-      }
-    );
+        page.classList.remove("is-title-transitioning");
+        page.classList.add("is-title-transition-complete");
+        titleTransitionTimeout = 0;
+      }, TITLE_TRANSITION_DURATION - 40);
+    } else if (page) {
+      page.classList.add("is-title-transition-complete");
+    }
+
+    setRevealState(true);
+    schedulePostRevealSync();
   }
 
-  function startParticleTransition(rectPairs, duration) {
-    stopParticleTransition();
-    if (!meshLayout || shouldReduceMotion() || !rectPairs || rectPairs.length === 0) {
-      return;
+  function resetIntroState() {
+    clearTitleAnimationState();
+    if (revealSyncTimeout) {
+      window.clearTimeout(revealSyncTimeout);
+      revealSyncTimeout = 0;
     }
-
-    const layoutRect = meshLayout.getBoundingClientRect();
-    const width = Math.max(1, Math.round(layoutRect.width));
-    const height = Math.max(1, Math.round(layoutRect.height));
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    particleCanvas = document.createElement("canvas");
-    particleCanvas.className = "mesh-transition-layer";
-    particleCanvas.width = Math.max(1, Math.round(width * dpr));
-    particleCanvas.height = Math.max(1, Math.round(height * dpr));
-    particleCanvas.style.width = width + "px";
-    particleCanvas.style.height = height + "px";
-    meshLayout.appendChild(particleCanvas);
-
-    const context = particleCanvas.getContext("2d");
-    if (!context) {
-      stopParticleTransition();
-      return;
-    }
-    context.scale(dpr, dpr);
-
-    const particles = [];
-    rectPairs.forEach(function (pair) {
-      if (!pair || !pair.from || !pair.to) {
-        return;
-      }
-
-      const from = pair.from;
-      const to = pair.to;
-      const area = Math.max(12000, from.width * from.height);
-      const count = Math.max(28, Math.min(72, Math.round(area / 22000)));
-
-      for (let i = 0; i < count; i += 1) {
-        particles.push({
-          sx: from.left - layoutRect.left + (Math.random() * from.width),
-          sy: from.top - layoutRect.top + (Math.random() * from.height),
-          ex: to.left - layoutRect.left + (Math.random() * to.width),
-          ey: to.top - layoutRect.top + (Math.random() * to.height),
-          delay: Math.random() * duration * 0.24,
-          life: duration * (0.6 + Math.random() * 0.32),
-          size: 0.9 + Math.random() * 1.8,
-          drift: (Math.random() - 0.5) * 24,
-          hueShift: Math.random() * 36
-        });
-      }
-    });
-
-    const startTime = performance.now();
-    const frameLimit = duration * 1.16;
-
-    function draw(now) {
-      const elapsed = now - startTime;
-      context.clearRect(0, 0, width, height);
-      context.globalCompositeOperation = "lighter";
-
-      for (let i = 0; i < particles.length; i += 1) {
-        const p = particles[i];
-        const local = (elapsed - p.delay) / Math.max(p.life, 1);
-        if (local <= 0 || local >= 1) {
-          continue;
-        }
-
-        const eased = 1 - Math.pow(1 - local, 3);
-        const bend = Math.sin((local * Math.PI) + p.hueShift) * p.drift * (1 - local);
-        const x = p.sx + (p.ex - p.sx) * eased;
-        const y = p.sy + (p.ey - p.sy) * eased + bend * 0.35;
-        const prevLocal = Math.max(0, local - 0.05);
-        const prevEased = 1 - Math.pow(1 - prevLocal, 3);
-        const px = p.sx + (p.ex - p.sx) * prevEased;
-        const py = p.sy + (p.ey - p.sy) * prevEased + Math.sin((prevLocal * Math.PI) + p.hueShift) * p.drift * (1 - prevLocal) * 0.35;
-        const alpha = Math.max(0, (1 - Math.abs(local - 0.5) * 2) * 0.68);
-
-        context.strokeStyle = "rgba(82, 237, 255, " + (alpha * 0.45) + ")";
-        context.lineWidth = Math.max(0.7, p.size * 0.7);
-        context.beginPath();
-        context.moveTo(px, py);
-        context.lineTo(x, y);
-        context.stroke();
-
-        context.fillStyle = "rgba(132, 248, 255, " + alpha + ")";
-        context.shadowBlur = 10;
-        context.shadowColor = "rgba(85, 238, 255, 0.62)";
-        context.beginPath();
-        context.arc(x, y, p.size, 0, Math.PI * 2);
-        context.fill();
-      }
-
-      context.shadowBlur = 0;
-      if (elapsed < frameLimit && particleCanvas) {
-        particleFrame = window.requestAnimationFrame(draw);
-        return;
-      }
-      stopParticleTransition();
-    }
-
-    particleFrame = window.requestAnimationFrame(draw);
-  }
-
-  function togglePlayerExpand() {
-    if (!meshStage || !meshLayout) {
-      return;
-    }
-
-    cancelExpandTransition();
-    const nextExpanded = !isPlayerExpanded;
-    const duration = shouldReduceMotion() ? 220 : TRANSITION_DURATION;
-    const token = transitionToken + 1;
-    transitionToken = token;
-
-    const animatedElements = [meshStage, meshHero, meshControls, meshStatusPanel].filter(function (element) {
-      return !!element;
-    });
-    const firstRects = new Map(animatedElements.map(function (element) {
-      return [element, element.getBoundingClientRect()];
-    }));
-
-    meshLayout.classList.toggle("is-player-expanded", nextExpanded);
-    const lastRects = new Map(animatedElements.map(function (element) {
-      return [element, element.getBoundingClientRect()];
-    }));
-
-    const particlePairs = [meshHero, meshControls, meshStatusPanel]
-      .filter(function (element) { return !!element; })
-      .map(function (element) {
-        return {
-          from: firstRects.get(element),
-          to: lastRects.get(element)
-        };
-      });
-
-    startParticleTransition(particlePairs, duration);
-    layoutFlipAnimations = [];
-    stageFlipAnimation = null;
-
-    animatedElements.forEach(function (element) {
-      const animation = createFlipAnimation(element, firstRects.get(element), lastRects.get(element), duration);
-      if (!animation) {
-        return;
-      }
-      layoutFlipAnimations.push(animation);
-      if (element === meshStage) {
-        stageFlipAnimation = animation;
-      }
-    });
-
-    Promise.all(layoutFlipAnimations.map(function (animation) {
-      return animation.finished.catch(function () {
-        return null;
-      });
-    })).then(function () {
-      if (token !== transitionToken) {
-        return;
-      }
-      clearElementTransforms();
-      layoutFlipAnimations = [];
-      stageFlipAnimation = null;
-    });
-
-    isPlayerExpanded = nextExpanded;
-    setExpandButtonState(isPlayerExpanded);
-    resizeDispatchTimer = window.setTimeout(function () {
-      resizeDispatchTimer = 0;
-      window.dispatchEvent(new Event("resize"));
-    }, duration + 20);
+    setRevealState(false);
+    window.requestAnimationFrame(syncStageAfterReveal);
   }
 
   buttons.forEach(function (button) {
@@ -1050,23 +853,11 @@
     });
   });
 
-  if (zoomResetButton) {
-    zoomResetButton.addEventListener("click", function () {
-      resetView();
+  if (introTrigger) {
+    introTrigger.addEventListener("click", function () {
+      revealStage();
     });
   }
-
-  if (expandToggleButton) {
-    expandToggleButton.addEventListener("click", function () {
-      togglePlayerExpand();
-    });
-  }
-
-  window.addEventListener("resize", function () {
-    if (layoutFlipAnimations.length > 0 || particleCanvas) {
-      cancelExpandTransition();
-    }
-  });
 
   window.addEventListener("storage", function (event) {
     if (!event || event.key !== DEMO_SCENE_STORAGE_KEY) {
@@ -1081,11 +872,30 @@
     });
   });
 
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "slideVisibility") {
+      return;
+    }
+
+    if (event.data.active) {
+      resetIntroState();
+    }
+  });
+
   setStatus(mode);
   setModeButtons(mode);
   setRecoverySwitchVisibility(mode);
   setRecoveryResultButtons(recoveryResult);
-  setExpandButtonState(isPlayerExpanded);
+  if (forceRevealOnLoad) {
+    clearTitleAnimationState();
+    setRevealState(true);
+    if (page) {
+      page.classList.add("is-title-transition-complete");
+    }
+    schedulePostRevealSync();
+  } else {
+    resetIntroState();
+  }
   ensurePlayer().catch(function () {
     return null;
   });

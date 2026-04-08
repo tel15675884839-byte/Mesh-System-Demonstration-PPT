@@ -18,6 +18,7 @@
   };
   const sceneNames = Object.keys(sceneMeta);
   const stage = page.querySelector(".distance-stage");
+  const introTrigger = page.querySelector("#distance-intro-trigger");
   const modeElement = page.querySelector("#distance-stage-mode");
   const statusTitle = page.querySelector("#distance-status-title");
   const statusCopy = page.querySelector("#distance-status-copy");
@@ -48,6 +49,7 @@
     : null;
   let openGeometryRafId = 0;
   let relayGeometryRafId = 0;
+  let revealSyncTimeoutId = 0;
 
   const hasRequiredScenes = sceneNames.every(function (sceneName) {
     return !!page.querySelector('.distance-scene[data-scene="' + sceneName + '"]');
@@ -59,6 +61,44 @@
   if (!stage || !modeElement || !hasRequiredScenes || !hasRequiredButtons) {
     console.warn("Distance page controller skipped: required elements are missing.");
     return;
+  }
+
+  function setRevealState(isRevealed) {
+    page.classList.toggle("is-revealed", !!isRevealed);
+    if (introTrigger) {
+      introTrigger.setAttribute("aria-expanded", String(!!isRevealed));
+    }
+  }
+
+  function schedulePostRevealSync() {
+    if (revealSyncTimeoutId) {
+      window.clearTimeout(revealSyncTimeoutId);
+    }
+    window.requestAnimationFrame(function () {
+      scheduleOpenGeometrySync();
+      scheduleRelayGeometrySync();
+    });
+    revealSyncTimeoutId = window.setTimeout(function () {
+      scheduleOpenGeometrySync();
+      scheduleRelayGeometrySync();
+      revealSyncTimeoutId = 0;
+    }, 760);
+  }
+
+  function revealStage() {
+    if (page.classList.contains("is-revealed")) {
+      return;
+    }
+    setRevealState(true);
+    schedulePostRevealSync();
+  }
+
+  function resetIntroState() {
+    if (revealSyncTimeoutId) {
+      window.clearTimeout(revealSyncTimeoutId);
+      revealSyncTimeoutId = 0;
+    }
+    setRevealState(false);
   }
 
   function setReducedMotionClass() {
@@ -390,6 +430,22 @@
     button.addEventListener("click", handleToggleClick);
   });
 
+  if (introTrigger) {
+    introTrigger.addEventListener("click", revealStage);
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "slideVisibility") {
+      return;
+    }
+
+    if (event.data.active) {
+      resetIntroState();
+      scheduleOpenGeometrySync();
+      scheduleRelayGeometrySync();
+    }
+  });
+
   const initialSceneName = stage.dataset.scene;
   if (!sceneMeta[initialSceneName]) {
     console.warn("Distance page controller skipped: invalid initial scene key.", initialSceneName);
@@ -397,6 +453,7 @@
   }
 
   applyScene(initialSceneName);
+  resetIntroState();
   scheduleOpenGeometrySync();
   scheduleRelayGeometrySync();
 

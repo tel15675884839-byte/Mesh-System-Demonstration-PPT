@@ -321,3 +321,110 @@ When refining existing screens generated with this design system:
 5. For glow effects, specify "Emerald Signal Green (#00d992) as a drop-shadow with 2–8px blur radius"
 6. Always specify which font — system-ui for headings, Inter for body/UI, SFMono-Regular for code
 7. Keep animations slow and subtle — marquee scrolls at 25–80s, glow pulses gently
+
+## 10. Presentation-Slide Standard For This Project
+
+This repository is not a conventional website first. It is a presentation deck for live product storytelling. Every page should be designed to support a speaker introducing the system in front of an audience, which means the slide must be understandable from a distance, readable in seconds, and never overloaded with explanatory copy.
+
+### Core Principle
+- One page = one idea
+- The speaker talks; the slide supports
+- Visual proof is more important than explanatory text
+- If a sentence can be said out loud, it usually does not need to stay on the screen
+
+### Page Role
+Every feature page should behave like a keynote slide, not like a dashboard, product detail page, or documentation screen.
+
+The preferred hierarchy is:
+1. Chapter impact
+2. Main visual proof
+3. One takeaway statement
+
+### Text Discipline
+- Titles must be large enough to read from a distance. Treat 40-50pt as the minimum presentation mindset, and prefer larger hero sizes when the page is introducing a core product capability.
+- Titles should be short and ideally stay on one line.
+- Supporting copy should be removed unless it adds information the visual cannot communicate.
+- Paragraph-style lead text is discouraged on feature slides.
+- Use as few words as possible. Never design a page that requires the audience to stop listening in order to read.
+- If a page includes a long quote or long statement, the speaker must intentionally pause for reading time. This should be a deliberate exception, not the default pattern.
+
+### Content Reduction Rules
+- Remove meta UI that feels like file labels, slide indexes, or internal scaffolding when it does not help the audience understand the feature.
+- Remove decorative micro-labels, redundant captions, and repeated descriptions.
+- Remove chart furniture or measurement rails when a stronger conclusion statement can replace them.
+- Avoid bullets unless the page is explicitly a summary or contributions slide.
+
+### Preferred Feature-Page Structure
+For feature slides such as `distance`, `mesh`, `response`, `battery`, `reliability`, and `installation`, use this structure:
+
+1. Intro / Cover State
+   - A single oversized centered title
+   - Minimal or no secondary copy
+   - Used as the chapter-arrival moment
+
+2. Revealed State
+   - Small overline / eyebrow at top-left
+   - Large title anchored top-left
+   - Main stage becomes the dominant content
+   - Only essential controls remain visible
+
+3. Conclusion Within The Stage
+   - Prefer one strong takeaway statement such as `Up to 500m` or `Up to 16km`
+   - Use display treatment rather than detailed scales, rulers, or dense annotations
+
+### Animation Standard
+The default reveal pattern for presentation pages is Version A with manual trigger:
+- When the audience first enters a feature page, show only the oversized centered title
+- The page does not auto-play into the next state
+- The speaker clicks the large title to reveal the working layout
+- After reveal, the title moves to its anchored layout position and the stage content appears
+- When the audience leaves the page and later returns, the page resets to the intro / cover state
+
+This pattern should be reused only for pages where a chapter-style entrance improves the presentation rhythm.
+
+### Main Stage Rules
+- The main stage is the hero. It should visually dominate the page after reveal.
+- The main stage should prove the feature through motion, layout, and emphasis rather than explanatory paragraphs.
+- Stage controls should live inside the stage when possible, usually in the upper-right area.
+- Controls should be simple rounded rectangles, not floating dashboard pills detached from the stage.
+- Labels inside the stage should be large enough to read at presentation distance.
+
+### Typography In Presentation Mode
+- Keep `system-ui` for headings, `Manrope` for UI/body, and monospace for numeric markers or technical labels.
+- Use extremely large display sizing for cover-state titles.
+- Keep heading line-height tight and letter-spacing slightly negative.
+- Favor single-line statements whenever possible.
+- Use bold or stronger weight only for the most important numeric takeaway, for example `500m` or `16km`.
+
+### Visual Proof Over Explanation
+Use built-in visual guidance instead of explanatory copy:
+- arrows
+- glow emphasis
+- route highlights
+- state changes
+- contrast shifts
+- one large metric statement
+
+If the audience can understand the point by looking at the stage for one second, the page is working.
+
+### Page-Specific Guidance
+- `distance`: prioritize the idea of reliable long-range communication. Replace explanatory rulers with a clear takeaway statement like `Up to 500m`.
+- `mesh`: use the gold conclusion style for total-range or network-capacity claims such as `Up to 16km` or node-based relay scale.
+- `response`: emphasize the motion path and stage timing rather than descriptive process text.
+- `battery`: emphasize the single most memorable outcome, not a paragraph about maintenance.
+- `overview`: can be more structural, but still avoid dense reading.
+
+### Special-Slide Guidance
+- A deliberately complex "this system is very large" graphic may appear once in the full deck, but only once.
+- Collaborator / partner / acknowledgment-heavy material should not be saved for the end if it weakens the core product narrative.
+- The final slide should reinforce concrete value or contributions, not end with a generic `Thank you` or `Questions?`.
+
+### Acceptance Checklist For New Pages
+- Can the audience understand the page's core point in under 3 seconds?
+- Is the title large enough to work as a presentation title rather than a web heading?
+- Is there any sentence that could be removed and spoken aloud instead?
+- Is the main stage doing the explanation work?
+- Are there any leftover internal labels, rulers, captions, or scaffolding that can be deleted?
+- Does the page feel like a keynote slide rather than a product dashboard?
+
+If the answer to the last question is "no," the page is not ready.

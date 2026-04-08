@@ -3,8 +3,21 @@
   const navDots = document.querySelectorAll(".nav-dot");
   const progressIndicator = document.getElementById("progress-indicator");
   const slidesContainer = document.getElementById("slides");
+  const slideFrames = document.querySelectorAll(".slide-frame");
   let currentSlide = 0;
   let wheelLock = false;
+
+  function syncFrameVisibility() {
+    slideFrames.forEach((frame, frameIndex) => {
+      if (!frame.contentWindow) {
+        return;
+      }
+      frame.contentWindow.postMessage({
+        type: "slideVisibility",
+        active: frameIndex === currentSlide
+      }, "*");
+    });
+  }
 
   function updateView(index) {
     currentSlide = Math.max(0, Math.min(index, slides.length - 1));
@@ -17,6 +30,8 @@
     if (progressIndicator) {
       progressIndicator.style.width = (((currentSlide + 1) / slides.length) * 100) + "%";
     }
+
+    syncFrameVisibility();
   }
 
   function goToSlide(index) {
@@ -69,6 +84,10 @@
     dot.addEventListener("click", () => {
       goToSlide(Number(dot.dataset.target));
     });
+  });
+
+  slideFrames.forEach((frame) => {
+    frame.addEventListener("load", syncFrameVisibility);
   });
 
   window.addEventListener("wheel", handleWheel, { passive: true });

@@ -6,66 +6,64 @@
   <title>Mesh Communication</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/page-base.css?v=20260407c">
-  <link rel="stylesheet" href="../css/pages/mesh.css?v=123641">
+  <link rel="stylesheet" href="../css/pages/mesh.css?v=20260408b">
 </head>
 <body>
   <main class="page page-mesh">
+    <button type="button" class="mesh-intro-overlay" id="mesh-intro-trigger" aria-controls="mesh-main-stage" aria-expanded="false">
+      <span class="mesh-intro-title">Mesh Communication</span>
+    </button>
+
     <section class="page-grid mesh-layout">
-      <div class="page-copy">
-        <div class="mesh-hero">
+      <header class="mesh-header">
+        <div class="page-copy mesh-hero mesh-hero-spotlight">
           <p class="eyebrow">Core Advantage</p>
           <h2>Mesh Communication</h2>
-          <p class="lead">
-            Multiple communication paths keep the system stable in complex buildings.
-          </p>
         </div>
-        <div class="mesh-controls" role="tablist" aria-label="Mesh demo mode">
-          <button class="mode-button active" data-mode="normal" role="tab" aria-selected="true">Normal Mode</button>
-          <button class="mode-button" data-mode="blocked" role="tab" aria-selected="false">Path Blocked</button>
-          <button class="mode-button" data-mode="recovery" role="tab" aria-selected="false">Auto Recovery</button>
-        </div>
-      </div>
+      </header>
 
-      <div class="visual-card mesh-stage">
-        <div class="mesh-network" id="mesh-network">
-          <div class="mesh-player-host" id="mesh-player-host" aria-label="3D mesh player"></div>
-          <div class="mesh-recovery-switch" id="mesh-recovery-switch" hidden aria-label="Auto Recovery results">
-            <button class="mesh-recovery-result active" data-recovery-result="1" type="button" aria-pressed="true">1</button>
-            <button class="mesh-recovery-result" data-recovery-result="2" type="button" aria-pressed="false">2</button>
-          </div>
-          <div class="mesh-zoom-controls" aria-label="Mesh player view controls">
-            <button class="mesh-zoom-button mesh-zoom-expand" id="mesh-expand-toggle" type="button" aria-pressed="false">Expand</button>
-            <button class="mesh-zoom-button mesh-zoom-reset" id="mesh-zoom-reset" type="button">Reset</button>
-          </div>
-          <div
-            class="mesh-player-message"
-            id="mesh-player-message"
-            role="status"
-            aria-live="polite"
-            hidden
-          ></div>
-        </div>
-      </div>
+      <div class="visual-card mesh-stage-shell">
+        <div class="mesh-stage" id="mesh-main-stage" aria-label="Mesh communication cinematic stage">
+          <div class="mesh-network" id="mesh-network">
+            <div class="mesh-stage-controls">
+              <div class="mesh-controls" role="tablist" aria-label="Mesh demo mode">
+                <button class="mode-button active" data-mode="normal" role="tab" aria-selected="true">Normal Mode</button>
+                <button class="mode-button" data-mode="blocked" role="tab" aria-selected="false">Path Blocked</button>
+                <button class="mode-button" data-mode="recovery" role="tab" aria-selected="false">Auto Recovery</button>
+              </div>
+              <div class="mesh-recovery-switch" id="mesh-recovery-switch" hidden aria-label="Auto Recovery results">
+                <button class="mesh-recovery-result active" data-recovery-result="1" type="button" aria-pressed="true" aria-label="Show first recovery route">
+                  <span class="mesh-recovery-arrow mesh-recovery-arrow-up" aria-hidden="true"></span>
+                </button>
+                <button class="mesh-recovery-result" data-recovery-result="2" type="button" aria-pressed="false" aria-label="Show second recovery route">
+                  <span class="mesh-recovery-arrow mesh-recovery-arrow-down" aria-hidden="true"></span>
+                </button>
+              </div>
+            </div>
 
-      <div class="status-panel mesh-status-panel">
-        <p class="eyebrow">Current state</p>
-        <h3 id="mesh-status-title">Default route is active</h3>
-        <p id="mesh-status-copy">
-          Signal follows the primary path from detector to panel through the mesh network.
-        </p>
+            <div class="status-panel mesh-status-panel">
+              <h3 id="mesh-status-title">Multiple paths ready</h3>
+            </div>
+
+            <div class="mesh-player-host" id="mesh-player-host" aria-label="3D mesh player"></div>
+            <div
+              class="mesh-player-message"
+              id="mesh-player-message"
+              role="status"
+              aria-live="polite"
+              hidden
+            ></div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <script src="../js/mesh-page.js?v=20260407c"></script>
+  <script src="../js/page-messaging.js?v=20260407c"></script>
+  <script src="../js/mesh-page.js?v=20260408b"></script>
 </body>
 </html>
-
-
-
-
-
 
 
