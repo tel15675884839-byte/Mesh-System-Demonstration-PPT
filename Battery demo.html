@@ -1,0 +1,331 @@
+import React, { useState, useEffect } from 'react';
+import { Battery, Zap, Clock, Infinity as InfinityIcon, Activity, Wrench, Cpu, BatteryCharging, RefreshCcw } from
+'lucide-react';
+
+export default function BatteryProductPage() {
+const [activeConcept, setActiveConcept] = useState('power');
+
+// Background particle effect logic
+const renderBackgroundNodes = () => {
+const nodes = [];
+for (let i = 0; i < 20; i++) { const top=Math.random() * 100; const left=Math.random() * 100; const
+    animationDelay=Math.random() * 5; nodes.push( <div key={i} className="absolute w-full h-full pointer-events-none"
+    style={{ top: `${top}%`, left: `${left}%` }}>
+    <div className="w-1 h-1 bg-teal-400 rounded-full opacity-30 absolute animate-pulse" style={{ animationDelay:
+        `${animationDelay}s`, animationDuration: '3s' }}></div>
+    {i % 3 === 0 && (
+    <div className="w-24 h-[1px] bg-gradient-to-r from-teal-400/20 to-transparent absolute origin-left rotate-45"
+        style={{ top: '2px' , left: '2px' }}></div>
+    )}
+    </div>
+    );
+    }
+    return nodes;
+    };
+
+    return (
+    <div
+        className="min-h-screen bg-[#050b0a] text-white font-sans overflow-hidden relative flex items-center justify-center p-8">
+        {/* Background Effect matching the uploaded image */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div
+                className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-900/10 via-[#050b0a] to-[#050b0a]">
+            </div>
+            {renderBackgroundNodes()}
+        </div>
+
+        {/* Main Content Container */}
+        <div className="relative z-10 w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+            {/* Left Column - Text & Controls */}
+            <div className="lg:col-span-5 space-y-8">
+
+                {/* Header Badge */}
+                <div className="flex items-center gap-4">
+                    <div
+                        className="w-10 h-10 rounded-full border border-teal-800 flex items-center justify-center text-teal-500 font-mono text-sm bg-teal-950/30">
+                        07
+                    </div>
+                    <div>
+                        <div className="text-teal-600 text-xs font-bold tracking-widest uppercase">Independent Page File
+                        </div>
+                        <div className="text-gray-300 text-sm font-medium">10-Year Battery</div>
+                    </div>
+                </div>
+
+                {/* Titles */}
+                <div className="space-y-2 pt-8">
+                    <h3 className="text-teal-400 text-sm font-bold tracking-widest uppercase">Core Advantage</h3>
+                    <h1 className="text-6xl font-bold tracking-tight text-white leading-tight">
+                        10-Year<br />Battery
+                    </h1>
+                    <p className="text-gray-400 text-sm pt-4 max-w-md leading-relaxed">
+                        Lower maintenance overhead with standard integrated long-life batteries.
+                    </p>
+                </div>
+
+                {/* Interactive Draft Status / Concept Switcher */}
+                <div className="mt-8 border border-teal-800/50 bg-teal-950/20 rounded-2xl p-6 backdrop-blur-sm">
+                    <h4 className="text-teal-500 text-xs font-bold tracking-widest uppercase mb-4">Select Design Concept
+                    </h4>
+
+                    <div className="space-y-3">
+                        {/* Concept 1 Button */}
+                        <button onClick={()=> setActiveConcept('power')}
+                            className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-all
+                            duration-300 ${activeConcept === 'power' ? 'bg-teal-900/40 border border-teal-500/50
+                            shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'hover:bg-teal-900/20 border border-transparent
+                            opacity-60 hover:opacity-100'}`}
+                            >
+                            <BatteryCharging className="w-5 h-5 text-teal-400" />
+                            <div>
+                                <div className="text-sm font-bold text-white">1. Power Endurance</div>
+                                <div className="text-xs text-gray-400">Powerful battery life and robust energy output
+                                </div>
+                            </div>
+                        </button>
+
+                        {/* Concept 2 Button */}
+                        <button onClick={()=> setActiveConcept('maintenance')}
+                            className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-all
+                            duration-300 ${activeConcept === 'maintenance' ? 'bg-teal-900/40 border border-teal-500/50
+                            shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'hover:bg-teal-900/20 border border-transparent
+                            opacity-60 hover:opacity-100'}`}
+                            >
+                            <Wrench className="w-5 h-5 text-teal-400" />
+                            <div>
+                                <div className="text-sm font-bold text-white">2. Minimal Maintenance</div>
+                                <div className="text-xs text-gray-400">Drastically reduced costs and replacement
+                                    frequency</div>
+                            </div>
+                        </button>
+
+                        {/* Concept 3 Button */}
+                        <button onClick={()=> setActiveConcept('lowpower')}
+                            className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-all
+                            duration-300 ${activeConcept === 'lowpower' ? 'bg-teal-900/40 border border-teal-500/50
+                            shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'hover:bg-teal-900/20 border border-transparent
+                            opacity-60 hover:opacity-100'}`}
+                            >
+                            <Cpu className="w-5 h-5 text-teal-400" />
+                            <div>
+                                <div className="text-sm font-bold text-white">3. Ultra-Low Power</div>
+                                <div className="text-xs text-gray-400">Exceptional low-power technology architecture
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Column - Visual Demo Area */}
+            <div
+                className="lg:col-span-7 h-[600px] border border-teal-800/40 bg-[#081210]/50 rounded-2xl relative overflow-hidden flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-md">
+
+                {/* Subtle grid background for the demo area */}
+                <div
+                    className="absolute inset-0 bg-[linear-gradient(to_right,#113330_1px,transparent_1px),linear-gradient(to_bottom,#113330_1px,transparent_1px)] bg-[size:40px_40px] opacity-20">
+                </div>
+
+                {/* Render Active Concept */}
+                <div className="relative z-10 w-full h-full flex items-center justify-center p-8">
+                    {activeConcept === 'power' &&
+                    <ConceptPower />}
+                    {activeConcept === 'maintenance' &&
+                    <ConceptMaintenance />}
+                    {activeConcept === 'lowpower' &&
+                    <ConceptLowPower />}
+                </div>
+
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-teal-500/50 m-4 rounded-tl">
+                </div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-teal-500/50 m-4 rounded-tr">
+                </div>
+                <div
+                    className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-teal-500/50 m-4 rounded-bl">
+                </div>
+                <div
+                    className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-teal-500/50 m-4 rounded-br">
+                </div>
+            </div>
+
+        </div>
+
+        {/* Global Styles for custom animations */}
+        <style dangerouslySetInnerHTML={{__html: ` @keyframes flow { 0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } } @keyframes pulse-ring { 0% {
+            transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes float { 0%,
+            100% { transform: translateY(0); } 50% { transform: translateY(-10px); } } @keyframes zap-flash { 0%, 100% {
+            opacity: 0.8; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)); transform: scale(1); } 50% { opacity: 1;
+            filter: drop-shadow(0 0 35px rgba(255,255,255,1)); transform: scale(1.15); } } @keyframes spin-slow { 100% {
+            transform: rotate(360deg); } } @keyframes flow-slow { 0% { stroke-dashoffset: 100; } 100% {
+            stroke-dashoffset: 0; } } .animate-flow { animation: flow 3s linear infinite; } .animate-pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; } .animate-float { animation: float
+            4s ease-in-out infinite; } .animate-zap { animation: zap-flash 1.5s ease-in-out infinite; }
+            .animate-spin-slow { animation: spin-slow linear infinite; } .animate-flow-slow { animation: flow-slow 2s
+            linear infinite; } `}} />
+    </div>
+    );
+    }
+
+    // --- Component 1: Power Endurance (强大的电池续航与闪电符号) ---
+    function ConceptPower() {
+    return (
+    <div className="flex flex-col items-center justify-center relative w-full h-full">
+        {/* Glowing Aura Background */}
+        <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none">
+        </div>
+
+        {/* Big Battery Graphic */}
+        <div
+            className="relative w-40 h-64 border-4 border-teal-500/80 rounded-2xl flex items-center justify-center bg-[#050b0a]/80 shadow-[0_0_40px_rgba(45,212,191,0.2)] backdrop-blur-sm animate-float">
+            {/* Battery Terminal */}
+            <div
+                className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-16 h-6 border-4 border-b-0 border-teal-500/80 rounded-t-lg bg-[#050b0a]">
+            </div>
+
+            {/* Battery Energy Fill */}
+            <div
+                className="absolute bottom-2 left-2 right-2 top-10 bg-gradient-to-t from-teal-400 to-teal-800 rounded-lg opacity-80 overflow-hidden">
+                {/* Internal glowing flow lines */}
+                <div className="absolute inset-0 bg-[linear-gradient(transparent,rgba(255,255,255,0.2),transparent)] h-full w-full animate-flow-slow"
+                    style={{ backgroundSize: '100% 200%' }}></div>
+            </div>
+
+            {/* Strong Lightning Symbol inside */}
+            <Zap className="w-28 h-28 text-white z-10 animate-zap" fill="currentColor" />
+        </div>
+
+        <div className="mt-12 text-center z-10">
+            <h3 className="text-2xl font-bold text-white tracking-widest uppercase mb-2">High-Density Power</h3>
+            <p className="text-teal-400/80 text-sm">Strong power output, fearless of high-load challenges</p>
+        </div>
+    </div>
+    );
+    }
+
+    // --- Component 2: Minimal Maintenance (减少维护成本和电池替换的频率) ---
+    function ConceptMaintenance() {
+    return (
+    <div className="w-full max-w-xl flex flex-col gap-8 relative z-10 animate-float">
+        <div className="text-center mb-4">
+            <h2 className="text-2xl font-bold text-white tracking-widest uppercase mb-2">Lifecycle Cost</h2>
+            <p className="text-teal-500/70 text-sm">Say goodbye to frequent replacements. True "install and forget".</p>
+        </div>
+
+        {/* Standard Battery Timeline (High replacement frequency) */}
+        <div className="bg-[#050b0a]/60 border border-gray-800 rounded-xl p-6 relative">
+            <div
+                className="absolute -left-2 -top-3 bg-gray-800 text-gray-300 text-[10px] px-2 py-1 rounded uppercase tracking-wider">
+                Standard Battery</div>
+            <div className="flex items-center justify-between relative mt-2">
+                {/* Line */}
+                <div className="absolute left-0 right-0 h-[2px] bg-gray-700 top-1/2 transform -translate-y-1/2"></div>
+                {[1, 2, 3, 4, 5].map((item) => (
+                <div key={item} className="relative z-10 flex flex-col items-center bg-[#050b0a] px-2">
+                    {item % 2 === 0 ? (
+                    <div
+                        className="w-8 h-8 rounded-full bg-red-900/30 border border-red-500/50 flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.2)] text-red-400">
+                        <RefreshCcw className="w-4 h-4" />
+                    </div>
+                    ) : (
+                    <div
+                        className="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-gray-400">
+                        <Battery className="w-4 h-4" />
+                    </div>
+                    )}
+                    <span className="text-[10px] mt-2 text-gray-500">Yr {item * 2}</span>
+                </div>
+                ))}
+            </div>
+            <div className="text-right text-xs text-red-400/80 mt-4 font-mono">Frequent Replacement · High Maintenance
+                Cost</div>
+        </div>
+
+        {/* 10-Year Battery Timeline (No replacements) */}
+        <div
+            className="bg-teal-950/20 border border-teal-500/40 rounded-xl p-6 relative shadow-[0_0_30px_rgba(20,184,166,0.15)]">
+            <div
+                className="absolute -left-2 -top-3 bg-teal-800 text-white text-[10px] px-2 py-1 rounded uppercase tracking-wider shadow-[0_0_10px_rgba(20,184,166,0.5)]">
+                10-Year Battery (Ours)</div>
+            <div className="flex items-center justify-between relative mt-2">
+                {/* Glowing Line */}
+                <div
+                    className="absolute left-4 right-4 h-1 bg-teal-400 top-1/2 transform -translate-y-1/2 shadow-[0_0_15px_#2dd4bf]">
+                </div>
+                <div className="relative z-10 flex flex-col items-center bg-transparent">
+                    <div
+                        className="w-10 h-10 rounded-full bg-teal-500 border-2 border-white flex items-center justify-center shadow-[0_0_20px_rgba(45,212,191,0.6)] text-white">
+                        <BatteryCharging className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs mt-2 text-teal-300 font-bold">Initial Install</span>
+                </div>
+                <div
+                    className="relative z-10 flex flex-col items-center bg-[#0a1815] px-4 py-1 rounded-full border border-teal-800 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
+                    <span className="text-sm text-teal-400 font-mono tracking-widest font-bold">0 Replacements</span>
+                </div>
+                <div className="relative z-10 flex flex-col items-center bg-transparent">
+                    <div
+                        className="w-10 h-10 rounded-full bg-[#050b0a] border-2 border-teal-500 flex items-center justify-center text-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.4)]">
+                        <Clock className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs mt-2 text-teal-500 font-bold">10 Yrs Worry-Free</span>
+                </div>
+            </div>
+            <div className="text-right text-xs text-teal-400 mt-4 font-mono font-bold">Minimal Maintenance · Near Zero
+                Cost</div>
+        </div>
+    </div>
+    );
+    }
+
+    // --- Component 3: Ultra-Low Power (超低功耗技术设计) ---
+    function ConceptLowPower() {
+    return (
+    <div className="flex flex-col items-center justify-center relative w-full">
+        <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-white tracking-widest uppercase mb-2">Ultra-Low Power</h2>
+            <p className="text-teal-500/70 text-sm">Micro-amp level standby power, ultimate energy utilization
+                efficiency</p>
+        </div>
+
+        <div className="relative w-80 h-80 flex items-center justify-center">
+            {/* Background Circuit Rings (Spinning slowly) */}
+            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-40 animate-spin-slow" style={{
+                animationDuration: '30s' }}>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#2dd4bf" strokeWidth="0.5" strokeDasharray="2 4" />
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#2dd4bf" strokeWidth="0.5" strokeDasharray="1 8" />
+            </svg>
+
+            {/* Energy efficient flow traces (Dashed lines moving towards the chip) */}
+            <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full z-0">
+                {/* Static paths */}
+                <path
+                    d="M 100 20 L 100 70 M 100 180 L 100 130 M 20 100 L 70 100 M 180 100 L 130 100 M 40 40 L 75 75 M 160 160 L 125 125 M 160 40 L 125 75 M 40 160 L 75 125"
+                    fill="none" stroke="rgba(45,212,191,0.2)" strokeWidth="1" />
+                {/* Animated flow indicating very small current */}
+                <path
+                    d="M 100 20 L 100 70 M 100 180 L 100 130 M 20 100 L 70 100 M 180 100 L 130 100 M 40 40 L 75 75 M 160 160 L 125 125 M 160 40 L 125 75 M 40 160 L 75 125"
+                    fill="none" stroke="#2dd4bf" strokeWidth="1.5" strokeDasharray="4 20"
+                    className="animate-flow-slow" />
+            </svg>
+
+            {/* Central Chip */}
+            <div
+                className="relative z-10 w-28 h-28 bg-[#020605] border border-teal-500/60 rounded-xl shadow-[0_0_35px_rgba(20,184,166,0.2)] flex items-center justify-center backdrop-blur-md">
+                <div className="absolute inset-2 border border-teal-500/30 rounded-lg"></div>
+                <Cpu className="w-12 h-12 text-teal-400 drop-shadow-[0_0_10px_#2dd4bf]" />
+            </div>
+
+            {/* Floating Data Nodes showing low power metrics */}
+            <div className="absolute top-6 left-6 bg-teal-950/80 border border-teal-800/50 px-3 py-2 rounded-md text-xs font-mono text-teal-300 shadow-lg animate-float"
+                style={{animationDelay: '1s' }}>
+                <div className="text-gray-500 text-[10px] uppercase mb-1">Standby Current</div>
+                <span className="text-white text-lg">&lt; 10</span> µA
+            </div>
+        </div>
+    </div>
+    );
+    }

@@ -142,13 +142,14 @@
     this.particles = [];
     this.dataClusters = [];
 
-    let clusterCount = Math.floor(((this.width * this.height) / 30000) * 0.7);
+    // Reduced density by 40%: 0.7 * 0.6 = 0.42
+    let clusterCount = Math.floor(((this.width * this.height) / 30000) * 0.42);
     for (let i = 0; i < clusterCount; i++) {
       this.dataClusters.push(new DataCluster(this.width, this.height));
     }
 
-    let nodeCount = Math.floor(((this.width * this.height) / 12000) * 0.7);
-    nodeCount = Math.max(28, Math.min(nodeCount, 105));
+    let nodeCount = Math.floor(((this.width * this.height) / 12000) * 0.42);
+    nodeCount = Math.max(16, Math.min(nodeCount, 105));
     for (let i = 0; i < nodeCount; i++) {
       this.particles.push(new Node(this.width, this.height));
     }
