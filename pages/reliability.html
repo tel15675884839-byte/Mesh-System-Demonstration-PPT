@@ -9,31 +9,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/page-base.css">
   <link rel="stylesheet" href="../css/pages/reliability.css">
+  <link rel="stylesheet" href="../css/pages/reliability-animations.css">
 </head>
 <body>
   <main class="page page-reliability">
     <section class="page-grid reliability-layout">
-      <div class="page-copy">
-        <p class="eyebrow">Core Advantage</p>
-        <h2>High Reliability</h2>
-        <p class="lead">
-          Two-way communication ensures all messages are delivered and acknowledged.
-        </p>
-        <div class="status-panel" style="margin-top: 2rem;">
-          <p class="eyebrow">Draft Status</p>
-          <h3>Framework Prepared</h3>
-          <p>This is an independent drafted page. You can customize the content and replace the visual placeholder as needed.</p>
+      <header class="reliability-header">
+        <div class="page-copy reliability-hero reliability-hero-spotlight">
+          <p class="eyebrow">Core Advantage</p>
+          <h2>High Reliability</h2>
         </div>
-      </div>
+      </header>
 
-      <div class="visual-card placeholder-stage">
-        <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
-          <span style="font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.05em;">[ Visual Demo Area for High Reliability ]</span>
+      <div class="visual-card reliability-stage-shell">
+        <div class="reliability-stage" aria-label="High reliability stage">
+          
+          <!-- Scene switching controls -->
+          <div class="reliability-stage-controls">
+            <button type="button" class="reliability-stage-mode-btn is-active" id="btn-scene-response" data-scene="response">ONE-WAY COMMUNICATION</button>
+            <button type="button" class="reliability-stage-mode-btn" id="btn-scene-path" data-scene="path">TWO-WAY COMMUNICATION</button>
+          </div>
+
+          <div id="scene-rapid-response" class="reliability-visual-map">
+            <svg class="reli-connection-svg" id="reli-connection-layer"></svg>
+            <div id="reli-animation-map" style="width:100%; height:100%; position:relative;"></div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <script src="../js/page-messaging.js"></script>
+  <script src="../js/pages/reliability-animations.js"></script>
 </body>
 </html>

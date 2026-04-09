@@ -24,9 +24,9 @@ popd
 exit /b 1
 
 :run_server
-echo Starting local presentation server at http://127.0.0.1:%PORT%/
+echo Starting local presentation server at http://127.0.0.1:%PORT%/welcome.html
 echo Press Ctrl+C in this window to stop the server.
-start "" "http://127.0.0.1:%PORT%/"
+start "" "http://127.0.0.1:%PORT%/welcome.html"
 %PYTHON_CMD% -m http.server %PORT%
 
 popd

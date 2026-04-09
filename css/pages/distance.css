@@ -462,6 +462,7 @@
 .open-arc-path {
   fill: none;
   stroke-linecap: round;
+
   stroke-width: 1.4;
   stroke: rgba(112, 240, 255, 0.82);
   filter: drop-shadow(0 0 10px rgba(112, 240, 255, 0.56));
@@ -495,19 +496,19 @@
 }
 
 .pulse-open-upper {
-  animation: open-pulse-track 3.46s linear infinite alternate-reverse;
+  animation: open-pulse-track 2.47s linear infinite alternate-reverse;
 }
 
 .pulse-open-upper-delayed {
-  animation-delay: 1.05s;
+  animation-delay: 0.75s;
 }
 
 .pulse-open-lower {
-  animation: open-pulse-track 3.46s linear infinite alternate-reverse;
+  animation: open-pulse-track 2.47s linear infinite alternate-reverse;
 }
 
 .pulse-open-lower-delayed {
-  animation-delay: 1.35s;
+  animation-delay: 0.96s;
 }
 
 .node-open-left-node {

@@ -1,11 +1,137 @@
 /* Feature Page: High Reliability */
-.page-reliability .placeholder-stage {
+.page-reliability {
+  justify-content: flex-start;
+  padding-block: 24px;
+}
+
+.page-reliability .reliability-layout {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  height: calc(100vh - 48px);
+  min-height: 0;
+  align-items: stretch;
+}
+
+.reliability-header {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 440px;
-  background: var(--surface-sunken);
-  border-radius: var(--radius-lg);
-  border: 1px dashed var(--border-subtle);
-  margin-top: var(--space-xl);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.reliability-hero {
+  max-width: none;
+}
+
+.reliability-hero-spotlight h2 {
+  max-width: none;
+  font-size: clamp(3.8rem, 5.3vw, 4.9rem);
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+}
+
+.reliability-stage-shell {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 12px;
+}
+
+.reliability-stage {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  border-radius: 26px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 22%, rgba(112, 240, 255, 0.06), transparent 32%),
+    radial-gradient(circle at 74% 74%, rgba(126, 255, 178, 0.05), transparent 28%),
+    linear-gradient(180deg, rgba(8, 14, 24, 0.96), rgba(4, 10, 18, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(143, 216, 255, 0.08),
+    0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.reliability-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 100% 100%, 58px 58px, 58px 58px;
+  opacity: 0.32;
+  mask-image: radial-gradient(circle at center, black 54%, transparent 100%);
+  pointer-events: none;
+}
+
+.reliability-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.reliability-placeholder-label {
+  color: var(--page-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.reliability-status-panel {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 2;
+  width: min(380px, calc(100% - 48px));
+  padding: 18px 20px;
+}
+
+.reliability-status-panel h3 {
+  margin: 10px 0 6px;
+}
+
+.reliability-status-panel p:last-child {
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .page-reliability .reliability-layout {
+    height: auto;
+    min-height: calc(100vh - 48px);
+  }
+
+  .reliability-hero-spotlight h2 {
+    font-size: clamp(3rem, 8.2vw, 4.2rem);
+  }
+
+  .reliability-stage {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-reliability {
+    padding-block: 18px;
+  }
+
+  .reliability-hero-spotlight h2 {
+    font-size: clamp(2.4rem, 10.2vw, 3rem);
+    white-space: normal;
+  }
+
+  .reliability-stage {
+    min-height: 380px;
+  }
+
+  .reliability-status-panel {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+  }
 }

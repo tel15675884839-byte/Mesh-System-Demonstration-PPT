@@ -1,0 +1,219 @@
+/* Visual Demo for Reliability - Rapid Response Stage */
+.reliability-visual-map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.reliability-device {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  user-select: none;
+}
+
+.reli-icon {
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(1) contrast(1.1) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  transition: transform 0.2s ease, filter 0.3s ease;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+.reliability-device.panel {
+  width: 306px;
+  height: 306px;
+}
+
+.reliability-device.panel .reli-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.reliability-device.node .reli-icon { background-image: url('../../assets/icons/node.svg'); }
+.reliability-device.det .reli-icon { background-image: url('../../assets/icons/smoke.svg'); }
+.reliability-device.sounder .reli-icon { background-image: url('../../assets/icons/sounder.svg'); }
+.reliability-device.panel .reli-icon { background-image: url('../../assets/icons/panel.svg'); }
+.reliability-device.leader-node .reli-icon { 
+  background-image: url('../../assets/icons/node.svg');
+  filter: brightness(1.2) drop-shadow(0 0 15px var(--page-accent));
+}
+
+/* Connection Lines */
+.reli-connection-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.reli-connection-hitbox {
+  stroke: transparent;
+  stroke-width: 25;
+  fill: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.reli-connection-line {
+  stroke: rgba(0, 229, 255, 0.12);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+  fill: none;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reli-snake-line {
+  stroke: var(--page-accent);
+  stroke-width: 2;
+  stroke-opacity: 0.6;
+  fill: none;
+  stroke-dasharray: none;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reli-line-broken {
+  stroke: #ff3333 !important;
+  stroke-dasharray: 2 6 !important;
+  stroke-opacity: 0.9 !important;
+  animation: reli-line-crack 0.3s infinite alternate;
+}
+
+@keyframes reli-line-crack {
+  0% { stroke-opacity: 0.4; stroke-dashoffset: 0; }
+  100% { stroke-opacity: 1; stroke-dashoffset: 10; }
+}
+
+.reli-break-x {
+  pointer-events: none;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  fill: #ff3333;
+  font-size: 28px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  filter: drop-shadow(0 0 10px rgba(255, 51, 51, 0.8));
+  animation: reli-x-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+  transform-origin: center;
+}
+
+@keyframes reli-x-pop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  70% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Particles */
+.reli-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 15px 4px var(--response-cyan, #00e5ff), 0 0 5px 1px #fff;
+  pointer-events: none;
+  z-index: 5;
+  filter: brightness(1.5);
+}
+
+.reliability-stage-controls {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  right: 22px;
+  z-index: 101;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.reliability-stage-mode-btn {
+  pointer-events: auto;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: rgba(7, 16, 29, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.2), 0 10px 25px rgba(0, 0, 0, 0.2);
+  color: rgba(230, 241, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.reliability-stage-mode-btn:hover {
+  background: rgba(12, 30, 52, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.4), 0 15px 35px rgba(0, 0, 0, 0.3);
+  color: rgba(230, 241, 255, 0.9);
+}
+
+.reliability-stage-mode-btn.is-active {
+  background: rgba(12, 30, 52, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.8), 0 20px 45px rgba(0, 0, 0, 0.4);
+  color: #00e5ff;
+  font-weight: 700;
+  transform: scale(1.02);
+}
+
+.reliability-stage-mode-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Panel Alarm State */
+.reliability-device.panel.is-alarming .reli-icon {
+  filter: brightness(1) contrast(1.2) drop-shadow(0 0 20px #ffcc00);
+  animation: reli-panel-alarm-glow 0.8s infinite alternate;
+}
+
+@keyframes reli-panel-alarm-glow {
+  0% {
+    filter: brightness(1) contrast(1.2) drop-shadow(0 0 15px rgba(255, 204, 0, 0.4));
+  }
+  100% {
+    filter: brightness(1.3) contrast(1.4) drop-shadow(0 0 50px rgba(255, 204, 0, 1));
+  }
+}
+
+/* Fault Icon Shaking from Center */
+.reliability-device.panel.is-alarming::after {
+  content: "⚠️";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.8));
+  animation: reli-fault-shake 0.5s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes reli-fault-shake {
+  10%, 90% { transform: translate(-52%, -50%) rotate(-3deg) scale(1); }
+  20%, 80% { transform: translate(-48%, -50%) rotate(4deg) scale(1.05); }
+  30%, 50%, 70% { transform: translate(-54%, -50%) rotate(-8deg) scale(1.1); }
+  40%, 60% { transform: translate(-46%, -50%) rotate(8deg) scale(1.1); }
+}

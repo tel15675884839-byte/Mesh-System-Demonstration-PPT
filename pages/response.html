@@ -13,80 +13,48 @@
 <body>
   <main class="page page-response" data-stage="accumulation">
     <section class="page-grid response-layout">
-      <div class="page-copy">
-        <p class="eyebrow">Core Advantage</p>
-        <h2>Rapid Response</h2>
-        <p class="lead">
-          Built on years of wireless R&amp;D and efficient algorithms.
-        </p>
-        <ol class="response-timeline" aria-label="Performance pipeline timeline">
-          <li class="response-timeline-item is-active" data-timeline-stage="accumulation" aria-current="step">
-            <span class="response-timeline-index">01</span>
-            <div>
-              <h3>R&amp;D Accumulation</h3>
-              <p>Mature wireless baseline.</p>
-            </div>
-          </li>
-          <li class="response-timeline-item" data-timeline-stage="optimization">
-            <span class="response-timeline-index">02</span>
-            <div>
-              <h3>Algorithm Optimization</h3>
-              <p>Faster and cleaner routing.</p>
-            </div>
-          </li>
-          <li class="response-timeline-item" data-timeline-stage="delivery">
-            <span class="response-timeline-index">03</span>
-            <div>
-              <h3>Rapid + Stable Delivery</h3>
-              <p>Consistent panel arrival.</p>
-            </div>
-          </li>
-        </ol>
-        <div class="status-panel response-status-panel">
-          <p class="eyebrow">Pipeline State</p>
-          <h3 id="response-status-title">R&amp;D baseline synced</h3>
-          <p id="response-status-copy">Network readiness is primed for dependable transmission.</p>
+      <header class="response-header">
+        <div class="page-copy response-hero response-hero-spotlight">
+          <h2>Rapid Response</h2>
         </div>
-      </div>
+      </header>
 
-      <div class="visual-card response-stage" aria-label="Rapid response animation stage">
-        <div class="response-network" aria-hidden="true">
-          <div class="route-track"></div>
-          <div class="route-track-backup"></div>
-          <div class="pulse-layer">
-            <span class="route-pulse pulse-a"></span>
-            <span class="route-pulse pulse-b"></span>
-            <span class="route-pulse pulse-c"></span>
-            <span class="route-pulse pulse-d"></span>
-          </div>
-          <div class="network-node node-detector">
-            <span class="node-core"></span>
-            <span class="node-label">Detector</span>
-          </div>
-          <div class="network-node node-mesh">
-            <span class="node-core"></span>
-            <span class="node-label">Mesh Node</span>
-          </div>
-          <div class="network-node node-panel">
-            <span class="node-core"></span>
-            <span class="node-label">Panel</span>
-          </div>
-          <div class="network-node node-support">
-            <span class="node-core"></span>
-            <span class="node-label">Support Path</span>
-          </div>
-        </div>
-        <div class="response-kpis" aria-label="Signal quality indicators">
-          <span class="response-kpi">Path Confidence</span>
-          <span class="response-kpi">Delivery Integrity</span>
-          <span class="response-kpi">Algorithm Tuned</span>
-        </div>
-      </div>
+      <div class="visual-card response-stage-shell" id="stage-trigger">
+        <div class="response-stage" aria-label="Rapid response animation stage">
+          <div class="stage-overlay"></div>
+          <div class="response-stage-frame">
+            <div class="response-visual" id="animation-map">
+              <!-- Mesh Nodes -->
+              <div class="device node" id="node-left" style="top: 60%; left: 23%;">
+                <div class="device-glow"></div>
+                <div class="device-icon"></div>
+              </div>
+              <div class="device node" id="node-right" style="top: 54%; left: 63%;">
+                <div class="device-glow"></div>
+                <div class="device-icon"></div>
+              </div>
 
-      <div class="response-outcomes" aria-label="Rapid response outcomes">
-        <div class="response-chip">Fast Transmission</div>
-        <div class="response-chip">Stable Routing</div>
-        <div class="response-chip">Reliable Delivery</div>
+              <!-- Detectors -->
+              <div class="device det trigger-det" id="det-trigger" style="top: 43%; left: 46%;">
+                <div class="device-glow"></div>
+                <div class="device-icon"></div>
+                <div class="trigger-label">ALARM SOURCE</div>
+              </div>
+              <div class="device det filler" style="top: 31%; left: 37%;"><div class="device-icon"></div></div>
+              <div class="device det filler" style="top: 56%; left: 39%;"><div class="device-icon"></div></div>
+              <div class="device det filler" style="top: 75%; left: 84%;"><div class="device-icon"></div></div>
+
+              <!-- Sounders -->
+              <div class="device sounder" style="top: 6%; left: 23%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+              <div class="device sounder" style="top: 14%; left: 67%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+              <div class="device sounder" style="top: 30%; left: 86%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+              <div class="device sounder" style="top: 44%; left: 9%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+              <div class="device sounder" style="top: 86%; left: 26%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+              <div class="device sounder" style="top: 89%; left: 57%;"><div class="device-glow"></div><div class="device-icon"></div></div>
+
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>

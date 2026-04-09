@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesh System Configurator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page-bg: #020408;
+      --page-text: #eef4ff;
+      --page-muted: #97acc9;
+      --page-accent: rgb(15, 235, 198);
+      --font-body: "Manrope", system-ui, -apple-system, sans-serif;
+      --response-cyan: #00e5ff;
+      --response-green: #0febc6;
+      --response-red: #ff3333;
+      --dim-white: rgba(255, 255, 255, 0.4);
+      --space-black: #020408;
+      --nebula-purple: rgba(86, 44, 168, 0.15);
+      --nebula-blue: rgba(0, 150, 255, 0.1);
+      --stage-bg: var(--space-black);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page-bg);
+      color: var(--page-text);
+      font-family: var(--font-body);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .toolbar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      background: rgba(15, 20, 30, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 12px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--page-accent);
+    }
+
+    .tool-btn.primary {
+      background: var(--page-accent);
+      color: var(--space-black);
+      border: none;
+    }
+
+    .tool-btn.primary:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .response-stage-shell {
+      position: relative;
+      width: 90vw;
+      height: 80vh;
+      max-width: 1100px;
+      max-height: 700px;
+      overflow: hidden;
+      border-radius: 28px;
+      background: var(--stage-bg);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .response-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .response-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px, 80px 80px;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .response-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 70% 20%, var(--nebula-purple), transparent 50%),
+        radial-gradient(circle at 30% 80%, var(--nebula-blue), transparent 60%);
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .response-visual {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .device {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      z-index: 10;
+      cursor: grab;
+      user-select: none;
+      transition: outline 0.2s ease;
+    }
+
+    .device:active {
+      cursor: grabbing;
+    }
+
+    .device.dragging {
+      z-index: 1000;
+      opacity: 0.8;
+      transition: none;
+    }
+
+    .device-icon {
+      width: 44px;
+      height: 44px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: brightness(0.9) drop-shadow(0 0 8px rgba(0, 229, 255, 0.2));
+      transition: transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .device:hover .device-icon {
+      transform: scale(1.1);
+      filter: brightness(1.1) drop-shadow(0 0 12px var(--response-cyan));
+    }
+
+    .device-delete {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 20px;
+      height: 20px;
+      background: var(--response-red);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 20;
+    }
+
+    .device:hover .device-delete {
+      opacity: 1;
+    }
+
+    /* Icon Paths */
+    .node .device-icon { background-image: url('assets/icons/node.svg'); }
+    .leader-node .device-icon { 
+      background-image: url('assets/icons/node.svg');
+      filter: brightness(1.2) drop-shadow(0 0 15px var(--response-green));
+    }
+    .det .device-icon { background-image: url('assets/icons/smoke.svg'); }
+    .sounder .device-icon { background-image: url('assets/icons/sounder.svg'); }
+    .panel .device-icon { background-image: url('assets/icons/panel.svg'); }
+
+    /* Particles Effect */
+    .signal-particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 15px 4px var(--response-cyan), 0 0 5px 1px #fff;
+      pointer-events: none;
+      z-index: 5;
+      filter: brightness(1.5);
+    }
+
+    /* Connection Lines - Optional/Visual context */
+    .connection-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .connection-hitbox {
+      stroke: transparent;
+      stroke-width: 20; /* Massive hit area for mouse */
+      fill: none;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .connection-line {
+      stroke: rgba(0, 229, 255, 0.1);
+      stroke-width: 2;
+      stroke-dasharray: 4 4;
+      fill: none;
+      pointer-events: none; /* Let hitbox handle clicks */
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .snake-line {
+      stroke: var(--page-accent);
+      stroke-width: 2;
+      stroke-opacity: 0.6;
+      fill: none;
+      stroke-dasharray: none;
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .line-broken {
+      stroke: var(--response-red) !important;
+      stroke-dasharray: 2 6 !important; /* Crackled look */
+      stroke-opacity: 0.8 !important;
+      animation: line-crack 0.3s infinite alternate;
+    }
+
+    @keyframes line-crack {
+      0% { stroke-opacity: 0.4; stroke-dashoffset: 0; }
+      100% { stroke-opacity: 0.9; stroke-dashoffset: 10; }
+    }
+
+    .break-x {
+      pointer-events: none;
+      font-family: Arial, sans-serif;
+      font-weight: 900;
+      fill: var(--response-red);
+      font-size: 28px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      filter: drop-shadow(0 0 10px rgba(255, 51, 51, 0.8));
+      animation: x-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0;
+      transform-origin: center;
+    }
+
+    @keyframes x-pop {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      70% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .save-status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--response-cyan);
+      color: var(--response-cyan);
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .save-status.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="tool-btn" onclick="addDevice('node')">Add Node</button>
+    <button class="tool-btn" onclick="addDevice('leader-node')">Add Leader Node</button>
+    <button class="tool-btn" onclick="addDevice('det')">Add Detector</button>
+    <button class="tool-btn" onclick="addDevice('sounder')">Add Sounder</button>
+    <button class="tool-btn" onclick="addDevice('panel')">Add Panel</button>
+    <button class="tool-btn primary" onclick="saveConfiguration()">Save Config</button>
+  </div>
+
+  <div class="response-stage-shell" id="stage-trigger">
+    <div class="response-stage">
+      <svg class="connection-svg" id="connection-layer"></svg>
+      <div class="response-visual" id="animation-map">
+        <!-- Devices will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="save-msg" class="save-status">Configuration Saved!</div>
+
+  <script>
+    const animationMap = document.getElementById("animation-map");
+    const connectionLayer = document.getElementById("connection-layer");
+    const saveMsg = document.getElementById("save-msg");
+
+    let devices = [];
+    let brokenLinks = new Set(); // Stores composite IDs like "source-target"
+    let dragItem = null;
+    let offset = { x: 0, y: 0 };
+
+    const CONFIG_KEY = 'mesh_system_config';
+
+    // Default configuration if nothing saved
+    const defaultConfig = [
+      { id: 'panel-1', type: 'panel', top: '15%', left: '50%' },
+      { id: 'leader-1', type: 'leader-node', top: '35%', left: '50%' },
+      { id: 'node-1', type: 'node', top: '60%', left: '23%' },
+      { id: 'node-2', type: 'node', top: '54%', left: '63%' },
+      { id: 'det-1', type: 'det', top: '43%', left: '46%' },
+      { id: 'sounder-1', type: 'sounder', top: '35%', left: '75%' }
+    ];
+
+    function saveConfiguration() {
+      const config = devices.map(d => ({
+        id: d.id,
+        type: d.type,
+        left: d.element.style.left,
+        top: d.element.style.top,
+        scale: d.element.dataset.scale || 1
+      }));
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({
+        devices: config,
+        brokenLinks: Array.from(brokenLinks)
+      }));
+      
+      saveMsg.classList.add('show');
+      setTimeout(() => saveMsg.classList.remove('show'), 2000);
+    }
+
+    function init() {
+      const savedRaw = localStorage.getItem(CONFIG_KEY);
+      let config = defaultConfig;
+      if (savedRaw) {
+        const parsed = JSON.parse(savedRaw);
+        config = parsed.devices || parsed;
+        if (parsed.brokenLinks) brokenLinks = new Set(parsed.brokenLinks);
+      }
+      
+      config.forEach(d => {
+        const el = createDeviceElement(d.id, d.type, d.left, d.top);
+        if (d.scale) {
+          el.dataset.scale = d.scale;
+          el.querySelector('.device-icon').style.transform = `scale(${d.scale})`;
+        }
+        animationMap.appendChild(el);
+        devices.push({ id: d.id, type: d.type, element: el });
+      });
+
+      startParticleSystem();
+      updateConnections();
+    }
+
+    function createDeviceElement(id, type, left, top) {
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = `device ${type}`;
+      div.style.left = left;
+      div.style.top = top;
+      
+      div.innerHTML = `
+        <div class="device-icon"></div>
+        <div class="device-delete" onclick="removeDevice('${id}')">&times;</div>
+      `;
+
+      div.addEventListener('mousedown', onMouseDown);
+      div.addEventListener('wheel', onWheelScale);
+      return div;
+    }
+
+    function onWheelScale(e) {
+      e.preventDefault();
+      const scaleStep = 0.1;
+      let currentScale = parseFloat(e.currentTarget.dataset.scale || 1);
+      
+      if (e.deltaY < 0) {
+        currentScale += scaleStep;
+      } else {
+        currentScale = Math.max(0.5, currentScale - scaleStep);
+      }
+      
+      e.currentTarget.dataset.scale = currentScale;
+      e.currentTarget.querySelector('.device-icon').style.transform = `scale(${currentScale})`;
+    }
+
+    function addDevice(type) {
+      const id = `${type}-${Date.now()}`;
+      const el = createDeviceElement(id, type, '50%', '50%');
+      animationMap.appendChild(el);
+      devices.push({ id, type, element: el });
+      updateConnections();
+    }
+
+    function removeDevice(id) {
+      const index = devices.findIndex(d => d.id === id);
+      if (index > -1) {
+        devices[index].element.remove();
+        devices.splice(index, 1);
+        updateConnections();
+      }
+    }
+
+    function onMouseDown(e) {
+      if (e.target.classList.contains('device-delete')) return;
+      
+      dragItem = e.currentTarget;
+      dragItem.classList.add('dragging');
+      
+      const rect = dragItem.getBoundingClientRect();
+      const parentRect = animationMap.getBoundingClientRect();
+      
+      offset.x = e.clientX - rect.left;
+      offset.y = e.clientY - rect.top;
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    }
+
+    function onMouseMove(e) {
+      if (!dragItem) return;
+      
+      const parentRect = animationMap.getBoundingClientRect();
+      let x = e.clientX - parentRect.left - offset.x + (dragItem.offsetWidth / 2);
+      let y = e.clientY - parentRect.top - offset.y + (dragItem.offsetHeight / 2);
+
+      // Boundary check
+      x = Math.max(0, Math.min(x, parentRect.width));
+      y = Math.max(0, Math.min(y, parentRect.height));
+
+      dragItem.style.left = `${(x / parentRect.width) * 100}%`;
+      dragItem.style.top = `${(y / parentRect.height) * 100}%`;
+      
+      updateConnections();
+    }
+
+    function onMouseUp() {
+      if (dragItem) {
+        dragItem.classList.remove('dragging');
+        dragItem = null;
+      }
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+
+    function updateConnections() {
+      connectionLayer.innerHTML = '';
+      const nodes = devices.filter(d => d.type === 'node');
+      const leaders = devices.filter(d => d.type === 'leader-node');
+      const peripherals = devices.filter(d => d.type === 'det' || d.type === 'sounder');
+      const panels = devices.filter(d => d.type === 'panel');
+
+      // Peripherals -> Node
+      peripherals.forEach(p => {
+        const closestNode = getClosestNode(p.element, nodes.map(n => n.element));
+        if (closestNode) drawLine(p.id, p.element, closestNode.id, closestNode);
+      });
+
+      // Leader Node -> Panel (Snake Curve)
+      leaders.forEach(l => {
+        const closestPanel = getClosestNode(l.element, panels.map(p => p.element));
+        if (closestPanel) drawSnakeLine(l.id, l.element, closestPanel.id || closestPanel.dataset.id, closestPanel);
+      });
+    }
+
+    function toggleLink(id) {
+      if (brokenLinks.has(id)) {
+        brokenLinks.delete(id);
+      } else {
+        brokenLinks.add(id);
+      }
+      updateConnections();
+    }
+
+    function drawLine(id1, el1, id2, el2) {
+      const linkId = `${id1}_${id2}`;
+      const isBroken = brokenLinks.has(linkId);
+
+      const rect1 = el1.getBoundingClientRect();
+      const rect2 = el2.getBoundingClientRect();
+      const parentRect = animationMap.getBoundingClientRect();
+
+      const x1 = rect1.left + rect1.width / 2 - parentRect.left;
+      const y1 = rect1.top + rect1.height / 2 - parentRect.top;
+      const x2 = rect2.left + rect2.width / 2 - parentRect.left;
+      const y2 = rect2.top + rect2.height / 2 - parentRect.top;
+
+      // Clickable Hitbox
+      const hitbox = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      hitbox.setAttribute("x1", x1); hitbox.setAttribute("y1", y1);
+      hitbox.setAttribute("x2", x2); hitbox.setAttribute("y2", y2);
+      hitbox.setAttribute("class", "connection-hitbox");
+      hitbox.onclick = () => toggleLink(linkId);
+      connectionLayer.appendChild(hitbox);
+
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+      line.setAttribute("class", `connection-line ${isBroken ? 'line-broken' : ''}`);
+      connectionLayer.appendChild(line);
+
+      if (isBroken) drawX( (x1+x2)/2, (y1+y2)/2 );
+    }
+
+    function drawSnakeLine(id1, el1, id2, el2) {
+      const linkId = `${id1}_${id2}`;
+      const isBroken = brokenLinks.has(linkId);
+
+      const rect1 = el1.getBoundingClientRect();
+      const rect2 = el2.getBoundingClientRect();
+      const parentRect = animationMap.getBoundingClientRect();
+
+      const x1 = rect1.left + rect1.width / 2 - parentRect.left;
+      const y1 = rect1.top + rect1.height / 2 - parentRect.top;
+      const x2 = rect2.left + rect2.width / 2 - parentRect.left;
+      const y2 = rect2.top + rect2.height / 2 - parentRect.top;
+
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const length = Math.hypot(dx, dy);
+      const nx = -dy / length;
+      const ny = dx / length;
+      const amplitude = Math.max(80, length * 0.4);
+
+      const cp1x = x1 + dx * 0.3 + (nx * amplitude);
+      const cp1y = y1 + dy * 0.3 + (ny * amplitude);
+      const cp2x = x1 + dx * 0.7 - (nx * amplitude);
+      const cp2y = y1 + dy * 0.7 - (ny * amplitude);
+
+      const d = `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+
+      // Clickable Hitbox
+      const hitbox = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      hitbox.setAttribute("d", d);
+      hitbox.setAttribute("class", "connection-hitbox");
+      hitbox.onclick = () => toggleLink(linkId);
+      connectionLayer.appendChild(hitbox);
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      path.setAttribute("class", `snake-line ${isBroken ? 'line-broken' : ''}`);
+      connectionLayer.appendChild(path);
+
+      if (isBroken) {
+        // Find midpoint of cubic bezier for X
+        const mx = x1 * 0.125 + cp1x * 0.375 + cp2x * 0.375 + x2 * 0.125;
+        const my = y1 * 0.125 + cp1y * 0.375 + cp2y * 0.375 + y2 * 0.125;
+        drawX(mx, my);
+      }
+    }
+
+    function drawX(x, y) {
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", x);
+      text.setAttribute("y", y);
+      text.setAttribute("class", "break-x");
+      text.textContent = "✕";
+      connectionLayer.appendChild(text);
+    }
+
+    function getClosestNode(targetEl, nodesList) {
+      if (nodesList.length === 0) return null;
+      const targetRect = targetEl.getBoundingClientRect();
+      const tx = targetRect.left + targetRect.width / 2;
+      const ty = targetRect.top + targetRect.height / 2;
+
+      let minDistance = Infinity;
+      let closestNode = null;
+
+      nodesList.forEach(node => {
+        const rect = node.getBoundingClientRect();
+        const nx = rect.left + rect.width / 2;
+        const ny = rect.top + rect.height / 2;
+        const dist = Math.hypot(nx - tx, ny - ty);
+
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestNode = node;
+        }
+      });
+      return closestNode;
+    }
+
+    function saveConfiguration() {
+      const config = devices.map(d => ({
+        id: d.id,
+        type: d.type,
+        left: d.element.style.left,
+        top: d.element.style.top,
+        scale: d.element.dataset.scale || 1
+      }));
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      
+      saveMsg.classList.add('show');
+      setTimeout(() => saveMsg.classList.remove('show'), 2000);
+    }
+
+    function initFromSaved(el, savedData) {
+      if (savedData.scale) {
+        el.dataset.scale = savedData.scale;
+        el.querySelector('.device-icon').style.transform = `scale(${savedData.scale})`;
+      }
+    }
+
+    // Particle System: Logic is Peripheral -> Node -> Panel
+    const activeParticles = new Set();
+
+    function startParticleSystem() {
+      setInterval(() => {
+        const nodes = devices.filter(d => d.type === 'node');
+        const leaders = devices.filter(d => d.type === 'leader-node');
+        
+        devices.forEach(d => {
+          if (activeParticles.has(d.id)) return;
+
+          let targetEl = null;
+          let targetId = null;
+
+          if (d.type === 'det' || d.type === 'sounder') {
+            const closest = getClosestNode(d.element, nodes.map(n => n.element));
+            if (closest) {
+              targetEl = closest;
+              targetId = closest.id;
+            }
+          } else if (d.type === 'node') {
+            // Node -> Leader Node
+            const closest = getClosestNode(d.element, leaders.map(l => l.element));
+            if (closest) {
+              targetEl = closest;
+              targetId = closest.id;
+            }
+          }
+
+          if (targetEl && !brokenLinks.has(`${d.id}_${targetId}`)) {
+            spawnParticle(d, targetEl);
+          }
+        });
+      }, 100); 
+    }
+
+    function spawnParticle(sourceDevice, toEl, color) {
+      const fromEl = sourceDevice.element;
+      activeParticles.add(sourceDevice.id);
+
+      const mapRect = animationMap.getBoundingClientRect();
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
+
+      const startX = fromRect.left + fromRect.width / 2 - mapRect.left;
+      const startY = fromRect.top + fromRect.height / 2 - mapRect.top;
+      const endX = toRect.left + toRect.width / 2 - mapRect.left;
+      const endY = toRect.top + toRect.height / 2 - mapRect.top;
+
+      const particle = document.createElement("div");
+      particle.className = "signal-particle";
+      if (color) {
+        particle.style.background = "#fff";
+        particle.style.boxShadow = `0 0 15px 4px ${color}, 0 0 5px 1px #fff`;
+      }
+      particle.style.left = `${startX}px`;
+      particle.style.top = `${startY}px`;
+      animationMap.appendChild(particle);
+
+      const duration = 400; // Significantly faster speed
+      const animation = particle.animate([
+        { transform: `translate(0, 0) scale(0)`, opacity: 0 },
+        { transform: `translate(${(endX - startX) * 0.1}px, ${(endY - startY) * 0.1}px) scale(1.2)`, opacity: 1, offset: 0.1 },
+        { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1)`, opacity: 0 }
+      ], {
+        duration: duration,
+        easing: "ease-in"
+      });
+
+      animation.onfinish = () => {
+        particle.remove();
+        activeParticles.delete(sourceDevice.id);
+      };
+    }
+
+    window.addEventListener('resize', updateConnections);
+    
+    init();
+  </script>
+</body>
+</html>
