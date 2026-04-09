@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>侧滑发光导航</title>
+<style>
+  /* --- 全局颜色变量 (可根据你的项目修改) --- */
+  :root {
+    --nav-dot-color: #3a4a50;   /* 默认圆点颜色（暗灰蓝） */
+    --nav-active-color: #00e5ff; /* 激活/悬停颜色（发光青色） */
+  }
+
+  /* 仅用于演示页面的深色背景，集成时可删除 */
+  body {
+    background-color: #050e12;
+    margin: 0;
+    height: 100vh;
+    font-family: sans-serif;
+  }
+
+  /* =========================================
+     导航核心 CSS 代码
+     ========================================= */
+     
+  /* 导航容器：固定在屏幕右侧 */
+  .side-nav {
+    position: fixed;
+    right: 30px;          /* 距离右侧的边距 */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;            /* 调整圆点之间的垂直间距 */
+    z-index: 1000;        /* 确保在最上层 */
+  }
+
+  /* 单个导航项 */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* 圆点基础样式 */
+  .nav-item .dot {
+    width: 8px; 
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--nav-dot-color);
+    transition: all 0.3s ease;
+  }
+
+  /* 文字基础样式 */
+  .nav-item .text {
+    margin-right: 15px;
+    color: var(--nav-active-color);
+    font-size: 14px;
+    letter-spacing: 1px;
+    
+    /* 初始状态：透明且向右偏移 */
+    opacity: 0;
+    transform: translateX(15px);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 平滑的缓动效果 */
+    
+    /* 防止鼠标放在文字上时造成悬停闪烁 */
+    pointer-events: none; 
+  }
+
+  /* --- 交互动画：悬停(hover) 和 激活(active) 状态 --- */
+  
+  /* 1. 圆点放大并添加发光阴影 */
+  .nav-item:hover .dot, 
+  .nav-item.active .dot {
+    transform: scale(1.8);
+    background-color: var(--nav-active-color);
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+  }
+
+  /* 2. 文字显示并滑入原位 */
+  .nav-item:hover .text, 
+  .nav-item.active .text {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>
+</head>
+<body>
+
+  <!-- =========================================
+       导航 HTML 结构
+       ========================================= -->
+  <div class="side-nav">
+    <!-- 普通状态的项 -->
+    <div class="nav-item">
+      <span class="text">系统总览</span>
+      <div class="dot"></div>
+    </div>
+    
+    <!-- 当前所在页面，添加了 'active' 类 -->
+    <div class="nav-item active">
+      <span class="text">超长传输距离</span>
+      <div class="dot"></div>
+    </div>
+    
+    <!-- 普通状态的项 -->
+    <div class="nav-item">
+      <span class="text">短路隔离器</span>
+      <div class="dot"></div>
+    </div>
+    
+    <div class="nav-item">
+      <span class="text">网络拓扑结构</span>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+</body>
+</html>

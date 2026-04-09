@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../css/pages/distance.css">
 </head>
 <body>
-  <main class="page page-distance">
+  <main class="page page-distance is-revealed">
     <button type="button" class="distance-intro-overlay" id="distance-intro-trigger" aria-controls="distance-main-stage" aria-expanded="false">
       <span class="distance-intro-title">Extended Distance</span>
     </button>
@@ -27,8 +27,12 @@
       <div class="visual-card distance-main-stage-shell">
         <div class="distance-stage" id="distance-main-stage" data-scene="open" aria-label="Extended distance cinematic stage">
           <div class="distance-stage-controls" role="group" aria-label="Distance scene switch">
-            <button type="button" class="scene-toggle is-active" data-scene-target="open" aria-controls="distance-scene-open" aria-pressed="true">Open Area 500m</button>
-            <button type="button" class="scene-toggle" data-scene-target="relay" aria-controls="distance-scene-relay" aria-pressed="false">Mesh Relay 16km</button>
+            <button type="button" class="scene-toggle is-active" data-scene-target="open" aria-controls="distance-scene-open" aria-pressed="true" aria-label="Show open area 500m scene">
+              <span class="scene-toggle-arrow scene-toggle-arrow-left" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="scene-toggle" data-scene-target="relay" aria-controls="distance-scene-relay" aria-pressed="false" aria-label="Show mesh relay 16km scene">
+              <span class="scene-toggle-arrow scene-toggle-arrow-right" aria-hidden="true"></span>
+            </button>
           </div>
           <span class="distance-stage-mode" id="distance-stage-mode">OPEN AREA</span>
           <div class="distance-cinematic-bg" aria-hidden="true"></div>
@@ -55,7 +59,10 @@
               <img class="node-icon" src="../assets/icons/sounder.svg" alt="">
               <span>Device</span>
             </div>
-            <p class="metric-open-highlight">Up to 500m</p>
+            <div class="metric-open-impact style1" id="metric-open-impact" aria-hidden="true">
+              <span class="shockwave" aria-hidden="true"></span>
+              <p class="metric-open-highlight impact-text">Up to 500m</p>
+            </div>
           </section>
           <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene" aria-hidden="true">
             <div class="relay-arc-stage" aria-hidden="true">
@@ -83,7 +90,10 @@
               <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
               <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
               <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <p class="relay-total-distance">up to 16km</p>
+              <div class="relay-total-impact style1" id="relay-total-impact" aria-hidden="true">
+                <span class="shockwave" aria-hidden="true"></span>
+                <p class="relay-total-distance impact-text">up to 16km</p>
+              </div>
             </div>
           </section>
         </div>

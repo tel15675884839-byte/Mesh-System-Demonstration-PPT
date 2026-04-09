@@ -19,6 +19,8 @@
   const sceneNames = Object.keys(sceneMeta);
   const stage = page.querySelector(".distance-stage");
   const introTrigger = page.querySelector("#distance-intro-trigger");
+  const introTitle = page.querySelector(".distance-intro-title");
+  const heroTitle = page.querySelector(".distance-hero h2");
   const modeElement = page.querySelector("#distance-stage-mode");
   const statusTitle = page.querySelector("#distance-status-title");
   const statusCopy = page.querySelector("#distance-status-copy");
@@ -33,6 +35,7 @@
   const openRightBottomNode = openScene ? openScene.querySelector(".node-open-right-bottom") : null;
   const openUpperPulses = openScene ? Array.from(openScene.querySelectorAll(".pulse-open-upper")) : [];
   const openLowerPulses = openScene ? Array.from(openScene.querySelectorAll(".pulse-open-lower")) : [];
+  const openImpact = openScene ? openScene.querySelector("#metric-open-impact") : null;
   const openGeometryTargets = [openScene, openLeftNode, openRightTopNode, openRightBottomNode].filter(Boolean);
   const relayScene = page.querySelector("#distance-scene-relay");
   const relayArcStage = relayScene ? relayScene.querySelector(".relay-arc-stage") : null;
@@ -41,15 +44,21 @@
   const relayArcLeft = relayScene ? relayScene.querySelector("#relay-arc-left") : null;
   const relayArcRight = relayScene ? relayScene.querySelector("#relay-arc-right") : null;
   const relayNoteArc = relayScene ? relayScene.querySelector("#relay-note-arc") : null;
+  const relayImpact = relayScene ? relayScene.querySelector("#relay-total-impact") : null;
   const relayPoints = relayScene ? Array.from(relayScene.querySelectorAll(".relay-point")) : [];
   const relayDistances = relayScene ? Array.from(relayScene.querySelectorAll(".relay-hop-distance")) : [];
   const relayGeometryTargets = [relayArcStage, relayArcSvg, relayMainArc, relayArcLeft, relayArcRight].filter(Boolean);
+  const searchParams = new URLSearchParams(window.location.search);
+  const forceRevealOnLoad = searchParams.get("reveal") === "1";
   const reducedMotionQuery = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
   let openGeometryRafId = 0;
   let relayGeometryRafId = 0;
   let revealSyncTimeoutId = 0;
+  let introBaseWidth = 0;
+  let openImpactVisible = false;
+  let relayImpactVisible = false;
 
   const hasRequiredScenes = sceneNames.every(function (sceneName) {
     return !!page.querySelector('.distance-scene[data-scene="' + sceneName + '"]');
@@ -70,35 +79,62 @@
     }
   }
 
+  function updateIntroTitleTarget() {
+    if (!heroTitle) {
+      return;
+    }
+
+    const heroRect = heroTitle.getBoundingClientRect();
+    const pageRect = page.getBoundingClientRect();
+    if (heroRect.width <= 0 || heroRect.height <= 0 || pageRect.width <= 0 || pageRect.height <= 0) {
+      return;
+    }
+
+    const targetLeft = ((heroRect.left + (heroRect.width / 2) - pageRect.left) / pageRect.width) * 100;
+    const targetTop = ((heroRect.top + (heroRect.height / 2) - pageRect.top) / pageRect.height) * 100;
+    const introRect = introTitle ? introTitle.getBoundingClientRect() : null;
+
+    if (!introBaseWidth && introRect && introRect.width > 0) {
+      introBaseWidth = introRect.width;
+    }
+
+    const scale = heroRect.width / Math.max(introBaseWidth || (introRect ? introRect.width : 1), 1);
+
+    page.style.setProperty("--distance-intro-target-left", targetLeft + "%");
+    page.style.setProperty("--distance-intro-target-top", targetTop + "%");
+    page.style.setProperty("--distance-intro-target-scale", String(scale));
+  }
+
   function schedulePostRevealSync() {
     if (revealSyncTimeoutId) {
       window.clearTimeout(revealSyncTimeoutId);
     }
     window.requestAnimationFrame(function () {
+      updateIntroTitleTarget();
       scheduleOpenGeometrySync();
       scheduleRelayGeometrySync();
     });
     revealSyncTimeoutId = window.setTimeout(function () {
+      updateIntroTitleTarget();
       scheduleOpenGeometrySync();
       scheduleRelayGeometrySync();
       revealSyncTimeoutId = 0;
     }, 760);
   }
 
-  function revealStage() {
-    if (page.classList.contains("is-revealed")) {
-      return;
-    }
-    setRevealState(true);
-    schedulePostRevealSync();
-  }
-
-  function resetIntroState() {
+  function enterStageState() {
     if (revealSyncTimeoutId) {
       window.clearTimeout(revealSyncTimeoutId);
       revealSyncTimeoutId = 0;
     }
-    setRevealState(false);
+    updateIntroTitleTarget();
+    setRevealState(true);
+    schedulePostRevealSync();
+  }
+
+  function resetInteractiveState() {
+    resetOpenImpact();
+    resetRelayImpact();
   }
 
   function setReducedMotionClass() {
@@ -107,6 +143,50 @@
 
   function setPageHiddenClass() {
     page.classList.toggle("is-hidden", document.hidden);
+  }
+
+  function showOpenImpact() {
+    if (!openImpact || openImpactVisible || stage.dataset.scene !== "open" || !page.classList.contains("is-revealed")) {
+      return;
+    }
+
+    openImpactVisible = true;
+    openImpact.classList.remove("is-visible");
+    openImpact.setAttribute("aria-hidden", "false");
+    void openImpact.offsetWidth;
+    openImpact.classList.add("is-visible");
+  }
+
+  function resetOpenImpact() {
+    if (!openImpact) {
+      return;
+    }
+
+    openImpactVisible = false;
+    openImpact.classList.remove("is-visible");
+    openImpact.setAttribute("aria-hidden", "true");
+  }
+
+  function showRelayImpact() {
+    if (!relayImpact || relayImpactVisible || stage.dataset.scene !== "relay" || !page.classList.contains("is-revealed")) {
+      return;
+    }
+
+    relayImpactVisible = true;
+    relayImpact.classList.remove("is-visible");
+    relayImpact.setAttribute("aria-hidden", "false");
+    void relayImpact.offsetWidth;
+    relayImpact.classList.add("is-visible");
+  }
+
+  function resetRelayImpact() {
+    if (!relayImpact) {
+      return;
+    }
+
+    relayImpactVisible = false;
+    relayImpact.classList.remove("is-visible");
+    relayImpact.setAttribute("aria-hidden", "true");
   }
 
   function getSceneTarget(button) {
@@ -314,7 +394,7 @@
       const noteHalfSpan = pointStep * 0.72;
       const noteStartLength = Math.max(0, noteCenter - noteHalfSpan);
       const noteEndLength = Math.min(totalLength, noteCenter + noteHalfSpan);
-      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 20, 24);
+      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 26, 24);
       relayNoteArc.setAttribute("d", notePath);
     }
   }
@@ -372,9 +452,11 @@
     }
 
     if (next === "open") {
+      resetInteractiveState();
       scheduleOpenGeometrySync();
     }
     if (next === "relay") {
+      resetInteractiveState();
       scheduleRelayGeometrySync();
     }
   }
@@ -385,6 +467,14 @@
       return;
     }
     applyScene(target);
+  }
+
+  function handleOpenSceneClick() {
+    showOpenImpact();
+  }
+
+  function handleRelaySceneClick() {
+    showRelayImpact();
   }
 
   setReducedMotionClass();
@@ -403,12 +493,15 @@
   }
 
   document.addEventListener("visibilitychange", setPageHiddenClass);
+  window.addEventListener("resize", updateIntroTitleTarget);
   window.addEventListener("resize", scheduleOpenGeometrySync);
   window.addEventListener("resize", scheduleRelayGeometrySync);
+  window.addEventListener("load", updateIntroTitleTarget);
   window.addEventListener("load", scheduleOpenGeometrySync);
   window.addEventListener("load", scheduleRelayGeometrySync);
 
   if (document.fonts && typeof document.fonts.ready === "object" && typeof document.fonts.ready.then === "function") {
+    document.fonts.ready.then(updateIntroTitleTarget);
     document.fonts.ready.then(scheduleOpenGeometrySync);
     document.fonts.ready.then(scheduleRelayGeometrySync);
   }
@@ -430,8 +523,12 @@
     button.addEventListener("click", handleToggleClick);
   });
 
-  if (introTrigger) {
-    introTrigger.addEventListener("click", revealStage);
+  if (openScene) {
+    openScene.addEventListener("click", handleOpenSceneClick);
+  }
+
+  if (relayScene) {
+    relayScene.addEventListener("click", handleRelaySceneClick);
   }
 
   window.addEventListener("message", function (event) {
@@ -440,7 +537,8 @@
     }
 
     if (event.data.active) {
-      resetIntroState();
+      resetInteractiveState();
+      enterStageState();
       scheduleOpenGeometrySync();
       scheduleRelayGeometrySync();
     }
@@ -453,7 +551,11 @@
   }
 
   applyScene(initialSceneName);
-  resetIntroState();
+  resetInteractiveState();
+  enterStageState();
+  if (forceRevealOnLoad) {
+    schedulePostRevealSync();
+  }
   scheduleOpenGeometrySync();
   scheduleRelayGeometrySync();
 

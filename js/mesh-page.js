@@ -202,9 +202,7 @@
   let resolvedIconBasePathPromise = null;
   let playerRecoveryResult = null;
   let revealSyncTimeout = 0;
-  let titleTransitionTimeout = 0;
-
-  const TITLE_TRANSITION_DURATION = 840;
+  let introBaseWidth = 0;
   const searchParams = new URLSearchParams(window.location.search);
   const forceRevealOnLoad = searchParams.get("reveal") === "1";
   const prefersReducedMotion = window.matchMedia
@@ -769,73 +767,35 @@
     }, 760);
   }
 
-  function clearTitleAnimationState() {
-    if (titleTransitionTimeout) {
-      window.clearTimeout(titleTransitionTimeout);
-      titleTransitionTimeout = 0;
+  function updateIntroTitleTarget() {
+    if (!page || !heroTitle) {
+      return;
     }
+    const heroRect = heroTitle.getBoundingClientRect();
+    const pageRect = page.getBoundingClientRect();
+    const targetLeft = ((heroRect.left + (heroRect.width / 2) - pageRect.left) / Math.max(pageRect.width, 1)) * 100;
+    const targetTop = ((heroRect.top + (heroRect.height / 2) - pageRect.top) / Math.max(pageRect.height, 1)) * 100;
+    const introRect = introTitle ? introTitle.getBoundingClientRect() : null;
+    if (!introBaseWidth && introRect) {
+      introBaseWidth = introRect.width;
+    }
+    const scale = heroRect.width / Math.max(introBaseWidth || (introRect ? introRect.width : 1), 1);
+
+    page.style.setProperty("--mesh-intro-target-left", targetLeft + "%");
+    page.style.setProperty("--mesh-intro-target-top", targetTop + "%");
+    page.style.setProperty("--mesh-intro-target-scale", String(scale));
+  }
+
+  function enterStageState() {
     if (!page) {
       return;
     }
-    page.classList.remove("is-title-transitioning", "is-title-transition-complete", "is-measuring-reveal");
-    page.style.removeProperty("--mesh-intro-title-dx");
-    page.style.removeProperty("--mesh-intro-title-dy");
-    page.style.removeProperty("--mesh-intro-title-scale");
-  }
-
-  function measureTitleTransition() {
-    if (!page || !introTitle || !heroTitle) {
-      return;
-    }
-
-    const introRect = introTitle.getBoundingClientRect();
-    page.classList.add("is-measuring-reveal");
-    const heroRect = heroTitle.getBoundingClientRect();
-    page.classList.remove("is-measuring-reveal");
-
-    const introCenterX = introRect.left + (introRect.width / 2);
-    const introCenterY = introRect.top + (introRect.height / 2);
-    const heroCenterX = heroRect.left + (heroRect.width / 2);
-    const heroCenterY = heroRect.top + (heroRect.height / 2);
-    const scale = heroRect.width / Math.max(introRect.width, 1);
-
-    page.style.setProperty("--mesh-intro-title-dx", (heroCenterX - introCenterX) + "px");
-    page.style.setProperty("--mesh-intro-title-dy", (heroCenterY - introCenterY) + "px");
-    page.style.setProperty("--mesh-intro-title-scale", String(scale));
-  }
-
-  function revealStage() {
-    if (!page || page.classList.contains("is-revealed")) {
-      return;
-    }
-
-    clearTitleAnimationState();
-    if (!shouldReduceMotion()) {
-      measureTitleTransition();
-      page.classList.add("is-title-transitioning");
-      titleTransitionTimeout = window.setTimeout(function () {
-        if (!page) {
-          return;
-        }
-        page.classList.remove("is-title-transitioning");
-        page.classList.add("is-title-transition-complete");
-        titleTransitionTimeout = 0;
-      }, TITLE_TRANSITION_DURATION - 40);
-    } else if (page) {
-      page.classList.add("is-title-transition-complete");
-    }
-
-    setRevealState(true);
-    schedulePostRevealSync();
-  }
-
-  function resetIntroState() {
-    clearTitleAnimationState();
     if (revealSyncTimeout) {
       window.clearTimeout(revealSyncTimeout);
       revealSyncTimeout = 0;
     }
-    setRevealState(false);
+    updateIntroTitleTarget();
+    setRevealState(true);
     window.requestAnimationFrame(syncStageAfterReveal);
   }
 
@@ -853,11 +813,9 @@
     });
   });
 
-  if (introTrigger) {
-    introTrigger.addEventListener("click", function () {
-      revealStage();
-    });
-  }
+  window.addEventListener("resize", function () {
+    updateIntroTitleTarget();
+  });
 
   window.addEventListener("storage", function (event) {
     if (!event || event.key !== DEMO_SCENE_STORAGE_KEY) {
@@ -878,7 +836,7 @@
     }
 
     if (event.data.active) {
-      resetIntroState();
+      enterStageState();
     }
   });
 
@@ -886,15 +844,9 @@
   setModeButtons(mode);
   setRecoverySwitchVisibility(mode);
   setRecoveryResultButtons(recoveryResult);
+  enterStageState();
   if (forceRevealOnLoad) {
-    clearTitleAnimationState();
-    setRevealState(true);
-    if (page) {
-      page.classList.add("is-title-transition-complete");
-    }
     schedulePostRevealSync();
-  } else {
-    resetIntroState();
   }
   ensurePlayer().catch(function () {
     return null;
