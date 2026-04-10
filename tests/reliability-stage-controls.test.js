@@ -5,26 +5,39 @@ const path = require("node:path");
 
 const rootDir = path.resolve(__dirname, "..");
 const reliabilityHtml = fs.readFileSync(path.join(rootDir, "pages", "reliability.html"), "utf8");
-const reliabilityCss = fs.readFileSync(path.join(rootDir, "css", "pages", "reliability-animations.css"), "utf8");
+const reliabilityCss = fs.readFileSync(path.join(rootDir, "css", "pages", "reliability.css"), "utf8");
+const reliabilityAnimationsCss = fs.readFileSync(path.join(rootDir, "css", "pages", "reliability-animations.css"), "utf8");
 
-test("reliability page uses the same double-button stage control structure as distance", () => {
+test("reliability page removes scene-toggle controls and renders two stacked substages", () => {
+  assert.doesNotMatch(
+    reliabilityHtml,
+    /reliability-stage-controls|btn-scene-response|btn-scene-path|scene-toggle/,
+    "Expected High Reliability to remove the old scene-toggle controls."
+  );
+
   assert.match(
     reliabilityHtml,
-    /<div class="reliability-stage-controls"[^>]*>[\s\S]*?<button type="button" class="scene-toggle is-active"[^>]*data-scene="response"[\s\S]*?<span class="scene-toggle-arrow scene-toggle-arrow-left"[\s\S]*?<button type="button" class="scene-toggle"[^>]*data-scene="path"[\s\S]*?<span class="scene-toggle-arrow scene-toggle-arrow-right"/,
-    "Expected High Reliability to use the same scene-toggle markup pattern as Extended Distance."
+    /reliability-stage-stack[\s\S]*?reliability-substage-one-way[\s\S]*?ONE-WAY COMMUNICATION[\s\S]*?reli-connection-layer-one-way[\s\S]*?reli-animation-map-one-way[\s\S]*?reliability-substage-two-way[\s\S]*?TWO-WAY COMMUNICATION[\s\S]*?reli-connection-layer-two-way[\s\S]*?reli-animation-map-two-way/,
+    "Expected High Reliability to render one-way and two-way substages inside the same stage card."
   );
 });
 
-test("reliability stage controls match distance control sizing and placement", () => {
+test("reliability split-stage css defines a two-row stage stack and line variants", () => {
   assert.match(
     reliabilityCss,
-    /\.reliability-stage-controls\s*\{[\s\S]*?top:\s*22px;[\s\S]*?right:\s*22px;[\s\S]*?display:\s*flex;[\s\S]*?gap:\s*8px;[\s\S]*?align-items:\s*center;/,
-    "Expected High Reliability controls to use the same top-right placement."
+    /\.reliability-stage-stack\s*\{[\s\S]*?(grid-template-rows:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)|grid-template-rows:\s*minmax\(0,\s*1fr\)\s+minmax\(0,\s*1fr\))/,
+    "Expected reliability.css to define a two-row stacked stage."
   );
 
   assert.match(
     reliabilityCss,
-    /\.scene-toggle\s*\{[\s\S]*?width:\s*34px;[\s\S]*?height:\s*34px;[\s\S]*?border:\s*1px solid rgba\(112,\s*240,\s*255,\s*0\.16\);[\s\S]*?border-radius:\s*12px;/,
-    "Expected High Reliability buttons to use the same button sizing and radius as Extended Distance."
+    /\.reliability-substage-label\s*\{/,
+    "Expected reliability.css to style the per-stage label."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reli-link-wired[\s\S]*?stroke-dasharray:\s*none[\s\S]*?\.reli-link-wireless[\s\S]*?stroke-dasharray:\s*[^;]+;[\s\S]*?\.reli-link-wireless-secondary\s*\{/,
+    "Expected reliability animation styles to distinguish wired links, primary wireless links, and secondary wireless lanes."
   );
 });

@@ -131,53 +131,16 @@
   filter: brightness(1.5);
 }
 
-.reliability-stage-controls {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  right: 22px;
-  z-index: 101;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
+.reli-link-wired {
+  stroke-dasharray: none;
 }
 
-.reliability-stage-mode-btn {
-  pointer-events: auto;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 999px;
-  background: rgba(7, 16, 29, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.2), 0 10px 25px rgba(0, 0, 0, 0.2);
-  color: rgba(230, 241, 255, 0.6);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  backdrop-filter: blur(12px);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  outline: none;
+.reli-link-wireless {
+  stroke-dasharray: 8 10;
 }
 
-.reliability-stage-mode-btn:hover {
-  background: rgba(12, 30, 52, 0.6);
-  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.4), 0 15px 35px rgba(0, 0, 0, 0.3);
-  color: rgba(230, 241, 255, 0.9);
-}
-
-.reliability-stage-mode-btn.is-active {
-  background: rgba(12, 30, 52, 0.95);
-  box-shadow: inset 0 0 0 1px rgba(112, 240, 255, 0.8), 0 20px 45px rgba(0, 0, 0, 0.4);
-  color: #00e5ff;
-  font-weight: 700;
-  transform: scale(1.02);
-}
-
-.reliability-stage-mode-btn:active {
-  transform: translateY(1px) scale(0.98);
+.reli-link-wireless-secondary {
+  stroke: rgba(0, 229, 255, 0.08);
 }
 
 /* Panel Alarm State */
