@@ -15,6 +15,8 @@ test("welcome entry page exposes the intro title and links into the main present
 
   assert.match(html, /Mesh Technology/);
   assert.doesNotMatch(html, /<button/i);
+  assert.match(html, /class="welcome-brand"/);
+  assert.match(html, /<img[^>]+class="welcome-brand-logo"[^>]+src="assets\/branding\/logo-long\.png"/i);
   assert.match(html, /id="content-layer"/);
   assert.match(html, /<iframe[^>]+src="index\.html"/i);
   assert.match(html, /class="welcome-title style-3"/);
@@ -22,7 +24,11 @@ test("welcome entry page exposes the intro title and links into the main present
   assert.match(script, /mode-entered/);
   assert.match(script, /pointerdown|click/);
   assert.match(css, /body\.mode-entered\s+#hero-layer/);
+  assert.match(css, /\.welcome-brand\s*\{/);
+  assert.match(css, /\.welcome-brand-logo\s*\{/);
+  assert.match(css, /backdrop-filter:\s*blur/);
   assert.match(css, /mix-blend-mode:\s*color-dodge/);
+  assert.match(css, /background-clip:\s*text/);
   assert.match(css, /font-size:\s*clamp\(4\.8rem,\s*11vw,\s*10\.5rem\)/);
   assert.match(css, /League Spartan/);
 });

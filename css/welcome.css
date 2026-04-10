@@ -3,6 +3,8 @@
   --welcome-text: rgba(255, 255, 255, 0.92);
   --welcome-shadow: rgba(0, 0, 0, 0.58);
   --welcome-accent: rgba(112, 240, 255, 0.85);
+  --welcome-brand-surface: rgba(8, 16, 24, 0.58);
+  --welcome-brand-border: rgba(190, 236, 255, 0.18);
   --welcome-title-font: "League Spartan", "Manrope", sans-serif;
   --welcome-body-font: "Manrope", sans-serif;
 }
@@ -117,7 +119,49 @@ body {
   transform: translateY(0);
 }
 
+.welcome-brand {
+  position: absolute;
+  top: clamp(1rem, 2.6vw, 2.25rem);
+  left: clamp(1rem, 2.8vw, 2.5rem);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  width: min(26rem, 31vw);
+  min-width: clamp(12.5rem, 20vw, 15.5rem);
+  padding: clamp(0.7rem, 1.2vw, 0.95rem) clamp(0.95rem, 1.5vw, 1.3rem);
+  border: 1px solid var(--welcome-brand-border);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(135deg, rgba(18, 37, 52, 0.36), rgba(8, 16, 24, 0.08)),
+    var(--welcome-brand-surface);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+}
+
+.welcome-brand::after {
+  content: "";
+  position: absolute;
+  inset: auto 1rem -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(112, 240, 255, 0.55), transparent);
+  opacity: 0.72;
+}
+
+.welcome-brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0.5rem 1.35rem rgba(0, 0, 0, 0.34))
+    drop-shadow(0 0 0.65rem rgba(140, 229, 255, 0.12));
+}
+
 .welcome-title {
+  position: relative;
+  display: inline-block;
   margin: 0;
   max-width: 12ch;
   font-family: var(--welcome-title-font);
@@ -128,21 +172,61 @@ body {
 }
 
 .style-3 {
-  color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(228, 249, 255, 0.96) 16%,
+      rgba(173, 219, 236, 0.92) 42%,
+      rgba(248, 252, 255, 0.98) 61%,
+      rgba(116, 159, 178, 0.94) 100%
+    );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   mix-blend-mode: color-dodge;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+  -webkit-text-stroke: 1px rgba(228, 247, 255, 0.45);
   text-shadow:
-    -2px -2px 4px rgba(255, 255, 255, 0.6),
-    2px 2px 4px rgba(0, 0, 0, 0.8),
-    0 10px 20px rgba(0, 0, 0, 0.5);
+    0 1px 0 rgba(255, 255, 255, 0.66),
+    0 0.04em 0 rgba(170, 220, 239, 0.34),
+    0 0.11em 0.16em rgba(0, 0, 0, 0.34),
+    0 0.32em 0.68em rgba(0, 0, 0, 0.28),
+    0 0 1.3rem rgba(123, 212, 242, 0.2);
+}
+
+.style-3::before,
+.style-3::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.style-3::before {
+  z-index: -1;
+  color: rgba(223, 247, 255, 0.36);
+  transform: translate(-0.012em, -0.018em);
+  filter: blur(0.01em);
+  text-shadow: 0 -0.03em 0.2em rgba(255, 255, 255, 0.42);
+}
+
+.style-3::after {
+  z-index: -2;
+  color: rgba(18, 31, 42, 0.78);
+  transform: translate(0.03em, 0.085em);
+  text-shadow:
+    0 0.05em 0 rgba(7, 16, 23, 0.72),
+    0 0.14em 0.38em rgba(0, 0, 0, 0.48);
 }
 
 .style-3:hover {
-  color: rgba(255, 255, 255, 0.3);
   text-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.8),
-    3px 3px 6px rgba(0, 0, 0, 0.9),
-    0 15px 30px rgba(0, 0, 0, 0.7);
+    0 1px 0 rgba(255, 255, 255, 0.76),
+    0 0.05em 0 rgba(181, 226, 243, 0.42),
+    0 0.14em 0.2em rgba(0, 0, 0, 0.4),
+    0 0.4em 0.95em rgba(0, 0, 0, 0.34),
+    0 0 1.8rem rgba(123, 212, 242, 0.26);
 }
 
 body.mode-parallax {
@@ -246,8 +330,16 @@ body.mode-entered #hero-layer {
     padding: 1.5rem;
   }
 
+  .welcome-brand {
+    width: min(17rem, calc(100vw - 2rem));
+    min-width: 0;
+    padding: 0.65rem 0.85rem;
+    border-radius: 1rem;
+  }
+
   .welcome-title {
     font-size: clamp(3.8rem, 18vw, 6.4rem);
+    max-width: 10ch;
   }
 }
 
