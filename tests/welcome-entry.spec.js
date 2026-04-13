@@ -19,7 +19,7 @@ test("welcome entry page exposes the intro title and links into the main present
   assert.match(html, /<img[^>]+class="welcome-brand-logo"[^>]+src="assets\/branding\/logo-long\.png"/i);
   assert.match(html, /id="content-layer"/);
   assert.match(html, /<iframe[^>]+src="index\.html"/i);
-  assert.match(html, /class="welcome-title style-3"/);
+  assert.match(html, /class="welcome-title style-3 style-3-bubble"/);
   assert.match(script, /mode-parallax/);
   assert.match(script, /mode-entered/);
   assert.match(script, /pointerdown|click/);
@@ -27,6 +27,12 @@ test("welcome entry page exposes the intro title and links into the main present
   assert.match(css, /\.welcome-brand\s*\{/);
   assert.match(css, /\.welcome-brand-logo\s*\{/);
   assert.match(css, /backdrop-filter:\s*blur/);
+  assert.match(css, /--welcome-bubble-shell:/);
+  assert.match(css, /--welcome-title-depth:/);
+  assert.match(css, /\.style-3-bubble::before/);
+  assert.match(css, /\.style-3-bubble::after/);
+  assert.match(css, /-webkit-text-stroke:\s*var\(--welcome-bubble-shell\)/);
+  assert.match(css, /transform:\s*translate\(var\(--welcome-title-depth-x\),\s*var\(--welcome-title-depth\)\)/);
   assert.match(css, /mix-blend-mode:\s*color-dodge/);
   assert.match(css, /background-clip:\s*text/);
   assert.match(css, /font-size:\s*clamp\(4\.8rem,\s*11vw,\s*10\.5rem\)/);

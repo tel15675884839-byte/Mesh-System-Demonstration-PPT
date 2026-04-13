@@ -91,12 +91,18 @@
     }
   };
 
-  function getStatePathsForSelection(result) {
-    const recoveryPath = result === "2" ? LOCKED_STATE_PATHS.recovery2 : LOCKED_STATE_PATHS.recovery1;
+  const PLAYER_STATE_ORDER = ["normal", "blocked", "recovery", "recovery-2", "diagnostic"];
+  const RECOVERY_PLAYER_MODES = {
+    "1": "recovery",
+    "2": "recovery-2"
+  };
+
+  function getStatePaths() {
     return {
       normal: [withVersion(LOCKED_STATE_PATHS.normal)],
       blocked: [withVersion(LOCKED_STATE_PATHS.blocked)],
-      recovery: [withVersion(recoveryPath)]
+      recovery: [withVersion(LOCKED_STATE_PATHS.recovery1)],
+      "recovery-2": [withVersion(LOCKED_STATE_PATHS.recovery2)]
     };
   }
 
@@ -200,7 +206,7 @@
   let bootstrapPromise = null;
   let diagnosticScene = null;
   let resolvedIconBasePathPromise = null;
-  let playerRecoveryResult = null;
+  let playerAvailability = null;
   let revealSyncTimeout = 0;
   let introBaseWidth = 0;
   const searchParams = new URLSearchParams(window.location.search);
@@ -278,7 +284,7 @@
         return;
       }
 
-      const stateStatus = statusMap ? statusMap[button.dataset.mode] : null;
+      const stateStatus = getUiModeAvailability(statusMap, button.dataset.mode);
       const enabled = !!(stateStatus && stateStatus.ok);
       button.disabled = !enabled;
       button.classList.toggle("is-disabled", !enabled);
@@ -289,6 +295,45 @@
         button.removeAttribute("title");
       }
     });
+  }
+
+  function getUiModeAvailability(statusMap, uiMode) {
+    if (!statusMap) {
+      return null;
+    }
+
+    if (uiMode !== "recovery") {
+      return statusMap[uiMode] || null;
+    }
+
+    const recoveryPrimary = statusMap.recovery || null;
+    const recoverySecondary = statusMap["recovery-2"] || null;
+
+    if ((recoveryPrimary && recoveryPrimary.ok) || (recoverySecondary && recoverySecondary.ok)) {
+      return { ok: true, error: null };
+    }
+
+    return recoveryPrimary || recoverySecondary || null;
+  }
+
+  function getPlayerModeForUiMode(uiMode, statusMap) {
+    if (uiMode !== "recovery") {
+      return uiMode;
+    }
+
+    const preferredMode = RECOVERY_PLAYER_MODES[recoveryResult] || "recovery";
+    const fallbackMode = preferredMode === "recovery" ? "recovery-2" : "recovery";
+    const preferredStatus = statusMap ? statusMap[preferredMode] : null;
+    const fallbackStatus = statusMap ? statusMap[fallbackMode] : null;
+
+    if (preferredStatus && preferredStatus.ok) {
+      return preferredMode;
+    }
+    if (fallbackStatus && fallbackStatus.ok) {
+      return fallbackMode;
+    }
+
+    return preferredMode;
   }
 
   function stopDiagnosticScene() {
@@ -324,7 +369,7 @@
     }
     player = null;
     bootstrapPromise = null;
-    playerRecoveryResult = null;
+    playerAvailability = null;
   }
 
   function startDiagnosticScene() {
@@ -581,7 +626,7 @@
         resolvedIconBasePathPromise = detectIconBasePath();
       }
       const iconBasePath = await resolvedIconBasePathPromise;
-      const selectedStatePaths = getStatePathsForSelection(recoveryResult);
+      const selectedStatePaths = getStatePaths();
       const selectedStateData = getPlayerStateDataForSelection(recoveryResult);
       const demoConfigOverride = getDemoConfigOverride();
 
@@ -591,6 +636,7 @@
 
       player = new window.MeshScenePlayer({
         container: meshPlayerHost,
+        stateOrder: PLAYER_STATE_ORDER,
         statePaths: selectedStatePaths,
         stateData: selectedStateData,
         globalConfigOverride: demoConfigOverride,
@@ -599,7 +645,7 @@
           camera: { x: 0, y: 24, z: 88 },
           target: { x: 0, y: 0, z: 0 }
         },
-        initialMode: mode,
+        initialMode: getPlayerModeForUiMode(mode),
         autoFitView: false,
         autostart: false
       });
@@ -609,17 +655,19 @@
       const availability = typeof player.getStateAvailability === "function"
         ? player.getStateAvailability()
         : null;
+      playerAvailability = availability;
       setAvailability(availability);
 
       const selectableModes = ["normal", "blocked", "recovery"];
       const preferredMode = selectableModes.indexOf(mode) >= 0 ? mode : "normal";
-      const preferredStatus = availability && preferredMode ? availability[preferredMode] : null;
+      const preferredStatus = getUiModeAvailability(availability, preferredMode);
       let nextMode = preferredStatus && preferredStatus.ok ? preferredMode : null;
 
       if (!nextMode) {
         for (let i = 0; i < selectableModes.length; i += 1) {
           const modeName = selectableModes[i];
-          if (availability && availability[modeName] && availability[modeName].ok) {
+          const modeStatus = getUiModeAvailability(availability, modeName);
+          if (modeStatus && modeStatus.ok) {
             nextMode = modeName;
             break;
           }
@@ -636,7 +684,7 @@
       setRecoverySwitchVisibility(mode);
       setRecoveryResultButtons(recoveryResult);
 
-      const switched = await player.switchMode(mode);
+      const switched = await player.switchMode(getPlayerModeForUiMode(mode, availability));
       if (!switched) {
         throw new Error("Unable to activate the initial mesh state.");
       }
@@ -644,7 +692,6 @@
       if (meshStage) {
         meshStage.removeAttribute("aria-busy");
       }
-      playerRecoveryResult = recoveryResult;
       setMessage("");
       return player;
     }()).catch(function (error) {
@@ -694,15 +741,12 @@
       }
 
       stopDiagnosticScene();
-      if (mode === "recovery" && player && playerRecoveryResult !== recoveryResult) {
-        resetPlayerInstance();
-      }
       const readyPlayer = await ensurePlayer();
       if (!readyPlayer) {
         return;
       }
 
-      const switched = await readyPlayer.switchMode(mode);
+      const switched = await readyPlayer.switchMode(getPlayerModeForUiMode(mode, playerAvailability));
       if (!switched) {
         setMessage("Failed to switch the 3D player to " + mode + ".", "error");
         return;
@@ -734,7 +778,6 @@
       return;
     }
 
-    resetPlayerInstance();
     await applyMeshMode("recovery");
   }
 

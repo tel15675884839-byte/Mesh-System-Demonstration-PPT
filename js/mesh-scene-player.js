@@ -1,7 +1,7 @@
 ﻿(function () {
   "use strict";
 
-  const STATE_ORDER = ["normal", "blocked", "recovery", "diagnostic"];
+  const DEFAULT_STATE_ORDER = ["normal", "blocked", "recovery", "diagnostic"];
   const DEFAULT_STATE_PATHS = {
     normal: "../assets/mesh-states/normal.json",
     blocked: "../assets/mesh-states/blocked.json",
@@ -135,7 +135,18 @@
       target: cloneVectorLike(targetSource, fallback.target)
     };
   }
-  function normalizeStatePaths(options) {
+  function normalizeStateOrder(options) {
+    if (Array.isArray(options.stateOrder)) {
+      const customOrder = options.stateOrder.filter(function (mode) {
+        return typeof mode === "string" && mode.trim().length > 0;
+      });
+      if (customOrder.length > 0) {
+        return customOrder;
+      }
+    }
+    return DEFAULT_STATE_ORDER.slice();
+  }
+  function normalizeStatePaths(options, stateOrder) {
     const statePaths = options.statePaths;
     function toCandidates(value, fallback) {
       if (Array.isArray(value)) {
@@ -146,7 +157,10 @@
       if (typeof value === "string" && value.trim().length > 0) {
         return [value];
       }
-      return [fallback];
+      if (typeof fallback === "string" && fallback.trim().length > 0) {
+        return [fallback];
+      }
+      return [];
     }
     if (Array.isArray(statePaths)) {
       return {
@@ -156,11 +170,13 @@
       };
     }
     if (isObject(statePaths)) {
-      return {
-        normal: toCandidates(statePaths.normal, DEFAULT_STATE_PATHS.normal),
-        blocked: toCandidates(statePaths.blocked, DEFAULT_STATE_PATHS.blocked),
-        recovery: toCandidates(statePaths.recovery, DEFAULT_STATE_PATHS.recovery)
-      };
+      const resolvedPaths = {};
+      const keys = Array.from(new Set([].concat(stateOrder || [], Object.keys(statePaths))));
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        resolvedPaths[key] = toCandidates(statePaths[key], DEFAULT_STATE_PATHS[key] || "");
+      }
+      return resolvedPaths;
     }
     const basePath = options.stateBasePath || null;
     if (basePath) {
@@ -310,12 +326,13 @@
 
       this.options = options || {};
       this.container = resolveContainer(this.options.container);
-      this.statePaths = normalizeStatePaths(this.options);
+      this.stateOrder = normalizeStateOrder(this.options);
+      this.statePaths = normalizeStatePaths(this.options, this.stateOrder);
       this.stateData = isObject(this.options.stateData) ? this.options.stateData : {};
       this.globalConfigOverride = isObject(this.options.globalConfigOverride) ? this.options.globalConfigOverride : null;
       this.iconBasePath = this.options.iconBasePath || DEFAULT_ICON_BASE_PATH;
       this.fallbackView = normalizeView(this.options.fallbackView, DEFAULT_FALLBACK_VIEW);
-      this.initialMode = STATE_ORDER.includes(this.options.initialMode) ? this.options.initialMode : "normal";
+      this.initialMode = this.stateOrder.includes(this.options.initialMode) ? this.options.initialMode : "normal";
       this.autostart = this.options.autostart !== false;
       this.autoFitView = this.options.autoFitView !== false;
       this.debugEnabled = !!this.options.debug;
@@ -370,7 +387,7 @@
     }
 
     _activateMode(mode) {
-      const nextMode = STATE_ORDER.includes(mode) ? mode : this.initialMode;
+      const nextMode = this.stateOrder.includes(mode) ? mode : this.initialMode;
       const nextState = this._states.get(nextMode);
       if (!nextState || nextState.error) {
         this._setStatus(nextState && nextState.error ? "Unable to load " + nextMode + " state" : "Unknown mesh state: " + nextMode, true);
@@ -394,7 +411,7 @@
 
     getStateAvailability() {
       const availability = {};
-      for (const mode of STATE_ORDER) {
+      for (const mode of this.stateOrder) {
         const state = this._states.get(mode);
         availability[mode] = {
           ok: !!(state && !state.error),
@@ -406,7 +423,7 @@
     }
 
     getFirstAvailableMode() {
-      for (const mode of STATE_ORDER) {
+      for (const mode of this.stateOrder) {
         const state = this._states.get(mode);
         if (state && !state.error) {
           return mode;
@@ -626,7 +643,7 @@
     }
 
     async _preload() {
-      const results = await Promise.allSettled(STATE_ORDER.map(async (mode) => {
+      const results = await Promise.allSettled(this.stateOrder.map(async (mode) => {
         const inlineRaw = isObject(this.stateData[mode]) ? this.stateData[mode] : null;
         let raw = null;
 
@@ -649,7 +666,7 @@
 
       let firstReady = null;
       for (let i = 0; i < results.length; i += 1) {
-        const mode = STATE_ORDER[i];
+        const mode = this.stateOrder[i];
         const result = results[i];
         if (result.status === "fulfilled") {
           const state = result.value.state;
@@ -1351,8 +1368,8 @@
         );
       }
 
-      for (let i = 0; i < STATE_ORDER.length; i += 1) {
-        const mode = STATE_ORDER[i];
+      for (let i = 0; i < this.stateOrder.length; i += 1) {
+        const mode = this.stateOrder[i];
         const state = this._states.get(mode);
         if (!state) {
           lines.push(mode + ": pending");

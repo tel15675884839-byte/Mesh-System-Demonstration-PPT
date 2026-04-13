@@ -25,21 +25,22 @@
     "deviceLinkMotionSpeed": 2,
     "deviceLinkMotionIntensity": 7,
     "deviceLinkMotionSpacing": 0.4,
-    "bidirectionalMotion": true
+    "bidirectionalMotion": true,
+    "observeOnlyMode": false
   },
   "view": {
     "camera": {
       "position": {
-        "x": 24.733906672478746,
-        "y": -71.51854035068705,
-        "z": 181.72330515061208
+        "x": -64.35093253452021,
+        "y": -88.08612949800313,
+        "z": 175.42513569845624
       }
     },
     "controls": {
       "target": {
-        "x": -12.029885078550814,
-        "y": -92.4429190939887,
-        "z": 105.25692047051224
+        "x": -12.271748042352197,
+        "y": -92.50999205926261,
+        "z": 105.39155819151546
       }
     }
   },
@@ -223,6 +224,6 @@
     "d:node-2|device-44"
   ],
   "meta": {
-    "updatedAt": "2026-04-07T01:04:40.080Z"
+    "updatedAt": "2026-04-10T07:04:54.276Z"
   }
 }
