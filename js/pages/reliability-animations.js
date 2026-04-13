@@ -16,7 +16,7 @@
         { id: "oneway-sounder", type: "sounder", left: "17%", top: "74%", scale: 0.94 },
         { id: "oneway-node", type: "node", left: "39%", top: "53%", scale: 1.06 },
         { id: "oneway-leader", type: "leader-node", left: "63%", top: "53%", scale: 1.16 },
-        { id: "oneway-panel", type: "panel", left: "86%", top: "50%", scale: 0.68 }
+        { id: "oneway-panel", type: "cie", left: "86%", top: "50%", scale: 0.68, label: "CIE", flipX: true }
       ],
       links: [
         { from: "oneway-det", to: "oneway-node", kind: "wireless-single", breakable: false },
@@ -136,8 +136,15 @@
 
     const icon = document.createElement("div");
     icon.className = "reli-icon";
-    icon.style.transform = `scale(${device.scale ?? 1})`;
+    icon.style.transform = `scale(${device.scale ?? 1}) scaleX(${device.flipX ? -1 : 1})`;
     element.appendChild(icon);
+
+    if (device.label) {
+      const label = document.createElement("div");
+      label.className = "reli-device-label";
+      label.textContent = device.label;
+      element.appendChild(label);
+    }
 
     return element;
   }
@@ -157,9 +164,9 @@
       drawGeometry(layer, primaryGeometry, getLinkClasses(link, "primary"), isBroken);
       drawGeometry(layer, secondaryGeometry, getLinkClasses(link, "secondary"), isBroken);
 
-      if (link.breakable) {
+      if (link.kind !== "wired") {
         drawHitbox(layer, createDoubleLaneGeometry(map, from.element, to.element, link, 0), () => {
-          toggleTwoWayLink(linkId, stageKey, stageConfig);
+          toggleWirelessLink(linkId, stageKey, stageConfig);
         });
       }
 
@@ -172,9 +179,9 @@
     const geometry = getConfiguredGeometry(map, from.element, to.element, link);
     drawGeometry(layer, geometry, getLinkClasses(link), isBroken);
 
-    if (link.breakable) {
+    if (link.kind !== "wired") {
       drawHitbox(layer, geometry, () => {
-        toggleTwoWayLink(linkId, stageKey, stageConfig);
+        toggleWirelessLink(linkId, stageKey, stageConfig);
       });
     }
 
@@ -237,15 +244,29 @@
         }
       : primaryGeometry.mid;
 
-    const marker = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    marker.setAttribute("x", midpoint.x);
-    marker.setAttribute("y", midpoint.y);
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "g");
     marker.setAttribute("class", "reli-break-x");
-    marker.textContent = "X";
+
+    const lineOne = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineOne.setAttribute("class", "reli-break-x-line");
+    lineOne.setAttribute("x1", midpoint.x - 9);
+    lineOne.setAttribute("y1", midpoint.y - 9);
+    lineOne.setAttribute("x2", midpoint.x + 9);
+    lineOne.setAttribute("y2", midpoint.y + 9);
+
+    const lineTwo = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineTwo.setAttribute("class", "reli-break-x-line");
+    lineTwo.setAttribute("x1", midpoint.x + 9);
+    lineTwo.setAttribute("y1", midpoint.y - 9);
+    lineTwo.setAttribute("x2", midpoint.x - 9);
+    lineTwo.setAttribute("y2", midpoint.y + 9);
+
+    marker.appendChild(lineOne);
+    marker.appendChild(lineTwo);
     layer.appendChild(marker);
   }
 
-  function toggleTwoWayLink(linkId, stageKey, stageConfig) {
+  function toggleWirelessLink(linkId, stageKey, stageConfig) {
     const brokenLinks = stageState[stageKey].brokenLinks;
     if (brokenLinks.has(linkId)) {
       brokenLinks.delete(linkId);

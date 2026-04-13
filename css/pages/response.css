@@ -25,8 +25,11 @@
 }
 
 .response-hero-spotlight h2 {
-  font-size: clamp(3rem, 5vw, 4.5rem);
-  letter-spacing: -0.04em;
+  max-width: none;
+  font-size: clamp(3.8rem, 5.3vw, 4.9rem);
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
   background: linear-gradient(to right, #fff, #94a3b8);
   -webkit-background-clip: text;
   background-clip: text;
@@ -51,6 +54,67 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.response-reset-button {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(112, 240, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(4, 12, 20, 0.74);
+  color: rgba(232, 248, 255, 0.88);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    opacity 0.16s ease;
+}
+
+.response-reset-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(112, 240, 255, 0.28);
+  background: rgba(8, 20, 34, 0.9);
+}
+
+.response-reset-button:focus-visible {
+  outline: 2px solid rgba(112, 240, 255, 0.65);
+  outline-offset: 3px;
+}
+
+.response-reset-button:active {
+  transform: translateY(0);
+}
+
+.response-reset-icon {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 1.8px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-35deg);
+}
+
+.response-reset-icon::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 5px;
+  height: 5px;
+  border-top: 1.8px solid currentColor;
+  border-right: 1.8px solid currentColor;
 }
 
 /* Deep Space & Stars Background */
@@ -273,8 +337,16 @@
 }
 
 /* Responsive Overrides */
-@media (max-width: 900px) {
-  .response-hero-spotlight h2 { font-size: 2.8rem; }
+@media (max-width: 960px) {
+  .response-hero-spotlight h2 { font-size: clamp(3rem, 8.2vw, 4.2rem); }
   .device { width: 40px; height: 40px; }
   .node-main { width: 50px; height: 50px; }
+  .response-reset-button { top: 18px; right: 18px; }
+}
+
+@media (max-width: 720px) {
+  .response-hero-spotlight h2 {
+    font-size: clamp(2.4rem, 10.2vw, 3rem);
+    white-space: nowrap;
+  }
 }

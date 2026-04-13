@@ -2,19 +2,62 @@
   const page = document.querySelector(".page-response");
   const stage = document.getElementById("stage-trigger");
   const animationMap = document.getElementById("animation-map");
+  const resetButton = document.querySelector(".response-reset-button");
   const detTrigger = document.getElementById("det-trigger");
   const nodeLeft = document.getElementById("node-left");
   const nodeRight = document.getElementById("node-right");
   const sounders = document.querySelectorAll(".sounder");
 
-  if (!page || !stage) return;
+  if (!page || !stage || !animationMap || !detTrigger || !nodeLeft || !nodeRight) return;
 
   let isAnimating = false;
   let hasTriggered = false;
+  let activeRunId = 0;
+  const activePulseRecords = new Set();
 
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  async function sendPulse(fromEl, toEl, color, duration = 600) {
+  function removePulseRecord(record) {
+    if (!record) {
+      return;
+    }
+
+    activePulseRecords.delete(record);
+
+    if (record.animation) {
+      try {
+        record.animation.cancel();
+      } catch (error) {
+        // Ignore pulse animations that have already finished.
+      }
+    }
+
+    if (record.element && record.element.parentNode) {
+      record.element.remove();
+    }
+  }
+
+  function clearActivePulses() {
+    Array.from(activePulseRecords).forEach(removePulseRecord);
+  }
+
+  function resetStageState() {
+    activeRunId += 1;
+    isAnimating = false;
+    hasTriggered = false;
+
+    detTrigger.classList.remove("is-triggered");
+    nodeLeft.classList.remove("is-active");
+    nodeRight.classList.remove("is-active");
+    sounders.forEach((sounder) => sounder.classList.remove("is-alarming"));
+
+    clearActivePulses();
+
+    page.dataset.status = "idle";
+    page.dataset.isAlarming = "false";
+  }
+
+  async function sendPulse(fromEl, toEl, color, duration = 600, runId = activeRunId) {
     const mapRect = animationMap.getBoundingClientRect();
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toEl.getBoundingClientRect();
@@ -48,8 +91,19 @@
       fill: "forwards"
     });
 
-    await animation.finished;
-    pulse.remove();
+    const record = { element: pulse, animation, runId };
+    activePulseRecords.add(record);
+
+    try {
+      await animation.finished;
+    } catch (error) {
+      // Reset cancels in-flight pulse animations. That is expected.
+    } finally {
+      activePulseRecords.delete(record);
+      if (pulse.parentNode) {
+        pulse.remove();
+      }
+    }
   }
 
   function getClosestNode(targetEl, nodesList) {
@@ -75,23 +129,29 @@
   }
 
   async function startAlarmSequence() {
-    if (isAnimating) return;
+    if (isAnimating || hasTriggered) return;
+
     isAnimating = true;
+    const runId = activeRunId + 1;
+    activeRunId = runId;
     page.dataset.status = "animating";
 
     // 1. Trigger DET fires
     detTrigger.classList.add("is-triggered");
     await sleep(800);
+    if (runId !== activeRunId) return;
 
     // 2. Pulse directly to all nodes
     await Promise.all([
-      sendPulse(detTrigger, nodeLeft, "#ff3333", 450),
-      sendPulse(detTrigger, nodeRight, "#ff3333", 450)
+      sendPulse(detTrigger, nodeLeft, "#ff3333", 450, runId),
+      sendPulse(detTrigger, nodeRight, "#ff3333", 450, runId)
     ]);
+    if (runId !== activeRunId) return;
     
     nodeLeft.classList.add("is-active");
     nodeRight.classList.add("is-active");
     await sleep(300);
+    if (runId !== activeRunId) return;
 
     // 3. Spread to Sounders
     const allNodes = [nodeLeft, nodeRight];
@@ -100,30 +160,31 @@
 
     const sounderPromises = Array.from(sounders).map(async (sounder) => {
       const closestNode = getClosestNode(sounder, allNodes);
-      await sendPulse(closestNode, sounder, "#ff3333", 450);
+      await sendPulse(closestNode, sounder, "#ff3333", 450, runId);
+      if (runId !== activeRunId) return;
       sounder.classList.add("is-alarming");
     });
 
     await Promise.all(sounderPromises);
+    if (runId !== activeRunId) return;
     
     isAnimating = false;
     hasTriggered = true;
   }
 
+  if (resetButton) {
+    resetButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      resetStageState();
+    });
+  }
+
   stage.addEventListener("click", () => {
-    if (!isAnimating) {
-      if (hasTriggered) {
-        // Soft reset if already alarming to allow re-demo
-        detTrigger.classList.remove("is-triggered");
-        nodeCenter.classList.remove("is-active");
-        nodeLeft.classList.remove("is-active");
-        nodeRight.classList.remove("is-active");
-        sounders.forEach(s => s.classList.remove("is-alarming"));
-        page.dataset.isAlarming = "false";
-        hasTriggered = false;
-      }
+    if (!isAnimating && !hasTriggered) {
       startAlarmSequence();
     }
   });
+
+  resetStageState();
 
 }());

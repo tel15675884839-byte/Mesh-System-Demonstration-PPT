@@ -197,3 +197,73 @@ test("reliability animation polish keeps two-way traffic readable without changi
     "Expected the two-way animation to use a pair of particles that start from opposite ends and travel in opposite directions."
   );
 });
+
+test("reliability one-way stage uses a CIE asset and all wireless links can be broken interactively", () => {
+  assert.match(
+    reliabilityScript,
+    /id:\s*"oneway-panel"[\s\S]*?type:\s*"cie"[\s\S]*?label:\s*"CIE"[\s\S]*?flipX:\s*true/,
+    "Expected the one-way terminal device to use a dedicated CIE configuration and label."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reliability-device\.cie\s*\{[\s\S]*?width:\s*24[67]px;[\s\S]*?height:\s*24[67]px;[\s\S]*?\.reli-icon[\s\S]*?background-image:\s*url\('\.\.\/\.\.\/assets\/icons\/cie\.svg'\)/,
+    "Expected reliability-animations.css to map the one-way terminal device to cie.svg."
+  );
+
+  assert.match(
+    reliabilityScript,
+    /scaleX\(\$\{device\.flipX\s*\?\s*-1\s*:\s*1\}\)/,
+    "Expected the one-way CIE icon to support a horizontal flip around its own origin."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reli-device-label\s*\{[\s\S]*?text-transform:\s*uppercase;/,
+    "Expected reliability-animations.css to style the CIE label under the device."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reliability-device\.cie\s+\.reli-device-label\s*\{[\s\S]*?bottom:\s*[1-9]\dpx;/,
+    "Expected the CIE label to be nudged upward closer to the icon body."
+  );
+
+  assert.match(
+    reliabilityScript,
+    /if\s*\(\s*link\.kind\s*!==\s*"wired"\s*\)[\s\S]*?drawHitbox[\s\S]*?toggleWirelessLink|drawHitbox\([\s\S]*?toggleWirelessLink\(/,
+    "Expected all wireless links to receive a clickable hitbox that toggles the broken state."
+  );
+
+  assert.match(
+    reliabilityScript,
+    /createElementNS\("http:\/\/www\.w3\.org\/2000\/svg",\s*"g"\)[\s\S]*?createElementNS\("http:\/\/www\.w3\.org\/2000\/svg",\s*"line"\)/,
+    "Expected broken-link markers to be drawn as SVG line artwork instead of a text glyph."
+  );
+});
+
+test("reliability two-way panel shows a lighter warning reaction when a wireless link breaks", () => {
+  assert.match(
+    reliabilityScript,
+    /stageKey\s*===\s*"twoWay"[\s\S]*?brokenLinks\.size\s*>\s*0/,
+    "Expected the two-way panel warning state to activate when a wireless link is broken."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reliability-device\.panel\.is-alarming\s*\{[\s\S]*?animation:\s*reli-panel-warning-wobble/,
+    "Expected the two-way panel container to wobble in a warning state."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reliability-device\.panel\.is-alarming\s+\.reli-icon\s*\{[\s\S]*?drop-shadow\(0 0 (?:1[0-9]|2[0-9])px/,
+    "Expected the two-way panel warning glow to be a restrained yellow halo."
+  );
+
+  assert.match(
+    reliabilityAnimationsCss,
+    /\.reliability-device\.panel\.is-alarming::after\s*\{[\s\S]*?content:\s*"⚠️"[\s\S]*?top:\s*50%;[\s\S]*?left:\s*50%;[\s\S]*?transform:\s*translate\(-50%,\s*-50%\);[\s\S]*?font-size:\s*(?:2[0-9]|3[0-2])px;/,
+    "Expected the two-way panel warning icon to appear as a centered yellow emoji badge."
+  );
+});
