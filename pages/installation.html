@@ -15,20 +15,20 @@
     <section class="page-grid installation-layout">
       <header class="installation-header">
         <div class="page-copy installation-hero installation-hero-spotlight">
-          <p class="eyebrow">Core Advantage</p>
           <h2>Easy Installation</h2>
         </div>
       </header>
 
       <div class="visual-card installation-stage-shell">
-        <div class="installation-stage" aria-label="Easy installation stage">
-          <div class="installation-placeholder">
-            <span class="installation-placeholder-label">[ Visual Demo Area for Easy Installation ]</span>
-          </div>
-          <div class="status-panel installation-status-panel">
-            <p class="eyebrow">Core Note</p>
-            <h3>Less cabling, faster setup</h3>
-            <p>Less cabling means faster deployment, lowering labor and material costs while keeping the stage compact and easy to present.</p>
+        <div class="installation-stage mode-wipe" id="wipeStage" aria-label="Easy installation stage">
+          <div class="wipe-container">
+            <img src="../assets/images/No%20Wiring%20Headahce.png" class="wipe-img" id="img-after" alt="No Wiring Headache">
+            <img src="../assets/images/Wiring%20Headache.png" class="wipe-img" id="img-before" alt="Wiring Headache">
+            
+            <!-- Comparison Handle - Only the line remains -->
+            <div class="wipe-handle">
+              <div class="handle-line"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -36,5 +36,6 @@
   </main>
 
   <script src="../js/page-messaging.js"></script>
+  <script src="../js/pages/installation-page.js"></script>
 </body>
 </html>

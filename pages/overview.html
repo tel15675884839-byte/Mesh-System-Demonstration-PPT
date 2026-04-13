@@ -13,55 +13,210 @@
 <body>
   <main class="page page-overview">
     <section class="page-grid overview-layout">
-      <div class="page-copy">
-        <p class="eyebrow">Feature Overview</p>
-        <h2>Six core values in one quick view</h2>
-        <p class="lead">
-          A clean summary page you can later rebuild card by card with your own icons and layout.
-        </p>
-      </div>
+      <header class="overview-header">
+        <div class="page-copy overview-hero overview-hero-spotlight">
+          <h2>Six Core Features</h2>
+        </div>
+      </header>
 
-      <div class="feature-grid overview-feature-grid" role="list">
-        <button class="feature-card active feature-mesh" data-action="goto" data-target="2" role="listitem">
-          <span class="feature-icon icon-mesh"></span>
-          <strong>Mesh Communication</strong>
-          <span>Multiple paths</span>
-        </button>
-        <button class="feature-card feature-reliability" data-action="goto" data-target="3" role="listitem">
-          <span class="feature-icon icon-reliability"></span>
-          <strong>High Reliability</strong>
-          <span>Two-way communication</span>
-        </button>
-        <button class="feature-card feature-response" data-action="goto" data-target="4" role="listitem">
-          <span class="feature-icon icon-response"></span>
-          <strong>Rapid Response</strong>
-          <span>Fast alarm transmission</span>
-        </button>
-        <button class="feature-card feature-distance" data-action="goto" data-target="5" role="listitem">
-          <span class="feature-icon icon-distance"></span>
-          <strong>Extended Distance</strong>
-          <span>Up to 500 m</span>
-        </button>
-        <button class="feature-card feature-battery" data-action="goto" data-target="6" role="listitem">
-          <span class="feature-icon icon-battery"></span>
-          <strong>10-Year Battery</strong>
-          <span>Lower maintenance</span>
-        </button>
-        <button class="feature-card feature-installation" data-action="goto" data-target="7" role="listitem">
-          <span class="feature-icon icon-installation"></span>
-          <strong>Easy Installation</strong>
-          <span>Less cabling</span>
-        </button>
-      </div>
+      <div class="visual-card overview-stage-shell">
+        <div class="overview-stage" id="overview-main-stage" aria-label="Feature overview stage">
+          <div class="feature-grid overview-feature-grid" role="list">
+            <button class="feature-card feature-mesh" data-action="goto" data-target="2" role="listitem">
+              <strong>Mesh Communication</strong>
+              <div class="feature-content-placeholder">
+                <div class="topology-container">
+                  <svg viewBox="0 0 200 220" class="topology-svg">
+                    <!-- 1. Connection Paths (Background lines) -->
+                    <g class="link-base">
+                      <!-- Layer 0 to 1 -->
+                      <line x1="160" y1="20" x2="110" y2="60" />
+                      <!-- Layer 1 to 2 -->
+                      <line x1="110" y1="60" x2="70" y2="105" />
+                      <line x1="110" y1="60" x2="150" y2="105" />
+                      <!-- Layer 2 horizontal/cross -->
+                      <line x1="70" y1="105" x2="110" y2="145" />
+                      <line x1="150" y1="105" x2="110" y2="145" />
+                      <!-- Layer 3 (Bottom Routers) -->
+                      <line x1="30" y1="150" x2="70" y2="105" />
+                      <line x1="30" y1="150" x2="110" y2="145" />
+                      <line x1="110" y1="145" x2="150" y2="105" />
+                      <line x1="150" y1="105" x2="180" y2="150" />
+                      <line x1="30" y1="150" x2="110" y2="145" />
+                      <line x1="110" y1="145" x2="180" y2="150" />
+                      <!-- End Devices -->
+                      <line x1="30" y1="150" x2="10" y2="190" />
+                      <line x1="30" y1="150" x2="60" y2="195" />
+                      <line x1="180" y1="150" x2="150" y2="200" />
+                      <line x1="180" y1="150" x2="190" y2="185" />
+                    </g>
+                    
+                    <!-- 2. Signal Flow (Animated overlays) -->
+                    <g class="signal-flow">
+                      <path d="M160 20 L110 60" class="flow-path" />
+                      <path d="M110 60 L70 105 L30 150" class="flow-path" />
+                      <path d="M110 60 L150 105 L180 150" class="flow-path" />
+                      <path d="M70 105 L110 145 L150 105" class="flow-path" />
+                      <path d="M30 150 L110 145 L180 150" class="flow-path" />
+                      <path d="M30 150 L10 190" class="flow-path" />
+                      <path d="M30 150 L60 195" class="flow-path" />
+                      <path d="M180 150 L150 200" class="flow-path" />
+                      <path d="M180 150 L190 185" class="flow-path" />
+                    </g>
+                    
+                    <!-- 3. Nodes -->
+                    <!-- Top Green (Gateway) -->
+                    <circle cx="160" cy="20" r="7" class="node-green" />
+                    <!-- Red (Leader) -->
+                    <circle cx="110" cy="60" r="9" class="node-red" />
+                    <!-- Blue (Routers/FTDs) -->
+                    <circle cx="70" cy="105" r="7" class="node-blue" />
+                    <circle cx="150" cy="105" r="7" class="node-blue" />
+                    <circle cx="110" cy="145" r="7" class="node-blue" />
+                    <circle cx="30" cy="150" r="7" class="node-blue" />
+                    <circle cx="180" cy="150" r="7" class="node-blue" />
+                    <!-- End Devices -->
+                    <circle cx="10" cy="190" r="6" class="node-green" />
+                    <circle cx="60" cy="195" r="6" class="node-green" />
+                    <circle cx="150" cy="200" r="6" class="node-green" />
+                    <circle cx="190" cy="185" r="6" class="node-green" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-reliability" data-action="goto" data-target="3" role="listitem">
+              <strong>High Reliability</strong>
+              <div class="feature-content-placeholder">
+                <div class="reliability-flow-container">
+                  <!-- Top: Left to Right Flow -->
+                  <div class="reliability-flow-row">
+                    <div class="flow-track">
+                      <div class="flow-beam green-beam"></div>
+                    </div>
+                    <div class="flow-icon icon-green">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M13 5l7 7-7 7M3 12h17" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
 
-      <aside class="visual-card overview-note">
-        <p class="eyebrow">Framework Note</p>
-        <h3>Each slide is now an independent page</h3>
-        <p>
-          You can replace cards, upload your own image assets, or redesign this page without touching the outer navigation framework.
-        </p>
-        <button class="secondary-button" data-action="goto" data-target="2">Open Mesh Demo</button>
-      </aside>
+                  <!-- Bottom: Right to Left Flow -->
+                  <div class="reliability-flow-row row-reverse">
+                    <div class="flow-track">
+                      <div class="flow-beam blue-beam"></div>
+                    </div>
+                    <div class="flow-icon icon-blue">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M11 19l-7-7 7-7m10 7H4" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-response" data-action="goto" data-target="4" role="listitem">
+              <strong>Rapid Response</strong>
+              <div class="feature-content-placeholder">
+                <div class="speed-tunnel-container">
+                  <div class="speed-line" style="top: 30%; animation-delay: 0s"></div>
+                  <div class="speed-line" style="top: 50%; animation-delay: 0.2s; width: 80%;"></div>
+                  <div class="speed-line" style="top: 75%; animation-delay: 0.4s"></div>
+                  <div class="boost-text">BOOST</div>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-distance" data-action="goto" data-target="5" role="listitem">
+              <strong>Extended Distance</strong>
+              <div class="feature-content-placeholder">
+                <div class="urban-arc-container">
+                  <svg viewBox="0 0 240 160" class="urban-svg">
+                    <!-- Skyline Silhouettes -->
+                    <g class="skyline" fill="rgba(255,255,255,0.05)">
+                      <rect x="20" y="110" width="15" height="40" />
+                      <rect x="40" y="90" width="12" height="60" />
+                      <rect x="75" y="100" width="18" height="50" />
+                      <rect x="130" y="115" width="10" height="35" />
+                      <rect x="180" y="80" width="14" height="70" />
+                      <rect x="205" y="105" width="12" height="45" />
+                    </g>
+                    <!-- Arc Paths -->
+                    <g class="arc-paths">
+                      <path d="M40 120 Q 100 20, 160 120" class="arc-path" />
+                      <path d="M40 120 Q 100 20, 160 120" class="arc-signal" />
+                      
+                      <path d="M80 140 Q 160 40, 200 120" class="arc-path" />
+                      <path d="M80 140 Q 160 40, 200 120" class="arc-signal" style="animation-delay: 1s" />
+                      
+                      <path d="M20 100 Q 120 -10, 220 100" class="arc-path" style="opacity: 0.1" />
+                    </g>
+                    <!-- Nodes at roots -->
+                    <circle cx="40" cy="120" r="3" fill="#3b82f6" />
+                    <circle cx="160" cy="120" r="3" fill="#3b82f6" />
+                    <circle cx="80" cy="140" r="3" fill="#3b82f6" />
+                    <circle cx="200" cy="120" r="3" fill="#3b82f6" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-battery" data-action="goto" data-target="6" role="listitem">
+              <strong>10-Year Battery</strong>
+              <div class="feature-content-placeholder">
+                <div class="battery-energy-container">
+                  <div class="battery-shell">
+                    <div class="battery-cap"></div>
+                    <div class="battery-fill surge-glow">
+                      <svg class="energy-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  <!-- Refined Premium Arcs (Expanded Set) -->
+                  <div class="spark-arc arc-top">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-bottom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-right">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-tr">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-installation" data-action="goto" data-target="7" role="listitem">
+              <strong>Easy Installation</strong>
+              <div class="feature-content-placeholder">
+                <div class="install-tools-container">
+                  <svg class="tools-premium-svg" viewBox="0 0 120 120" fill="currentColor">
+                    <g class="gear-rotor">
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(45 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(90 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(135 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(180 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(225 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(270 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(315 62 60)" />
+                      <circle class="gear-shape" cx="62" cy="60" r="28" />
+                      <circle class="gear-core" cx="62" cy="60" r="12.5" />
+                    </g>
+                    <g class="gear-check-badge">
+                      <circle class="badge-disc" cx="90" cy="88" r="13.5" />
+                      <path class="badge-check" d="M84 88l4 4 8-8" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 

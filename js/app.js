@@ -1,4 +1,5 @@
 (function () {
+  const STAGE_HEIGHT = 1080;
   const slides = document.querySelectorAll(".slide");
   const navDots = document.querySelectorAll(".nav-dot");
   const progressIndicator = document.getElementById("progress-indicator");
@@ -21,7 +22,7 @@
 
   function updateView(index) {
     currentSlide = Math.max(0, Math.min(index, slides.length - 1));
-    slidesContainer.style.transform = "translateY(-" + currentSlide * 100 + "vh)";
+    slidesContainer.style.transform = "translateY(-" + (currentSlide * STAGE_HEIGHT) + "px)";
 
     navDots.forEach((dot, dotIndex) => {
       dot.classList.toggle("active", dotIndex === currentSlide);
@@ -43,10 +44,6 @@
   }
 
   function handleWheel(event) {
-    if (window.innerWidth <= 900) {
-      return;
-    }
-
     if (wheelLock || Math.abs(event.deltaY) < 16) {
       return;
     }

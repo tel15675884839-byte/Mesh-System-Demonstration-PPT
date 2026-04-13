@@ -4,482 +4,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>无线系统报警响应演示</title>
+    <title>系统容量 - 网络级互联展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* --- 全局与背景 --- */
+        :root {
+            --primary-blue: #0ea5e9;
+            --dark-bg: #0f172a;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #050a0f;
-            /* 深邃的宇宙黑背景 */
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: #f1f5f9;
+            font-family: 'Inter', system-ui, sans-serif;
             overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 模拟背景星空/噪点 */
-        .space-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(1px 1px at 20% 30%, #ffffff 100%, transparent),
-                radial-gradient(1px 1px at 40% 70%, #ffffff 100%, transparent),
-                radial-gradient(2px 2px at 80% 40%, #ffffff 100%, transparent),
-                radial-gradient(1.5px 1.5px at 60% 10%, #ffffff 100%, transparent);
-            background-size: 200px 200px;
-            opacity: 0.3;
-            z-index: 0;
-        }
-
-        /* --- UI 控制面板 --- */
-        .controls {
-            position: relative;
-            z-index: 100;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            background: linear-gradient(to bottom, rgba(5, 10, 15, 0.9), transparent);
-        }
-
-        button {
-            background-color: #1a2a35;
-            color: #00e5ff;
-            border: 1px solid #00e5ff;
-            padding: 10px 25px;
-            font-size: 16px;
-            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
-        button:hover:not(:disabled) {
-            background-color: #00e5ff;
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        /* 装饰性背景网格 */
+        .grid-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            border-color: #555;
-            color: #555;
-        }
-
-        /* --- 演示区域地图 --- */
-        .map-container {
-            flex: 1;
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* --- 设备通用样式 (方便后期替换为 SVG) --- */
-        .device {
-            position: absolute;
+        /* CIE 控制面板样式 */
+        .cie-panel {
             width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: bold;
-            transform: translate(-50%, -50%);
-            /* 确保坐标定位在中心点 */
-            z-index: 20;
-            transition: all 0.3s;
-            box-sizing: border-box;
+            height: 80px;
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            border: 2px solid #475569;
+            border-radius: 4px;
+            position: absolute;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(-500px);
+            /* 初始位置在屏幕外 */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
         }
 
-        /* 各种设备的基础颜色 */
-        .node {
-            background-color: rgba(160, 192, 208, 0.1);
-            border: 2px solid #84a5b8;
-            color: #cce0eb;
-            box-shadow: 0 0 15px rgba(132, 165, 184, 0.2);
+        .cie-panel::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 15px;
+            background: #0f172a;
+            border: 1px solid #334155;
         }
 
-        .det {
-            background-color: rgba(200, 200, 200, 0.1);
-            border: 2px solid #aaaaaa;
-            color: #dddddd;
-            width: 45px;
-            /* 探头略小一点 */
-            height: 45px;
+        /* 标签动画 */
+        .cie-label {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            background: rgba(14, 165, 233, 0.9);
+            padding: 4px 10px;
+            border-radius: 4px;
             font-size: 10px;
-        }
-
-        .sounder {
-            background-color: rgba(180, 30, 30, 0.2);
-            border: 2px solid #a32222;
-            color: #ff8888;
-        }
-
-        /* --- 标号提示 (1, 2, 3, 4) --- */
-        .label-badge {
-            position: absolute;
-            bottom: -10px;
-            right: -10px;
-            background: #fff;
-            color: #000;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 900;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        /* --- 节点背后的无线电波纹 (装饰) --- */
-        .radio-waves {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 1px solid rgba(0, 150, 255, 0.15);
-            z-index: 15;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.5s ease;
             pointer-events: none;
         }
 
-        .radio-waves::before,
-        .radio-waves::after {
-            content: '';
+        /* 连线样式 */
+        .network-line {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 1px solid rgba(0, 150, 255, 0.08);
-        }
-
-        .radio-waves::before {
-            width: 450px;
-            height: 450px;
-        }
-
-        .radio-waves::after {
-            width: 600px;
-            height: 600px;
-        }
-
-
-        /* =========================================
-     动画状态样式 (通过 JS 添加 class 触发)
-     ========================================= */
-
-        /* 阶段 1: 探头火警 (红色呼吸) */
-        .fire-breathing {
-            border-color: #ff3333 !important;
-            color: #fff !important;
-            animation: fireBreath 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes fireBreath {
-            0% {
-                background-color: rgba(255, 50, 50, 0.2);
-                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            100% {
-                background-color: rgba(255, 50, 50, 0.8);
-                box-shadow: 0 0 30px rgba(255, 0, 0, 1);
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-        }
-
-        /* 阶段 4: 声光报警全面爆发 (雾状光晕、水波纹扩散) */
-        .alarming {
-            border-color: #ffbaba !important;
-            /* 颜色变浅 */
-            color: #fff !important;
-            background-color: rgba(255, 50, 50, 0.4) !important;
-        }
-
-        /* 利用伪元素制作水波纹和雾状光晕 */
-        .alarming::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 100, 100, 0.5);
-            /* 波纹清晰的边缘 */
-            background: radial-gradient(circle, rgba(255, 50, 50, 0.6) 0%, transparent 70%);
-            /* 内部雾状光晕扩散 */
-            transform: translate(-50%, -50%);
-            pointer-events: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            opacity: 0;
+            transition: opacity 1s ease;
             z-index: -1;
-            animation: fogRipple 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
         }
 
-        @keyframes fogRipple {
-            0% {
-                transform: translate(-50%, -50%) scale(0.8);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* 脉冲信号粒子 (用 JS 动态生成并赋予路径) */
-        .signal-pulse {
+        /* 设备粒子动画 */
+        .device-particle {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-blue);
             border-radius: 50%;
-            z-index: 100;
-            pointer-events: none;
-            /* 默认发光效果将在 JS 中根据颜色动态设定 */
+            filter: blur(1px);
+            z-index: 50;
         }
 
-        /* 节点接收到信号时的反馈闪烁 */
-        .node-received {
-            animation: nodeFlash 0.5s ease-out forwards;
+        /* 总计计数器样式 */
+        #total-counter {
+            transition: all 0.5s ease;
+            transform: scale(0.5);
+            opacity: 0;
         }
 
-        @keyframes nodeFlash {
-            0% {
-                border-color: #fff;
-                box-shadow: 0 0 40px #fff;
-                background-color: rgba(255, 255, 255, 0.5);
+        .active-counter {
+            transform: scale(1) !important;
+            opacity: 1 !important;
+        }
+
+        /* 点击提示 */
+        .click-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
             }
 
-            100% {
-                border-color: #00e5ff;
-                box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
-                background-color: rgba(0, 229, 255, 0.1);
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
             }
         }
     </style>
 </head>
 
-<body>
+<body class="grid-bg min-h-screen flex flex-col items-center justify-center overflow-hidden" onclick="nextStep()">
 
-    <!-- 背景星空 -->
-    <div class="space-bg"></div>
+    <header class="fixed top-12 text-center pointer-events-none">
+        <h1 class="text-4xl font-black tracking-tighter text-white uppercase">Network <span
+                class="text-sky-500">Level</span></h1>
+        <p id="step-desc" class="text-slate-500 mt-2">点击页面开始部署网络互联</p>
+    </header>
 
-    <!-- 控制面板 -->
-    <div class="controls">
-        <button id="btnStart" onclick="startDemo()">开始演示 (Start Demo)</button>
-        <button id="btnReset" onclick="resetDemo()">重置系统 (Reset)</button>
+    <!-- 核心展示区域 -->
+    <div id="canvas" class="relative w-full max-w-5xl h-[500px]">
+        <!-- CIE 控制器将由 JS 动态生成 -->
+
+        <!-- 中央汇聚点 -->
+        <div id="hub"
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-sky-500/20">
+            <div id="total-counter" class="text-center">
+                <div class="text-6xl font-black text-white leading-none" id="count-num">0</div>
+                <div class="text-sky-500 font-bold tracking-widest uppercase">Total Wireless Devices</div>
+            </div>
+        </div>
     </div>
 
-    <!-- 地图区域 -->
-    <div class="map-container" id="map">
-
-        <!-- 主节点 (Top Center Node) -->
-        <div class="device node" id="node-center" style="top: 12%; left: 45%;">
-            <div class="radio-waves"></div>
-            NODE
-        </div>
-
-        <!-- 左侧节点 (Bottom Left Node) -->
-        <div class="device node" id="node-left" style="top: 60%; left: 23%;">
-            <div class="radio-waves"></div>
-            NODE
-        </div>
-
-        <!-- 右侧节点 (Middle Right Node) -->
-        <div class="device node" id="node-right" style="top: 54%; left: 63%;">
-            <div class="radio-waves"></div>
-            NODE
-        </div>
-
-        <!-- 触发火警的探头 (Trigger DET) - 标号 1 (Center) -->
-        <div class="device det trigger-det" id="det-trigger" style="top: 43%; left: 46%;">
-            DET
-            <div class="label-badge">1</div>
-        </div>
-
-        <!-- 其他散落的探头 (Filler DETs) -->
-        <div class="device det" style="top: 31%; left: 37%;">DET</div>
-        <div class="device det" style="top: 56%; left: 39%;">DET</div>
-        <div class="device det" style="top: 75%; left: 84%;">DET</div>
-
-        <!-- 声光报警器 (Sounders) 根据新图精细分布 (6个) -->
-        <div class="device sounder" style="top: 6%; left: 23%;">SOUNDER</div>
-        <div class="device sounder" style="top: 14%; left: 67%;">SOUNDER</div>
-        <div class="device sounder" style="top: 30%; left: 86%;">SOUNDER</div>
-        <div class="device sounder" style="top: 44%; left: 9%;">SOUNDER</div>
-        <div class="device sounder" style="top: 86%; left: 26%;">SOUNDER</div>
-        <div class="device sounder" style="top: 89%; left: 57%;">SOUNDER</div>
-
-    </div>
+    <div class="click-hint">点击屏幕继续下一步</div>
 
     <script>
-        // 获取 DOM 元素
-        const btnStart = document.getElementById('btnStart');
-        const detTrigger = document.getElementById('det-trigger');
-        const nodeCenter = document.getElementById('node-center');
-        const nodeLeft = document.getElementById('node-left');
-        const nodeRight = document.getElementById('node-right');
-        const sounders = document.querySelectorAll('.sounder');
-        const map = document.getElementById('map');
+        let currentStep = 0;
+        const canvas = document.getElementById('canvas');
+        const cieCount = 8;
+        const cies = [];
+        const lines = [];
 
-        // 辅助函数：延迟等待 (Promise 封装的 setTimeout)
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        // 初始化 8 个 CIE
+        function initCIEs() {
+            const centerX = canvas.clientWidth / 2;
+            const centerY = canvas.clientHeight / 2 + 50;
+            const radius = 350;
+            const startAngle = Math.PI + 0.5; // 从左侧开始
+            const endAngle = 2 * Math.PI - 0.5; // 到右侧结束
+            const stepAngle = (endAngle - startAngle) / (cieCount - 1);
 
-        // 辅助函数：计算距离并获取距离目标最近的 Node 节点
-        function getClosestNode(targetEl, nodesList) {
-            const targetRect = targetEl.getBoundingClientRect();
-            // 获取目标中心点坐标
-            const tx = targetRect.left + targetRect.width / 2;
-            const ty = targetRect.top + targetRect.height / 2;
+            for (let i = 0; i < cieCount; i++) {
+                const angle = startAngle + i * stepAngle;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
 
-            let minDistance = Infinity;
-            let closestNode = null;
+                const cie = document.createElement('div');
+                cie.className = 'cie-panel';
+                cie.style.left = `${x - 30}px`;
+                cie.style.top = `${y - 40}px`;
+                cie.dataset.targetY = y - 40;
 
-            // 遍历计算与所有 Node 的欧几里得直线距离
-            nodesList.forEach(node => {
-                const rect = node.getBoundingClientRect();
-                const nx = rect.left + rect.width / 2;
-                const ny = rect.top + rect.height / 2;
-                const dist = Math.hypot(nx - tx, ny - ty); // 计算两点距离
+                const label = document.createElement('div');
+                label.className = 'cie-label';
+                label.innerText = '2 WIRELESS LOOP : 250 DEVICES';
+                cie.appendChild(label);
 
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    closestNode = node;
+                canvas.appendChild(cie);
+                cies.push({ element: cie, label: label, x: x, y: y });
+            }
+        }
+
+        function nextStep() {
+            currentStep++;
+            const desc = document.getElementById('step-desc');
+
+            if (currentStep === 1) {
+                desc.innerText = "Step 01: CIE 部署与网络互联中...";
+                cies.forEach((cie, index) => {
+                    setTimeout(() => {
+                        cie.element.style.opacity = '1';
+                        cie.element.style.transform = 'translateY(0)';
+
+                        // 连接线逻辑
+                        if (index > 0) {
+                            drawConnection(cies[index - 1], cie);
+                        }
+                    }, index * 200);
+                });
+            }
+            else if (currentStep === 2) {
+                desc.innerText = "Step 02: 读取节点配置信息...";
+                cies.forEach((cie, index) => {
+                    setTimeout(() => {
+                        cie.label.style.opacity = '1';
+                        cie.label.style.transform = 'translateX(-50%) translateY(-10px)';
+                    }, index * 100);
+                });
+            }
+            else if (currentStep === 3) {
+                desc.innerText = "Step 03: 全系统终端容量汇聚...";
+                animateDeviceAggregation();
+            }
+            else {
+                // 重置
+                location.reload();
+            }
+        }
+
+        function drawConnection(cieA, cieB) {
+            const line = document.createElement('div');
+            line.className = 'network-line';
+
+            const dx = cieB.x - cieA.x;
+            const dy = cieB.y - cieA.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            line.style.width = `${dist}px`;
+            line.style.left = `${cieA.x}px`;
+            line.style.top = `${cieA.y}px`;
+            line.style.transformOrigin = '0 50%';
+            line.style.transform = `rotate(${angle}deg)`;
+
+            canvas.appendChild(line);
+            setTimeout(() => line.style.opacity = '0.3', 500);
+        }
+
+        function animateDeviceAggregation() {
+            const counter = document.getElementById('total-counter');
+            const countNum = document.getElementById('count-num');
+            counter.classList.add('active-counter');
+
+            cies.forEach((cie, cieIndex) => {
+                // 每个 CIE 发出 10 个粒子代表设备群
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        createParticle(cie.x, cie.y);
+                    }, cieIndex * 100 + i * 50);
                 }
             });
-            return closestNode;
+
+            // 数字滚动动画
+            let currentCount = 0;
+            const targetTotal = 2000;
+            const duration = 2500;
+            const startTime = performance.now();
+
+            function updateCount(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                currentCount = Math.floor(progress * targetTotal);
+                countNum.innerText = currentCount.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCount);
+                } else {
+                    countNum.classList.add('text-sky-400');
+                    countNum.style.textShadow = '0 0 30px rgba(14, 165, 233, 0.8)';
+                }
+            }
+            requestAnimationFrame(updateCount);
         }
 
-        // 核心动画：发射脉冲信号
-        // fromEl: 起点元素, toEl: 终点元素, color: 脉冲颜色, duration: 飞行时间
-        async function sendPulse(fromEl, toEl, color, duration = 600) {
-            // 1. 获取起点和终点在地图容器中的坐标中心点
-            const mapRect = map.getBoundingClientRect();
-            const fromRect = fromEl.getBoundingClientRect();
-            const toRect = toEl.getBoundingClientRect();
+        function createParticle(startX, startY) {
+            const p = document.createElement('div');
+            p.className = 'device-particle';
+            p.style.left = `${startX}px`;
+            p.style.top = `${startY}px`;
+            canvas.appendChild(p);
 
-            const startX = fromRect.left + fromRect.width / 2 - mapRect.left;
-            const startY = fromRect.top + fromRect.height / 2 - mapRect.top;
-            const endX = toRect.left + toRect.width / 2 - mapRect.left;
-            const endY = toRect.top + toRect.height / 2 - mapRect.top;
+            const targetX = canvas.clientWidth / 2;
+            const targetY = canvas.clientHeight / 2;
 
-            // 2. 创建脉冲粒子 DOM
-            const pulse = document.createElement('div');
-            pulse.className = 'signal-pulse';
-            pulse.style.backgroundColor = color;
-            pulse.style.boxShadow = `0 0 15px 3px ${color}`;
-            // 初始位置放置在起点
-            pulse.style.left = `${startX - 4}px`; // 减去自身半径使其居中
-            pulse.style.top = `${startY - 4}px`;
-
-            map.appendChild(pulse);
-
-            // 3. 使用 Web Animations API 执行飞行路线动画
-            const deltaX = endX - startX;
-            const deltaY = endY - startY;
-
-            const animation = pulse.animate([
-                { transform: 'translate(0, 0) scale(1)' },
-                { transform: `translate(${deltaX / 2}px, ${deltaY / 2}px) scale(1.5)` }, // 中途变大一点
-                { transform: `translate(${deltaX}px, ${deltaY}px) scale(1)` }
+            const anim = p.animate([
+                { left: `${startX}px`, top: `${startY}px`, opacity: 1 },
+                { left: `${targetX}px`, top: `${targetY}px`, opacity: 0 }
             ], {
-                duration: duration,
-                easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)', // 缓动效果：先快后慢
-                fill: 'forwards'
+                duration: 1000 + Math.random() * 1000,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
             });
 
-            // 4. 等待动画播放完毕，销毁粒子
-            await animation.finished;
-            pulse.remove();
+            anim.onfinish = () => p.remove();
         }
 
-        // 主演剧本：演示流程
-        async function startDemo() {
-            // 禁用按钮防重复点击
-            btnStart.disabled = true;
-
-            // 阶段 1：探头探测到火警 (呼吸红光)
-            detTrigger.classList.add('fire-breathing');
-
-            // 让它呼吸闪烁一会儿 (1.2秒) 给观众视觉反应时间
-            await sleep(1200);
-
-            // 阶段 2：传给主节点 (红色脉冲)
-            // 颜色使用刺眼的红色
-            await sendPulse(detTrigger, nodeCenter, '#ff1111', 500);
-
-            // 主节点接收反馈
-            nodeCenter.classList.add('node-received');
-            await sleep(200); // 极短的内部处理延迟
-
-            // 阶段 3：主节点下发给其他子节点 (蓝色双向箭头概念)
-            // 使用 Promise.all 让两条脉冲同时发射
-            await Promise.all([
-                sendPulse(nodeCenter, nodeLeft, '#00e5ff', 500),
-                sendPulse(nodeCenter, nodeRight, '#00e5ff', 500)
-            ]);
-
-            // 子节点接收反馈
-            nodeLeft.classList.add('node-received');
-            nodeRight.classList.add('node-received');
-
-            // 短暂延迟后触发最终阶段
-            await sleep(150);
-
-            // 阶段 4：每个 Node 发送红色圆点到距离自己最近的 Sounder
-            const allNodes = [nodeCenter, nodeLeft, nodeRight];
-
-            const sounderPromises = Array.from(sounders).map(sounder => {
-                // 获取距离当前 Sounder 最近的 Node 节点
-                const closestNode = getClosestNode(sounder, allNodes);
-
-                // 由最近的 Node 发射刺眼的红色脉冲
-                return sendPulse(closestNode, sounder, '#ff1111', 500).then(() => {
-                    // 脉冲一抵达，Sounder 立即爆发雾状水波纹光晕
-                    sounder.classList.add('alarming');
-                });
-            });
-
-            await Promise.all(sounderPromises);
-
-            // 演示结束，恢复按钮状态（可以随时点重置）
-        }
-
-        // 重置系统到初始状态
-        function resetDemo() {
-            btnStart.disabled = false;
-
-            // 移除所有动态添加的动画类名
-            detTrigger.classList.remove('fire-breathing');
-            nodeCenter.classList.remove('node-received');
-            nodeLeft.classList.remove('node-received');
-            nodeRight.classList.remove('node-received');
-
-            sounders.forEach(sounder => {
-                sounder.classList.remove('alarming');
-            });
-
-            // 清理可能残留的脉冲粒子
-            document.querySelectorAll('.signal-pulse').forEach(p => p.remove());
-        }
-
+        window.onload = initCIEs;
     </script>
 </body>
 

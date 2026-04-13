@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Capcity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/capacity.css">
+</head>
+<body>
+  <main class="page page-capacity" data-capacity-scene="network-level">
+    <section class="page-grid capacity-layout">
+      <header class="capacity-header">
+        <div class="page-copy capacity-hero capacity-hero-spotlight">
+          <h2>System Capcity</h2>
+        </div>
+      </header>
+
+      <div class="visual-card capacity-stage-shell" id="capacity-stage-shell">
+        <div class="capacity-stage" id="capacity-stage" aria-label="System Capcity stage">
+          <div class="capacity-stage-head">
+            <p class="capacity-stage-title">Network Level</p>
+            <p class="capacity-stage-status" id="capacity-stage-status"></p>
+          </div>
+
+          <div class="capacity-stage-surface" id="capacity-stage-surface">
+            <div class="capacity-network" id="capacity-network"></div>
+            <div class="capacity-panels" id="capacity-panels"></div>
+            <div class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"></div>
+
+            <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
+              <div class="capacity-aggregation-core"></div>
+              <div class="capacity-total-value" id="capacity-total-value">0</div>
+              <p class="capacity-total-label">2000 devices</p>
+            </div>
+          </div>
+
+          <button type="button" class="capacity-stage-hint" id="capacity-stage-hint">Click to start</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/page-messaging.js"></script>
+  <script src="../js/capacity-page.js"></script>
+</body>
+</html>

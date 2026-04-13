@@ -35,8 +35,8 @@ test("reliability split-stage css defines a two-row stage stack and line variant
 
   assert.match(
     reliabilityCss,
-    /\.reliability-substage-label\s*\{/,
-    "Expected reliability.css to style the per-stage label."
+    /\.reliability-substage-label\s*\{[\s\S]*?font-size:\s*2(?:\.0+)?rem;[\s\S]*?font-weight:\s*(?:700|800);/,
+    "Expected reliability.css to give the one-way and two-way stage labels a much larger, more readable treatment."
   );
 
   assert.match(

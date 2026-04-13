@@ -10,14 +10,14 @@
   --stage-bg: var(--space-black);
   
   justify-content: flex-start;
-  padding-block: 24px;
+  padding-block: 18px;
 }
 
 .page-response .response-layout {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
-  height: calc(100vh - 48px);
+  height: calc(100vh - 36px);
 }
 
 .response-header {
