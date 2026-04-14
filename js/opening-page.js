@@ -244,6 +244,27 @@
     throw new Error("Failed to parse opening.json scene payload.");
   }
 
+  function hideOpeningNodeOrbs(playerInstance) {
+    if (!playerInstance || !playerInstance._states || typeof playerInstance._states.get !== "function") {
+      return;
+    }
+
+    const openingState = playerInstance._states.get(openingStateMode);
+    if (!openingState || !Array.isArray(openingState.nodes)) {
+      return;
+    }
+
+    for (let i = 0; i < openingState.nodes.length; i += 1) {
+      const node = openingState.nodes[i];
+      if (node && node.mesh) {
+        node.mesh.visible = false;
+      }
+      if (node && node.glow) {
+        node.glow.visible = false;
+      }
+    }
+  }
+
   async function loadOpeningScene() {
     const response = await fetch(openingStatePath, {
       credentials: "same-origin",
@@ -298,6 +319,7 @@
       if (!switched) {
         throw new Error("Unable to activate opening scene.");
       }
+      hideOpeningNodeOrbs(player);
 
       openingStage.removeAttribute("aria-busy");
       setMessage("");

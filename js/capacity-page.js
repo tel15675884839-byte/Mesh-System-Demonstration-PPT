@@ -152,7 +152,7 @@
     capacityStage.classList.toggle("is-scene-expansion", isExpansionScene);
 
     if (capacityStageTitle) {
-      capacityStageTitle.textContent = isExpansionScene ? "2 Loop Expansion Card" : "Network Level";
+      capacityStageTitle.textContent = isExpansionScene ? "Advanced Scaling Architecture" : "Network Level";
     }
   }
 
@@ -807,12 +807,26 @@
       record.count.classList.add("is-visible");
     }
 
-    capacityExpansion.classList.add("is-loops-visible", "is-complete");
+    capacityExpansion.classList.add("is-loops-visible");
     isExpansionRunning = false;
+    interactionStep = 5;
+
+    setStageMessage(
+      "The loop infrastructure is established. Click once more to reveal the wireless node capacity.",
+      "Click to reveal node capacity"
+    );
+  }
+
+  function revealNodeCapacity() {
+    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 5) {
+      return;
+    }
+
+    capacityExpansion.classList.add("is-complete");
     interactionStep = 0;
 
     setStageMessage(
-      "The 2 Loop Expansion Card infographic is complete. Click to replay from the beginning.",
+      "The Advanced Scaling Architecture is now fully demonstrated. Click to replay from the beginning.",
       "Click to replay"
     );
   }
@@ -844,6 +858,11 @@
 
     if (interactionStep === 4) {
       runExpansionSequence();
+      return;
+    }
+
+    if (interactionStep === 5) {
+      revealNodeCapacity();
       return;
     }
 

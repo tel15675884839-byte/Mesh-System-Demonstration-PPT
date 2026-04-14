@@ -753,3 +753,214 @@
     letter-spacing: 0.12em;
   }
 }
+
+/* Node Capacity Highlight (Specific to System Capacity Expansion Scene) */
+.relay-capacity-highlight {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(92%, 1160px);
+  padding: 24px 48px;
+  background: rgba(14, 28, 44, 0.5);
+  border-radius: 28px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(112, 240, 255, 0.08);
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.capacity-expansion.is-complete .relay-capacity-highlight {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.capacity-expansion:not(.is-complete) .relay-capacity-highlight {
+  transform: translateX(-50%) translateY(30px);
+}
+
+/* Node Side (MASTER) */
+.cap-node-side {
+  position: relative;
+  flex: 0 0 200px;
+  display: flex;
+  justify-content: center;
+}
+
+.node-master-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.cap-icon-node {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(94, 230, 255, 0.5));
+  position: relative;
+  z-index: 2;
+  animation: node-float 3s ease-in-out infinite;
+}
+
+.node-glow-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%;
+  height: 140%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(112, 240, 255, 0.15) 0%, transparent 70%);
+  border: 1px solid rgba(112, 240, 255, 0.1);
+  animation: pulse-ring 4s ease-out infinite;
+}
+
+/* Link Side */
+.cap-link-side {
+  flex: 1;
+  height: 60px;
+  margin: 0 40px;
+}
+
+.cap-link-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cap-link-path {
+  fill: none;
+  stroke: rgba(94, 230, 255, 0.65);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 8;
+  animation: slide-dash-cap 2.5s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(94, 230, 255, 0.5));
+}
+
+.cap-link-sub-path {
+  fill: none;
+  stroke: rgba(94, 230, 255, 0.15);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 10;
+  animation: slide-dash-cap 4s linear infinite;
+}
+
+/* Smoke Side (CLOUD) */
+.cap-smoke-side {
+  flex: 0 0 420px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.device-cloud {
+  position: relative;
+  width: 200px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cloud-icon {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  animation: cloud-float 4s ease-in-out infinite;
+}
+
+/* Positioning icons in a semi-random cloud */
+.det-1 { transform: translate(0, 0); z-index: 10; width: 56px; height: 56px; }
+.snd-1 { transform: translate(50px, -40px); z-index: 9; animation-delay: 0.5s; width: 44px; height: 44px; }
+.mcp-1 { transform: translate(-45px, -35px); z-index: 9; animation-delay: 0.8s; width: 44px; height: 44px; }
+
+.det-2.ghost { transform: translate(80px, 15px); opacity: 0.6; z-index: 5; width: 32px; height: 32px; animation-delay: 1.2s; }
+.snd-2.ghost { transform: translate(-70px, 20px); opacity: 0.45; z-index: 4; width: 36px; height: 36px; animation-delay: 1.5s; }
+.det-3.ghost { transform: translate(30px, 55px); opacity: 0.35; z-index: 3; width: 28px; height: 28px; animation-delay: 0.2s; }
+.mcp-2.ghost { transform: translate(-30px, 50px); opacity: 0.4; z-index: 4; width: 34px; height: 34px; animation-delay: 1.8s; }
+.det-4.ghost { transform: translate(0, -70px); opacity: 0.25; z-index: 2; width: 26px; height: 26px; animation-delay: 2.1s; }
+
+.cap-info-text {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.cap-number {
+  font-family: var(--font-mono);
+  font-size: 52px;
+  font-weight: 800;
+  color: #5ee6ff;
+  text-shadow: 0 0 25px rgba(94, 230, 255, 0.6);
+  line-height: 1;
+}
+
+.cap-label {
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.02em;
+}
+
+@keyframes node-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes cloud-float {
+  0%, 100% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)); }
+  50% { transform: translate(var(--tw-translate-x), calc(var(--tw-translate-y) - 6px)); }
+}
+
+/* Correction for cloud-float as it doesn't support combined transforms easily without variables, using a simpler approach */
+.cloud-icon {
+  animation: none; /* Disable the generic float first */
+}
+.det-1 { animation: float-det1 5s ease-in-out infinite; }
+.snd-1 { animation: float-snd1 6s ease-in-out infinite; }
+.mcp-1 { animation: float-mcp1 5.5s ease-in-out infinite; }
+
+@keyframes float-det1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -6px); } }
+@keyframes float-snd1 { 0%, 100% { transform: translate(50px, -40px); } 50% { transform: translate(50px, -48px); } }
+@keyframes float-mcp1 { 0%, 100% { transform: translate(-45px, -35px); } 50% { transform: translate(-45px, -42px); } }
+
+@keyframes pulse-ring {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.25; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+}
+
+@keyframes slide-dash-cap {
+  to { stroke-dashoffset: -28px; }
+}
+
+@media (max-width: 1200px) {
+  .relay-capacity-highlight { width: 96%; padding: 20px 32px; }
+  .cap-smoke-side { flex: 0 0 320px; gap: 20px; }
+  .device-cloud { width: 140px; }
+  .cap-number { font-size: 44px; }
+  .node-master-wrapper { width: 70px; height: 70px; }
+}
+
+@media (max-width: 960px) {
+  .relay-capacity-highlight { 
+    flex-direction: column;
+    height: auto;
+    gap: 30px;
+    padding: 30px 20px;
+  }
+  .cap-link-side { display: none; }
+  .cap-node-side, .cap-smoke-side { flex: none; width: 100%; justify-content: center; }
+  .cap-info-text { align-items: center; }
+}

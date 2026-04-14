@@ -777,6 +777,24 @@
   dominant-baseline: middle;
 }
 
+
+@keyframes slide-dash {
+  to {
+    stroke-dashoffset: -20px;
+  }
+}
+
+@keyframes fade-up-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 @keyframes stage-breath {
   0%,
   100% {
