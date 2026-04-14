@@ -10,6 +10,7 @@
   const capacityDeviceOverlay = document.getElementById("capacity-device-overlay");
   const capacityAggregation = document.getElementById("capacity-aggregation");
   const capacityTotalValue = document.getElementById("capacity-total-value");
+  const capacityStageTitle = capacityStage ? capacityStage.querySelector(".capacity-stage-title") : null;
 
   if (
     !page ||
@@ -30,6 +31,8 @@
   const panelCount = 8;
   const loopsPerPanel = 2;
   const devicesPerPanel = 250;
+  const expansionLoopCount = 4;
+  const nodesPerExpansionLoop = 32;
   const totalDevices = panelCount * devicesPerPanel;
   const panelScale = 1.7;
   const arcStartAngle = Math.PI * 1.08;
@@ -37,14 +40,33 @@
 
   const panelRecords = [];
   const lineRecords = [];
+  const expansionRowRecords = [];
   const activeParticleAnimations = new Set();
   let connectionSvg = null;
   let interactionStep = 0;
   let introRunId = 0;
   let aggregationFrame = 0;
   let countAnimationRunId = 0;
+  let expansionRunId = 0;
   let isIntroRunning = false;
   let isAggregating = false;
+  let isExpansionRunning = false;
+  let expansionSceneVisible = false;
+  let capacityExpansion = document.getElementById("capacity-expansion");
+  let capacityExpansionPanel = document.getElementById("capacity-expansion-panel");
+  let capacityExpansionLink = document.getElementById("capacity-expansion-link");
+  let capacityExpansionLinkLine = null;
+  let capacityExpansionCard = document.getElementById("capacity-expansion-card");
+  let capacityExpansionLoops = document.getElementById("capacity-expansion-loops");
+  let expansionLinkRevealProgress = 0;
+
+  // Synchronization settings: Scale physical particles for performance while maintaining dense swarm look
+  const particlesPerPanel = 40; 
+  const particleBaseDuration = 1400;
+  const panelDelayStep = 50;
+  const particleDelayStep = 10;
+  // Total duration calculation: Last panels delay + Last particles delay + Particle duration
+  const totalSyncDuration = ((panelCount - 1) * panelDelayStep) + ((particlesPerPanel - 1) * particleDelayStep) + particleBaseDuration;
 
   function sleep(ms) {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -119,6 +141,197 @@
 
     capacityStageSurface.style.setProperty("--panel-scale", String(panelScale));
     applyPanelPositions();
+  }
+
+  function setSceneMode(mode) {
+    const isExpansionScene = mode === "expansion-card";
+
+    page.dataset.capacityScene = isExpansionScene ? "expansion-card" : "network-level";
+    capacityStage.classList.toggle("is-scene-expansion", isExpansionScene);
+
+    if (capacityStageTitle) {
+      capacityStageTitle.textContent = isExpansionScene ? "2 Loop Expansion Card" : "Network Level";
+    }
+  }
+
+  function ensureExpansionScene() {
+    if (!capacityExpansion) {
+      capacityExpansion = document.createElement("div");
+      capacityExpansion.id = "capacity-expansion";
+      capacityExpansion.className = "capacity-expansion";
+      capacityExpansion.setAttribute("aria-hidden", "true");
+    }
+
+    if (!capacityExpansionPanel) {
+      capacityExpansionPanel = document.createElement("div");
+      capacityExpansionPanel.id = "capacity-expansion-panel";
+      capacityExpansionPanel.className = "capacity-expansion-panel";
+      capacityExpansionPanel.setAttribute("aria-hidden", "true");
+    }
+
+    if (!capacityExpansionLink) {
+      capacityExpansionLink = document.createElement("div");
+      capacityExpansionLink.id = "capacity-expansion-link";
+      capacityExpansionLink.className = "capacity-expansion-link";
+      capacityExpansionLink.setAttribute("aria-hidden", "true");
+    }
+
+    if (!capacityExpansionLinkLine) {
+      capacityExpansionLinkLine = document.createElement("span");
+      capacityExpansionLinkLine.className = "capacity-expansion-link-line";
+      capacityExpansionLinkLine.style.left = "0";
+      capacityExpansionLinkLine.style.top = "0";
+      capacityExpansionLinkLine.style.width = "0";
+      capacityExpansionLinkLine.style.opacity = "0";
+      capacityExpansionLinkLine.style.transition = "transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease";
+    }
+
+    if (!capacityExpansionCard) {
+      capacityExpansionCard = document.createElement("div");
+      capacityExpansionCard.id = "capacity-expansion-card";
+      capacityExpansionCard.className = "capacity-expansion-card";
+      capacityExpansionCard.setAttribute("aria-hidden", "true");
+      capacityExpansionCard.innerHTML = [
+        '<img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">'
+      ].join("");
+    }
+
+    if (!capacityExpansionLoops) {
+      capacityExpansionLoops = document.createElement("div");
+      capacityExpansionLoops.id = "capacity-expansion-loops";
+      capacityExpansionLoops.className = "capacity-expansion-loops";
+    }
+
+    if (!capacityExpansion.parentNode) {
+      capacityStageSurface.appendChild(capacityExpansion);
+    }
+
+    if (!capacityExpansionPanel.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionPanel);
+    }
+
+    if (!capacityExpansionLink.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionLink);
+    }
+
+    if (!capacityExpansionCard.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionCard);
+    }
+
+    if (!capacityExpansionLoops.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionLoops);
+    }
+
+    if (!capacityExpansionLinkLine.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionLinkLine);
+    }
+  }
+
+  function buildExpansionRows(container = capacityExpansionLoops) {
+    if (!container) {
+      return [];
+    }
+
+    container.innerHTML = "";
+    expansionRowRecords.length = 0;
+
+    for (let index = 0; index < expansionLoopCount; index += 1) {
+      const visibleClusterNodes = Math.min(nodesPerExpansionLoop, 8);
+      const row = document.createElement("article");
+      row.className = "capacity-expansion-row";
+      row.dataset.loopIndex = String(index + 1);
+
+      const track = document.createElement("div");
+      track.className = "capacity-loop-track";
+      track.setAttribute("aria-hidden", "true");
+
+      const cluster = document.createElement("div");
+      cluster.className = "capacity-node-cluster";
+      cluster.setAttribute("aria-hidden", "true");
+
+      for (let nodeIndex = 0; nodeIndex < visibleClusterNodes; nodeIndex += 1) {
+        const node = document.createElement("span");
+        node.className = "capacity-node";
+        node.setAttribute("aria-hidden", "true");
+        cluster.appendChild(node);
+      }
+
+      const nodeCount = document.createElement("span");
+      nodeCount.className = "capacity-node-count";
+      nodeCount.textContent = `${nodesPerExpansionLoop} Nodes`;
+
+      row.appendChild(track);
+      row.appendChild(cluster);
+      row.appendChild(nodeCount);
+      container.appendChild(row);
+
+      expansionRowRecords.push({
+        element: row,
+        track,
+        cluster,
+        count: nodeCount
+      });
+    }
+
+    return expansionRowRecords;
+  }
+
+  function positionExpansionLink(revealProgress = expansionLinkRevealProgress) {
+    if (!capacityExpansionLinkLine || !capacityExpansionPanel || !capacityExpansionCard) {
+      return;
+    }
+
+    const start = getPanelCenter(capacityExpansionPanel);
+    const end = getPanelCenter(capacityExpansionCard);
+    const distance = Math.max(Math.hypot(end.x - start.x, end.y - start.y), 1);
+    const angle = Math.atan2(end.y - start.y, end.x - start.x);
+    const clampedProgress = Math.min(Math.max(revealProgress, 0), 1);
+
+    expansionLinkRevealProgress = clampedProgress;
+    capacityExpansionLinkLine.style.left = `${start.x}px`;
+    capacityExpansionLinkLine.style.top = `${start.y}px`;
+    capacityExpansionLinkLine.style.width = `${distance}px`;
+    capacityExpansionLinkLine.style.opacity = clampedProgress > 0 ? "1" : "0";
+    capacityExpansionLinkLine.style.transform = `rotate(${angle}rad) scaleX(${clampedProgress})`;
+  }
+
+  function resetExpansionVisuals() {
+    expansionLinkRevealProgress = 0;
+    expansionRunId += 1;
+    isExpansionRunning = false;
+    expansionSceneVisible = false;
+
+    if (capacityExpansion) {
+      capacityExpansion.classList.remove("is-visible", "is-panel-visible", "is-link-visible", "is-card-visible", "is-loops-visible", "is-complete", "is-animating");
+      capacityExpansion.setAttribute("aria-hidden", "true");
+    }
+
+    if (capacityExpansionPanel) {
+      capacityExpansionPanel.classList.remove("is-visible");
+      capacityExpansionPanel.setAttribute("aria-hidden", "true");
+    }
+
+    if (capacityExpansionLink) {
+      capacityExpansionLink.classList.remove("is-visible");
+      capacityExpansionLink.setAttribute("aria-hidden", "true");
+    }
+
+    if (capacityExpansionLinkLine) {
+      capacityExpansionLinkLine.style.opacity = "0";
+      capacityExpansionLinkLine.style.transform = "rotate(0rad) scaleX(0)";
+    }
+
+    if (capacityExpansionCard) {
+      capacityExpansionCard.classList.remove("is-visible");
+      capacityExpansionCard.setAttribute("aria-hidden", "true");
+    }
+
+    expansionRowRecords.forEach((record) => {
+      record.element.classList.remove("is-visible");
+      record.track.classList.remove("is-visible");
+      record.cluster.classList.remove("is-visible");
+      record.count.classList.remove("is-visible");
+    });
   }
 
   function clearNetworkLines() {
@@ -225,6 +438,8 @@
     clearParticles();
     clearNetworkLines();
     resetPanels();
+    resetExpansionVisuals();
+    setSceneMode("network-level");
 
     if (aggregationFrame) {
       window.cancelAnimationFrame(aggregationFrame);
@@ -232,7 +447,7 @@
     }
     countAnimationRunId += 1;
 
-    capacityAggregation.classList.remove("is-visible");
+    capacityAggregation.classList.remove("is-visible", "is-finished");
     capacityStageShell.classList.remove("is-aggregating");
     capacityTotalValue.textContent = "0";
     isAggregating = false;
@@ -344,9 +559,9 @@
         }
       ],
       {
-        duration: 1350 + Math.random() * 450,
+        duration: particleBaseDuration,
         delay,
-        easing: "cubic-bezier(0.18, 0.84, 0.22, 1)",
+        easing: "cubic-bezier(0.25, 0.1, 0.25, 1)", // Smoother swarm easing
         fill: "forwards"
       }
     );
@@ -368,9 +583,9 @@
   }
 
   function animateCountUp(targetValue, duration) {
-    const startTime = performance.now();
     const runId = countAnimationRunId + 1;
     countAnimationRunId = runId;
+    let startTime = null;
 
     if (aggregationFrame) {
       window.cancelAnimationFrame(aggregationFrame);
@@ -380,6 +595,9 @@
     function tick(now) {
       if (runId !== countAnimationRunId) {
         return;
+      }
+      if (startTime === null) {
+        startTime = now;
       }
 
       const rawProgress = (now - startTime) / duration;
@@ -394,6 +612,7 @@
       } else {
         aggregationFrame = 0;
         capacityTotalValue.textContent = String(targetValue);
+        capacityAggregation.classList.add("is-finished");
         isAggregating = false;
       }
     }
@@ -410,33 +629,151 @@
     isAggregating = true;
     capacityStageShell.classList.add("is-aggregating");
     capacityAggregation.classList.add("is-visible");
+    capacityAggregation.classList.remove("is-finished");
     capacityTotalValue.textContent = "0";
 
+    animateCountUp(totalDevices, totalSyncDuration);
+
     setStageMessage(
-      "All panel capacity is now converging into the lower stage hub, combining into the full Network level total of 2000 devices.",
-      "Click to replay"
+      "All panel capacity is now converging into the lower stage hub, combining into the full Network level total of 2000 devices. Click again to open the 2 Loop Expansion Card.",
+      "Click to open expansion card"
     );
 
     const target = getAggregationCenter();
 
     panelRecords.forEach((record, panelIndex) => {
       const center = getPanelCenter(record.element);
-      const particleCount = 18;
 
-      for (let particleIndex = 0; particleIndex < particleCount; particleIndex += 1) {
-        const spreadX = (Math.random() - 0.5) * 18;
-        const spreadY = (Math.random() - 0.5) * 18;
-        const delay = panelIndex * 85 + particleIndex * 24;
+      for (let particleIndex = 0; particleIndex < particlesPerPanel; particleIndex += 1) {
+        const spreadX = (Math.random() - 0.5) * 24;
+        const spreadY = (Math.random() - 0.5) * 24;
+        const delay = panelIndex * panelDelayStep + particleIndex * particleDelayStep;
 
         createParticle(center.x + spreadX, center.y + spreadY, target.x, target.y, delay);
       }
     });
+  }
 
-    animateCountUp(totalDevices, 900);
+  function showExpansionScene() {
+    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 3) {
+      return;
+    }
+
+    ensureExpansionScene();
+    clearParticles();
+    clearNetworkLines();
+    resetPanels();
+    buildExpansionRows();
+    setSceneMode("expansion-card");
+    capacityStageShell.classList.remove("is-aggregating");
+
+    expansionSceneVisible = true;
+    interactionStep = 4;
+
+    capacityExpansion.setAttribute("aria-hidden", "false");
+    capacityExpansion.classList.add("is-visible");
+    positionExpansionLink(0);
+
+    setStageMessage(
+      "The 2 Loop Expansion Card is staged. Click again to play the one-time 4 loop and 32 Nodes infographic.",
+      "Click to animate expansion"
+    );
+  }
+
+  async function runExpansionSequence() {
+    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 4) {
+      return;
+    }
+
+    ensureExpansionScene();
+
+    if (!expansionSceneVisible) {
+      return;
+    }
+
+    const runId = expansionRunId + 1;
+    expansionRunId = runId;
+    isExpansionRunning = true;
+
+    capacityExpansion.classList.add("is-animating");
+    capacityExpansionPanel.setAttribute("aria-hidden", "false");
+    capacityExpansionLink.setAttribute("aria-hidden", "false");
+    capacityExpansionCard.setAttribute("aria-hidden", "false");
+
+    setStageMessage(
+      "Panel reveal: the 2 Loop Expansion Card begins its infographic sequence.",
+      "Revealing panel..."
+    );
+
+    capacityExpansionPanel.classList.add("is-visible");
+    await sleep(220);
+
+    if (runId !== expansionRunId) {
+      return;
+    }
+
+    capacityExpansionLink.classList.add("is-visible");
+    positionExpansionLink(0);
+
+    window.requestAnimationFrame(() => {
+      if (runId !== expansionRunId) {
+        return;
+      }
+
+      positionExpansionLink(1);
+    });
+
+    setStageMessage(
+      "The dashed line is growing toward the card before the 2 Loop Expansion Card reveals itself.",
+      "Growing connector..."
+    );
+
+    await sleep(560);
+
+    if (runId !== expansionRunId) {
+      return;
+    }
+
+    capacityExpansionCard.classList.add("is-visible");
+    setStageMessage(
+      "The card is visible. Four loops now reveal from top to bottom.",
+      "Revealing loops..."
+    );
+
+    await sleep(220);
+
+    if (runId !== expansionRunId) {
+      return;
+    }
+
+    for (let index = 0; index < expansionRowRecords.length; index += 1) {
+      const record = expansionRowRecords[index];
+
+      record.element.classList.add("is-visible");
+      record.track.classList.add("is-visible");
+
+      await sleep(120);
+
+      if (runId !== expansionRunId) {
+        return;
+      }
+
+      record.cluster.classList.add("is-visible");
+      record.count.classList.add("is-visible");
+    }
+
+    capacityExpansion.classList.add("is-loops-visible", "is-complete");
+    isExpansionRunning = false;
+    interactionStep = 0;
+
+    setStageMessage(
+      "The 2 Loop Expansion Card infographic is complete. Click to replay from the beginning.",
+      "Click to replay"
+    );
   }
 
   function handleAdvance() {
-    if (isIntroRunning || isAggregating) {
+    if (isIntroRunning || isAggregating || isExpansionRunning) {
       return;
     }
 
@@ -455,6 +792,16 @@
       return;
     }
 
+    if (interactionStep === 3) {
+      showExpansionScene();
+      return;
+    }
+
+    if (interactionStep === 4) {
+      runExpansionSequence();
+      return;
+    }
+
     interactionStep = 0;
     runIntroSequence();
   }
@@ -467,12 +814,18 @@
     if (lineRecords.length) {
       renderNetworkLines();
     }
+
+    if (capacityExpansion && expansionSceneVisible) {
+      positionExpansionLink();
+    }
   }
 
   buildPanels();
+  ensureExpansionScene();
+  buildExpansionRows();
   resetStageVisuals();
   setStageMessage(
-    "Click to start the panel drop. The first click launches the arc landing, the next reveals per-panel capacity, and the third totals the system.",
+    "Click to start the panel drop. The first click launches the arc landing, the next reveals per-panel capacity, the third totals the system, and the fourth opens the 2 Loop Expansion Card.",
     "Click to start"
   );
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Capcity</title>
+  <title>System Capacity</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,12 +15,12 @@
     <section class="page-grid capacity-layout">
       <header class="capacity-header">
         <div class="page-copy capacity-hero capacity-hero-spotlight">
-          <h2>System Capcity</h2>
+          <h2>System Capacity</h2>
         </div>
       </header>
 
       <div class="visual-card capacity-stage-shell" id="capacity-stage-shell">
-        <div class="capacity-stage" id="capacity-stage" aria-label="System Capcity stage">
+        <div class="capacity-stage" id="capacity-stage" aria-label="System Capacity stage">
           <div class="capacity-stage-head">
             <p class="capacity-stage-title">Network Level</p>
             <p class="capacity-stage-status" id="capacity-stage-status"></p>
@@ -33,8 +33,32 @@
 
             <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
               <div class="capacity-aggregation-core"></div>
-              <div class="capacity-total-value" id="capacity-total-value">0</div>
-              <p class="capacity-total-label">2000 devices</p>
+              <div class="capacity-value-wrapper">
+                <div class="capacity-total-value" id="capacity-total-value">0</div>
+                <span class="capacity-devices-label" id="capacity-devices-label">Devices</span>
+              </div>
+            </div>
+
+            <div class="capacity-expansion" id="capacity-expansion" aria-hidden="true">
+              <div class="capacity-expansion-panel" id="capacity-expansion-panel">
+                <p class="capacity-expansion-kicker">Expansion view</p>
+                <h3 class="capacity-expansion-title">Capacity scales into clustered loops.</h3>
+                <p class="capacity-expansion-copy">
+                  A clean presentation layer keeps the capacity story readable while the mesh breaks into four orderly loop groups.
+                </p>
+              </div>
+
+              <div class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"></div>
+
+              <div class="capacity-expansion-card" id="capacity-expansion-card">
+                <img
+                  class="capacity-expansion-card-image"
+                  src="../assets/icons/loop expansion card.svg"
+                  alt=""
+                >
+              </div>
+
+              <div class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"></div>
             </div>
           </div>
 
