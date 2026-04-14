@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/product-showcase.css">
+</head>
+<body>
+  <main class="page page-product-showcase">
+    <section class="page-grid product-layout">
+      <header class="product-header">
+        <div class="page-copy product-hero product-hero-spotlight">
+          <h2>Product Showcase</h2>
+        </div>
+      </header>
+
+      <div class="visual-card product-stage-shell">
+        <section class="product-stage" id="product-stage" aria-label="Wireless product showcase stage">
+          <div class="product-stage-main">
+            <section class="product-visual-panel" aria-live="polite">
+              <div class="product-aura" aria-hidden="true"></div>
+              <div class="product-image-shell" id="product-image-shell">
+                <img class="product-image" id="product-image" src="" alt="" decoding="async">
+                <img class="product-fallback is-hidden" id="product-fallback" src="" alt="" decoding="async">
+              </div>
+            </section>
+
+            <section class="product-details-panel">
+              <h3 class="product-title" id="product-title"></h3>
+              <div class="product-stats-grid" id="product-stats"></div>
+            </section>
+          </div>
+
+          <div class="product-switcher" id="product-switcher" role="tablist" aria-label="Switch products">
+            <button type="button" class="product-switch-btn is-active" role="tab" aria-selected="true" data-product-index="0">Expansion Card</button>
+            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="1">Leader/Node</button>
+            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="2">Det</button>
+            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="3">MCP</button>
+            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="4">Sounder</button>
+            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="5">I/O</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/page-messaging.js"></script>
+  <script src="../js/product-showcase.js"></script>
+</body>
+</html>

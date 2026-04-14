@@ -16,25 +16,34 @@
 
 <body>
   <main class="page page-opening">
-    <section class="page-grid">
-      <div class="page-copy">
-        <h1>Wireless Mesh<br>Fire Alarm System</h1>
-        <p class="lead">
-          Reliable, scalable, and self-healing: The next generation of wireless safety infrastructure.
-        </p>
-        <div class="page-actions">
-          <button class="primary-button" data-action="goto" data-target="1">Start Presentation</button>
+    <section class="page-grid opening-layout">
+      <header class="opening-header">
+        <div class="page-copy opening-hero opening-hero-spotlight">
+          <h1>Wireless Mesh Fire Alarm System</h1>
+        </div>
+      </header>
+
+      <div class="visual-card opening-stage-shell">
+        <div class="opening-stage" aria-label="Opening stage">
+          <div class="opening-player-host" id="opening-player-host" aria-label="Opening 3D mesh player"></div>
+          <div
+            class="opening-player-message"
+            id="opening-player-message"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></div>
         </div>
       </div>
 
-      <div class="visual-card opening-visual">
-        <img class="opening-visual-image" src="../assets/images/Numens Mesh Network Diagram.png"
-          alt="Numens Mesh Network Diagram">
+      <div class="page-actions opening-actions">
+        <button class="primary-button" data-action="goto" data-target="1">Start</button>
       </div>
     </section>
   </main>
 
   <script src="../js/page-messaging.js"></script>
+  <script src="../js/opening-page.js"></script>
 </body>
 
 </html>

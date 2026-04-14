@@ -58,7 +58,9 @@
   let capacityExpansionLinkLine = null;
   let capacityExpansionCard = document.getElementById("capacity-expansion-card");
   let capacityExpansionLoops = document.getElementById("capacity-expansion-loops");
+  let capacityExpansionSvg = document.getElementById("capacity-expansion-svg");
   let expansionLinkRevealProgress = 0;
+  const expansionConnections = [];
 
   // Synchronization settings: Scale physical particles for performance while maintaining dense swarm look
   const particlesPerPanel = 40; 
@@ -130,8 +132,8 @@
         `  <span class="capacity-panel-name">Panel ${String(index + 1).padStart(2, "0")}</span>`,
         "</div>",
         '<div class="capacity-panel-stats">',
-        `  <div>Wireless Loops: <strong>${loopsPerPanel}</strong></div>`,
-        `  <div>Devices: <strong>${devicesPerPanel}</strong></div>`,
+        `  <div>LOOPs:<span class="panel-stat-val">${loopsPerPanel}</span></div>`,
+        `  <div>DEV:<span class="panel-stat-val">${devicesPerPanel}</span></div>`,
         "</div>"
       ].join("");
 
@@ -202,16 +204,19 @@
       capacityExpansionLoops.className = "capacity-expansion-loops";
     }
 
+    if (!capacityExpansionSvg) {
+      capacityExpansionSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      capacityExpansionSvg.id = "capacity-expansion-svg";
+      capacityExpansionSvg.setAttribute("class", "capacity-expansion-svg");
+      capacityExpansionSvg.setAttribute("aria-hidden", "true");
+    }
+
     if (!capacityExpansion.parentNode) {
       capacityStageSurface.appendChild(capacityExpansion);
     }
 
     if (!capacityExpansionPanel.parentNode) {
       capacityExpansion.appendChild(capacityExpansionPanel);
-    }
-
-    if (!capacityExpansionLink.parentNode) {
-      capacityExpansion.appendChild(capacityExpansionLink);
     }
 
     if (!capacityExpansionCard.parentNode) {
@@ -222,8 +227,8 @@
       capacityExpansion.appendChild(capacityExpansionLoops);
     }
 
-    if (!capacityExpansionLinkLine.parentNode) {
-      capacityExpansion.appendChild(capacityExpansionLinkLine);
+    if (!capacityExpansionSvg.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionSvg);
     }
   }
 
@@ -236,7 +241,6 @@
     expansionRowRecords.length = 0;
 
     for (let index = 0; index < expansionLoopCount; index += 1) {
-      const visibleClusterNodes = Math.min(nodesPerExpansionLoop, 8);
       const row = document.createElement("article");
       row.className = "capacity-expansion-row";
       row.dataset.loopIndex = String(index + 1);
@@ -245,30 +249,25 @@
       track.className = "capacity-loop-track";
       track.setAttribute("aria-hidden", "true");
 
-      const cluster = document.createElement("div");
-      cluster.className = "capacity-node-cluster";
-      cluster.setAttribute("aria-hidden", "true");
-
-      for (let nodeIndex = 0; nodeIndex < visibleClusterNodes; nodeIndex += 1) {
-        const node = document.createElement("span");
-        node.className = "capacity-node";
-        node.setAttribute("aria-hidden", "true");
-        cluster.appendChild(node);
-      }
+      const icon = document.createElement("img");
+      icon.className = "capacity-row-icon";
+      icon.src = "../assets/icons/node.svg";
+      icon.alt = "";
+      icon.setAttribute("aria-hidden", "true");
 
       const nodeCount = document.createElement("span");
       nodeCount.className = "capacity-node-count";
-      nodeCount.textContent = `${nodesPerExpansionLoop} Nodes`;
+      nodeCount.textContent = `32 nodes`;
 
       row.appendChild(track);
-      row.appendChild(cluster);
+      row.appendChild(icon);
       row.appendChild(nodeCount);
       container.appendChild(row);
 
       expansionRowRecords.push({
         element: row,
         track,
-        cluster,
+        icon,
         count: nodeCount
       });
     }
@@ -277,22 +276,67 @@
   }
 
   function positionExpansionLink(revealProgress = expansionLinkRevealProgress) {
-    if (!capacityExpansionLinkLine || !capacityExpansionPanel || !capacityExpansionCard) {
+    if (!capacityExpansionSvg || !capacityExpansionPanel || !capacityExpansionCard) {
       return;
     }
 
     const start = getPanelCenter(capacityExpansionPanel);
     const end = getPanelCenter(capacityExpansionCard);
-    const distance = Math.max(Math.hypot(end.x - start.x, end.y - start.y), 1);
-    const angle = Math.atan2(end.y - start.y, end.x - start.x);
     const clampedProgress = Math.min(Math.max(revealProgress, 0), 1);
-
+    
     expansionLinkRevealProgress = clampedProgress;
-    capacityExpansionLinkLine.style.left = `${start.x}px`;
-    capacityExpansionLinkLine.style.top = `${start.y}px`;
-    capacityExpansionLinkLine.style.width = `${distance}px`;
-    capacityExpansionLinkLine.style.opacity = clampedProgress > 0 ? "1" : "0";
-    capacityExpansionLinkLine.style.transform = `rotate(${angle}rad) scaleX(${clampedProgress})`;
+
+    let line = capacityExpansionSvg.querySelector(".expansion-link-line");
+    if (!line) {
+      line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      line.setAttribute("class", "expansion-link-line");
+      line.setAttribute("fill", "none");
+      line.setAttribute("stroke", "rgba(94, 230, 255, 0.92)");
+      line.setAttribute("stroke-width", "2");
+      line.setAttribute("stroke-dasharray", "6,4");
+      capacityExpansionSvg.appendChild(line);
+    }
+
+    const currentX = start.x + (end.x - start.x) * clampedProgress;
+
+    line.setAttribute("d", `M ${start.x} ${start.y} L ${currentX} ${start.y}`);
+    line.style.opacity = clampedProgress > 0 ? "0.8" : "0";
+  }
+
+  function renderExpansionConnections() {
+    if (!capacityExpansionSvg || !capacityExpansionCard || !expansionRowRecords.length) {
+      return;
+    }
+
+    const cardImage = capacityExpansionCard.querySelector(".capacity-expansion-card-image");
+    const imageRect = (cardImage || capacityExpansionCard).getBoundingClientRect();
+    const stageRect = capacityStageSurface.getBoundingClientRect();
+    
+    // Origin is the right edge of the card image
+    const originX = imageRect.right - stageRect.left - 4; // slight padding inward
+    const originY = imageRect.top - stageRect.top + imageRect.height / 2;
+
+    expansionRowRecords.forEach((record, index) => {
+      let line = expansionConnections[index];
+      if (!line) {
+        line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("class", "expansion-loop-line");
+        line.setAttribute("fill", "none");
+        line.setAttribute("stroke", "rgba(94, 230, 255, 0.92)");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("stroke-dasharray", "6,4");
+        line.style.opacity = "0";
+        line.style.transition = "opacity 300ms ease, stroke-dashoffset 500ms ease";
+        capacityExpansionSvg.appendChild(line);
+        expansionConnections[index] = line;
+      }
+
+      const iconRect = record.icon.getBoundingClientRect();
+      const targetX = iconRect.left - stageRect.left + iconRect.width / 2;
+      const targetY = iconRect.top - stageRect.top + iconRect.height / 2;
+
+      line.setAttribute("d", `M ${originX} ${originY} L ${targetX} ${targetY}`);
+    });
   }
 
   function resetExpansionVisuals() {
@@ -311,15 +355,11 @@
       capacityExpansionPanel.setAttribute("aria-hidden", "true");
     }
 
-    if (capacityExpansionLink) {
-      capacityExpansionLink.classList.remove("is-visible");
-      capacityExpansionLink.setAttribute("aria-hidden", "true");
+    if (capacityExpansionSvg) {
+      capacityExpansionSvg.innerHTML = "";
     }
 
-    if (capacityExpansionLinkLine) {
-      capacityExpansionLinkLine.style.opacity = "0";
-      capacityExpansionLinkLine.style.transform = "rotate(0rad) scaleX(0)";
-    }
+    expansionConnections.length = 0;
 
     if (capacityExpansionCard) {
       capacityExpansionCard.classList.remove("is-visible");
@@ -329,7 +369,7 @@
     expansionRowRecords.forEach((record) => {
       record.element.classList.remove("is-visible");
       record.track.classList.remove("is-visible");
-      record.cluster.classList.remove("is-visible");
+      record.icon.classList.remove("is-visible");
       record.count.classList.remove("is-visible");
     });
   }
@@ -750,7 +790,12 @@
       const record = expansionRowRecords[index];
 
       record.element.classList.add("is-visible");
-      record.track.classList.add("is-visible");
+      
+      // Reveal the connection line to this row
+      renderExpansionConnections();
+      if (expansionConnections[index]) {
+        expansionConnections[index].style.opacity = "0.8";
+      }
 
       await sleep(120);
 
@@ -758,7 +803,7 @@
         return;
       }
 
-      record.cluster.classList.add("is-visible");
+      record.icon.classList.add("is-visible");
       record.count.classList.add("is-visible");
     }
 

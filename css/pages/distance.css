@@ -277,7 +277,6 @@
   transform: translateY(12px) scale(0.98);
   transition: opacity 220ms ease, transform 380ms ease;
   pointer-events: none;
-  overflow: hidden;
 }
 
 .distance-scene.is-visible {
@@ -294,17 +293,13 @@
   animation: none;
 }
 
-.distance-scene:not(.is-visible) * {
-  animation-play-state: paused;
-}
-
+.distance-scene:not(.is-visible) *,
 .page-distance.is-hidden .distance-cinematic-bg,
 .page-distance.is-hidden .distance-scene *,
 .page-distance:not(.is-revealed) .distance-cinematic-bg,
 .page-distance:not(.is-revealed) .distance-scene * {
   animation-play-state: paused !important;
 }
-
 .distance-scene::before {
   content: "";
   position: absolute;
@@ -622,6 +617,16 @@
   overflow: visible;
 }
 
+.relay-side-links-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
 .relay-main-arc-geometry {
   fill: none;
   stroke: rgba(0, 0, 0, 0);
@@ -644,6 +649,25 @@
 .relay-note-arc {
   fill: none;
   stroke: rgba(0, 0, 0, 0);
+}
+
+.relay-entry-link {
+  fill: none;
+  stroke: rgba(0, 195, 255, 0.84);
+  stroke-width: calc(1.8px * var(--relay-visual-scale));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 7px rgba(0, 195, 255, 0.42));
+}
+
+.relay-end-wireless {
+  fill: none;
+  stroke: rgba(112, 240, 255, 0.92);
+  stroke-width: calc(3px * var(--relay-visual-scale));
+  stroke-linecap: round;
+  stroke-dasharray: calc(2px * var(--relay-visual-scale)) calc(10px * var(--relay-visual-scale));
+  filter: drop-shadow(0 0 7px rgba(112, 240, 255, 0.52));
+  animation: relay-dash-backward 1.8s linear infinite;
 }
 
 .relay-point {
@@ -675,6 +699,47 @@
 
 .relay-point.is-leader::after {
   animation-delay: 1.3s;
+}
+
+.relay-entry-panel {
+  position: absolute;
+  z-index: 3;
+  width: 188px;
+  height: 188px;
+  --panel-link-anchor-x: -0.36;
+  --panel-link-anchor-y: -0.12;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+.relay-entry-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(170, 225, 255, 0.52));
+}
+
+.relay-end-device {
+  position: absolute;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  --device-link-offset-x: 0;
+  --device-link-offset-y: 0;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+.relay-end-device-smoke img,
+.relay-end-device-sounder img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(170, 225, 255, 0.62));
 }
 
 .relay-hop-distance {

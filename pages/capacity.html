@@ -40,22 +40,21 @@
             </div>
 
             <div class="capacity-expansion" id="capacity-expansion" aria-hidden="true">
+              <svg class="capacity-expansion-svg" id="capacity-expansion-svg" aria-hidden="true" preserveAspectRatio="none">
+                <defs>
+                   <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                     <polygon points="0 0, 10 3.5, 0 7" fill="rgba(94, 230, 255, 0.92)" />
+                   </marker>
+                </defs>
+              </svg>
+
               <div class="capacity-expansion-panel" id="capacity-expansion-panel">
-                <p class="capacity-expansion-kicker">Expansion view</p>
-                <h3 class="capacity-expansion-title">Capacity scales into clustered loops.</h3>
-                <p class="capacity-expansion-copy">
-                  A clean presentation layer keeps the capacity story readable while the mesh breaks into four orderly loop groups.
-                </p>
+                <img class="capacity-expansion-panel-icon" src="../assets/icons/panel.svg" alt="">
               </div>
 
-              <div class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"></div>
-
               <div class="capacity-expansion-card" id="capacity-expansion-card">
-                <img
-                  class="capacity-expansion-card-image"
-                  src="../assets/icons/loop expansion card.svg"
-                  alt=""
-                >
+                <img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="">
+                <p class="capacity-expansion-card-title">Loop Expansion Card</p>
               </div>
 
               <div class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"></div>
