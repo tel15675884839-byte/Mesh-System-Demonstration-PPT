@@ -95,28 +95,34 @@
               <strong>High Reliability</strong>
               <div class="feature-content-placeholder">
                 <div class="reliability-flow-container">
-                  <!-- Top: Left to Right Flow -->
-                  <div class="reliability-flow-row">
-                    <div class="flow-track">
-                      <div class="flow-beam green-beam"></div>
-                    </div>
-                    <div class="flow-icon icon-green">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M13 5l7 7-7 7M3 12h17" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </div>
-                  </div>
+                  <div class="reliability-loop-shell" aria-hidden="true">
+                    <svg class="reliability-loop-svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <path id="reliability-loop-path-blue" d="M40 90A120 44 0 0 1 280 90A120 44 0 0 1 40 90" pathLength="100" />
+                        <path id="reliability-loop-path-green" d="M280 90A120 44 0 0 1 40 90A120 44 0 0 1 280 90" pathLength="100" />
+                      </defs>
+                      <use href="#reliability-loop-path-blue" class="loop-track"></use>
 
-                  <!-- Bottom: Right to Left Flow -->
-                  <div class="reliability-flow-row row-reverse">
-                    <div class="flow-track">
-                      <div class="flow-beam blue-beam"></div>
-                    </div>
-                    <div class="flow-icon icon-blue">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M11 19l-7-7 7-7m10 7H4" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </div>
+                      <circle class="loop-signal-dot loop-signal-dot-blue" r="5">
+                        <animateMotion dur="1.45s" repeatCount="indefinite" rotate="auto" calcMode="linear">
+                          <mpath href="#reliability-loop-path-blue"></mpath>
+                        </animateMotion>
+                      </circle>
+
+                      <circle class="loop-signal-dot loop-signal-dot-green" r="5">
+                        <animateMotion dur="1.45s" repeatCount="indefinite" rotate="auto" calcMode="linear">
+                          <mpath href="#reliability-loop-path-green"></mpath>
+                        </animateMotion>
+                      </circle>
+
+                      <g class="loop-arrow loop-arrow-green loop-arrow-right" transform="translate(280 90) rotate(90)">
+                        <path d="M-16 -10L16 0L-16 10L-8 0Z"></path>
+                      </g>
+
+                      <g class="loop-arrow loop-arrow-blue loop-arrow-left" transform="translate(40 90) rotate(-90)">
+                        <path d="M-16 -10L16 0L-16 10L-8 0Z"></path>
+                      </g>
+                    </svg>
                   </div>
                 </div>
               </div>
@@ -128,7 +134,7 @@
                   <div class="speed-line" style="top: 30%; animation-delay: 0s"></div>
                   <div class="speed-line" style="top: 50%; animation-delay: 0.2s; width: 80%;"></div>
                   <div class="speed-line" style="top: 75%; animation-delay: 0.4s"></div>
-                  <div class="boost-text">BOOST</div>
+                  <img class="boost-letter-image" src="../assets/images/fast-f-transparent.png" alt="" aria-hidden="true">
                 </div>
               </div>
             </button>

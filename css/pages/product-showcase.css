@@ -1,6 +1,14 @@
 /* Feature Page: Product Showcase */
 .page-product-showcase {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding-block: 18px;
+}
+
+.product-layout {
+  position: relative;
+  z-index: 3;
 }
 
 .product-stage-shell {
@@ -268,4 +276,9 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-aura {
+    animation: none;
+  }
 }

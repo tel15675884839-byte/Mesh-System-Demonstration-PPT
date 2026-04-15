@@ -32,12 +32,15 @@
 }
 
 .capacity-stage-shell { box-shadow: none;
+  --capacity-stage-shift-x: -28px;
+  --capacity-stage-shift-y: -32px;
   min-width: 0;
   min-height: 0;
   height: 100%;
   padding: 12px;
   cursor: pointer;
   background: transparent;
+  transform: translate(var(--capacity-stage-shift-x), var(--capacity-stage-shift-y));
 }
 
 .capacity-stage {
@@ -91,8 +94,9 @@
 }
 
 .capacity-stage-surface {
-  --panel-scale: 1.7;
-  --panel-base-size: clamp(70px, 5.3vw, 92px);
+  --capacity-reference-panel-size: 210px;
+  --panel-scale: 1;
+  --panel-base-size: clamp(190px, 14vw, var(--capacity-reference-panel-size));
   position: relative;
   flex: 1;
   min-height: 0;
@@ -103,8 +107,9 @@
 }
 
 .capacity-expansion {
-  --capacity-card-width: 230px;
-  --capacity-card-group-shift: -70px;
+  --capacity-card-width: 138px;
+  --capacity-card-shift: -96px;
+  --capacity-loops-shift: -94px;
   position: absolute;
   inset: 0;
   z-index: 5;
@@ -255,7 +260,7 @@
 }
 
 .capacity-stage-shell.is-aggregating .capacity-stage-surface {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 .capacity-panel {
@@ -369,7 +374,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(100%, 210px);
+  width: min(100%, var(--capacity-reference-panel-size));
   aspect-ratio: 1 / 1;
   opacity: 0;
   transform: translateX(-26px);
@@ -391,6 +396,138 @@
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.42));
 }
 
+.capacity-expansion-left-cluster {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+
+.capacity-expansion-left-cluster.is-visible {
+  opacity: 1;
+}
+
+.capacity-expansion-left-cluster-svg,
+.capacity-expansion-left-cluster-panels {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.capacity-expansion-left-cluster-svg {
+  overflow: visible;
+}
+
+.capacity-expansion-left-cluster-line {
+  fill: none;
+  stroke: rgba(94, 230, 255, 0.88);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  filter: drop-shadow(0 0 12px rgba(80, 210, 255, 0.24));
+  transition: opacity 220ms ease;
+}
+
+.capacity-expansion-left-cluster-line.is-visible {
+  opacity: 0.82;
+}
+
+.capacity-linked-panel {
+  --capacity-linked-panel-scale: 1;
+  position: absolute;
+  width: 110px;
+  aspect-ratio: 0.72 / 1;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transform:
+    translate3d(-10px, -120px, 0)
+    scale(calc(var(--capacity-linked-panel-scale) * 0.78))
+    rotate(-8deg);
+  transform-origin: center bottom;
+  transform-style: preserve-3d;
+  transition:
+    opacity 260ms ease,
+    transform 640ms cubic-bezier(0.18, 0.92, 0.24, 1.12);
+}
+
+.capacity-linked-panel.is-landed {
+  opacity: 1;
+  transform:
+    translate3d(0, 0, 0)
+    scale(var(--capacity-linked-panel-scale))
+    rotate(0deg);
+}
+
+.capacity-linked-panel-primary {
+  --capacity-linked-panel-scale: 1.18;
+  left: 7.5%;
+  top: 52%;
+  z-index: 3;
+}
+
+.capacity-linked-panel-secondary {
+  --capacity-linked-panel-scale: 1.04;
+  left: 17.2%;
+  top: 25%;
+  z-index: 2;
+}
+
+.capacity-linked-panel-tertiary {
+  --capacity-linked-panel-scale: 0.94;
+  left: 31.6%;
+  top: 30.5%;
+  z-index: 1;
+}
+
+.capacity-linked-panel-visual {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  border: 2px solid rgba(94, 230, 255, 0.9);
+  background:
+    linear-gradient(180deg, rgba(5, 16, 26, 0.02), rgba(5, 16, 26, 0.14)),
+    rgba(2, 10, 18, 0.02);
+  box-shadow:
+    0 20px 36px rgba(0, 0, 0, 0.24),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 18px rgba(80, 210, 255, 0.16);
+  overflow: hidden;
+}
+
+.capacity-linked-panel-visual::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(94, 230, 255, 0.22);
+  opacity: 0.78;
+}
+
+.capacity-linked-panel-visual::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -12px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80, 210, 255, 0.18), rgba(80, 210, 255, 0));
+  transform: translateZ(-1px);
+}
+
+.capacity-linked-panel-glow {
+  position: absolute;
+  inset: 20% 16%;
+  background: radial-gradient(circle, rgba(80, 210, 255, 0.16), rgba(80, 210, 255, 0));
+  filter: blur(14px);
+}
+
 .capacity-expansion-card-title {
   position: absolute;
   top: 100%;
@@ -398,7 +535,7 @@
   transform: translateX(-50%);
   color: rgba(233, 240, 247, 0.9);
   font-family: var(--font-title);
-  font-size: 0.72rem;
+  font-size: 0.864rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -458,13 +595,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: transparent;
   opacity: 0;
-  transform: translateX(var(--capacity-card-group-shift)) scale(0.67);
+  transform: translateX(var(--capacity-card-shift)) scale(0.67);
   transition:
     opacity 320ms ease,
     transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -472,15 +609,15 @@
 
 .capacity-expansion-card.is-visible {
   opacity: 1;
-  transform: translateX(var(--capacity-card-group-shift)) scale(0.7);
+  transform: translateX(var(--capacity-card-shift)) scale(0.7);
 }
-
 
 .capacity-expansion-card-image {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: contain;
   padding: 4px;
   filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.22));
@@ -496,12 +633,12 @@
   gap: 20px;
   min-width: 0;
   margin-left: 0;
-  transform: translateX(calc(var(--capacity-card-group-shift) - 24px));
+  transform: translateX(var(--capacity-loops-shift));
   transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .capacity-expansion-loops::before {
-  content: "UP TO 4 WIRELESS LOOPS";
+  content: "UP TO 64 NODES";
   color: rgba(233, 240, 247, 0.82);
   font-family: var(--font-title);
   font-size: 0.76rem;
@@ -1005,7 +1142,7 @@
   }
 
   .capacity-stage-surface {
-    --panel-base-size: clamp(62px, 8vw, 80px);
+    --panel-base-size: clamp(132px, 16vw, 170px);
   }
 
   .capacity-stage-hint {
@@ -1013,8 +1150,14 @@
     width: 100%;
   }
 
+  .capacity-stage-shell {
+    --capacity-stage-shift-x: 0px;
+    --capacity-stage-shift-y: 0px;
+  }
+
   .capacity-expansion {
-    --capacity-card-group-shift: 0px;
+    --capacity-card-shift: 0px;
+    --capacity-loops-shift: 0px;
     grid-template-columns: minmax(0, 1fr);
     align-content: center;
     gap: 18px;
@@ -1058,7 +1201,7 @@
   }
 
   .capacity-stage-surface {
-    --panel-base-size: clamp(52px, 11vw, 66px);
+    --panel-base-size: clamp(104px, 26vw, 148px);
     min-height: 390px;
   }
 
@@ -1129,7 +1272,9 @@
 
 @media (max-width: 1200px) {
   .capacity-expansion {
-    --capacity-card-width: 208px;
+    --capacity-card-width: 125px;
+    --capacity-card-shift: -88px;
+    --capacity-loops-shift: -94px;
     grid-template-columns:
       minmax(180px, 0.88fr)
       minmax(140px, 0.62fr)

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesh Pointer Trail Preview</title>
+    <style>
+        :root {
+            --bg-color: #080c14;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent-blue: #5fd6ff;
+            --accent-green: #64f2a7;
+            --accent-red: #ff9072;
+            --text-main: #f4f9ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .effect-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 320px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: crosshair;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .label-hint {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        h3 {
+            margin: 0;
+            color: var(--accent-blue);
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .btn-autoplay {
+            margin-top: 15px;
+            background: rgba(95, 214, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: fit-content;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-autoplay:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mesh System / Pointer Trail</h1>
+        <p>Interactive demonstration of mouse trail effects. Choose the one that best fits the Mesh System's aesthetic.</p>
+    </header>
+
+    <div class="showcase-grid">
+        <!-- 1. Fiber Optic Ribbon -->
+        <div class="effect-card" id="card-1">
+            <div class="canvas-container">
+                <canvas id="canvas-1"></canvas>
+                <div class="label-hint">DRAG TO DRAW</div>
+            </div>
+            <div class="card-info">
+                <h3>1. Fiber Optic Ribbon</h3>
+                <p>A fluid, glowing ribbon that tapers and fades. Repesents energy connectivity.</p>
+                <button class="btn-autoplay">Auto Play Demo</button>
+            </div>
+        </div>
+
+        <!-- 2. Neon Stardust -->
+        <div class="effect-card" id="card-2">
+            <div class="canvas-container">
+                <canvas id="canvas-2"></canvas>
+                <div class="label-hint">DRAG TO DRAW</div>
+            </div>
+            <div class="card-info">
+                <h3>2. Digital Stardust</h3>
+                <p>Scattering pixel particles that drift and vanish. Emphasizes the digital map nature.</p>
+                <button class="btn-autoplay">Auto Play Demo</button>
+            </div>
+        </div>
+
+        <!-- 3. High-Intensity Laser -->
+        <div class="effect-card" id="card-3">
+            <div class="canvas-container">
+                <canvas id="canvas-3"></canvas>
+                <div class="label-hint">DRAG TO DRAW</div>
+            </div>
+            <div class="card-info">
+                <h3>3. High-Intensity Laser</h3>
+                <p>Hot white core with a red glowing trail. Industrial and precise feel.</p>
+                <button class="btn-autoplay">Auto Play Demo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TrailBase {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.points = [];
+                this.particles = [];
+                this.isDrawing = false;
+                this.width = 0;
+                this.height = 0;
+                this.lastX = 0;
+                this.lastY = 0;
+                
+                this.canvas.addEventListener('mousedown', (e) => this.onStart(e));
+                this.canvas.addEventListener('touchstart', (e) => this.onStart(e.touches[0]));
+                
+                window.addEventListener('mousemove', (e) => this.onMove(e));
+                window.addEventListener('touchmove', (e) => this.onMove(e.touches[0]));
+                
+                window.addEventListener('mouseup', () => this.onStop());
+                window.addEventListener('touchend', () => this.onStop());
+                
+                this.canvas.closest('.effect-card').querySelector('.btn-autoplay').addEventListener('click', () => this.autoPlay());
+
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
+                this.animate();
+            }
+
+            resize() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.width = rect.width;
+                this.height = rect.height;
+                this.canvas.width = this.width * window.devicePixelRatio;
+                this.canvas.height = this.height * window.devicePixelRatio;
+                this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+
+            onStart(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                if (x >= 0 && x <= this.width && y >= 0 && y <= this.height) {
+                    this.isDrawing = true;
+                    this.addPoint(x, y);
+                }
+            }
+
+            onMove(e) {
+                if (!this.isDrawing) return;
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                this.addPoint(x, y);
+            }
+
+            onStop() {
+                this.isDrawing = false;
+            }
+
+            addPoint(x, y) {
+                this.points.push({ x, y, time: Date.now() });
+                this.onPointAdded(x, y);
+            }
+
+            onPointAdded(x, y) {}
+
+            autoPlay() {
+                if (this.isDrawing) return;
+                const points = 30;
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+                const radius = 60;
+                
+                for(let i=0; i<points; i++) {
+                    setTimeout(() => {
+                        const angle = (i / points) * Math.PI * 4;
+                        const r = radius * (1 + Math.sin(i * 0.2));
+                        const x = centerX + Math.cos(angle) * r;
+                        const y = centerY + Math.sin(angle) * r;
+                        this.addPoint(x, y);
+                    }, i * 40);
+                }
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                this.ctx.save();
+                
+                const now = Date.now();
+                const lifespan = 1000;
+                
+                this.points = this.points.filter(p => now - p.time < lifespan);
+                
+                this.draw(now, lifespan);
+                this.ctx.restore();
+                requestAnimationFrame(() => this.animate());
+            }
+
+            draw(now, lifespan) {}
+        }
+
+        // --- 1. Ribbon Effect ---
+        class RibbonTrail extends TrailBase {
+            draw(now, lifespan) {
+                if (this.points.length < 2) return;
+
+                this.ctx.lineJoin = 'round';
+                this.ctx.lineCap = 'round';
+
+                for (let i = 1; i < this.points.length; i++) {
+                    const p1 = this.points[i - 1];
+                    const p2 = this.points[i];
+                    const age = now - p2.time;
+                    const opacity = Math.max(0, 1 - (age / lifespan));
+                    const width = opacity * 14;
+
+                    // Glow line
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(95, 214, 255, ${opacity * 0.4})`;
+                    this.ctx.lineWidth = width;
+                    this.ctx.moveTo(p1.x, p1.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.stroke();
+
+                    // Bright core
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(244, 249, 255, ${opacity * 0.7})`;
+                    this.ctx.lineWidth = width * 0.3;
+                    this.ctx.moveTo(p1.x, p1.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        // --- 2. Stardust Effect ---
+        class StardustTrail extends TrailBase {
+            onPointAdded(x, y) {
+                for(let i=0; i<4; i++) {
+                    this.particles.push({
+                        x, y,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: (Math.random() - 0.5) * 2 - 0.5,
+                        size: 2 + Math.random() * 4,
+                        life: 1.0,
+                        decay: 0.015 + Math.random() * 0.015,
+                        color: Math.random() > 0.4 ? '#5fd6ff' : '#64f2a7'
+                    });
+                }
+            }
+            draw() {
+                // Line base
+                if (this.points.length > 2) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = 'rgba(95, 214, 255, 0.15)';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.moveTo(this.points[0].x, this.points[0].y);
+                    for(let i=1; i<this.points.length; i++) {
+                        this.ctx.lineTo(this.points[i].x, this.points[i].y);
+                    }
+                    this.ctx.stroke();
+                }
+
+                // Particles
+                for(let i = this.particles.length-1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= p.decay;
+                    
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.globalAlpha = p.life;
+                    const s = p.size * p.life;
+                    this.ctx.fillRect(p.x - s/2, p.y - s/2, s, s);
+                }
+            }
+        }
+
+        // --- 3. Laser Effect ---
+        class LaserTrail extends TrailBase {
+            draw(now, lifespan) {
+                if (this.points.length < 2) return;
+
+                this.ctx.shadowBlur = 0;
+                
+                // Red Glow
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 10;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.moveTo(this.points[0].x, this.points[0].y);
+                for(let i=1; i<this.points.length; i++) {
+                    const age = now - this.points[i].time;
+                    const alpha = Math.max(0, 1 - age / lifespan);
+                    this.ctx.strokeStyle = `rgba(255, 60, 0, ${alpha * 0.2})`;
+                    this.ctx.lineTo(this.points[i].x, this.points[i].y);
+                }
+                this.ctx.stroke();
+                
+                // Hot Laser line
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2.5;
+                this.ctx.moveTo(this.points[0].x, this.points[0].y);
+                for(let i=1; i<this.points.length; i++) {
+                    const age = now - this.points[i].time;
+                    const alpha = Math.max(0, 1 - age / lifespan);
+                    this.ctx.strokeStyle = `rgba(255, 144, 114, ${alpha})`;
+                    this.ctx.lineTo(this.points[i].x, this.points[i].y);
+                }
+                this.ctx.stroke();
+
+                // Spark Tip
+                if (this.points.length > 0) {
+                    const last = this.points[this.points.length - 1];
+                    this.ctx.beginPath();
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.arc(last.x, last.y, 4, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = '#ffffff';
+                    this.ctx.fill();
+                }
+            }
+        }
+
+        new RibbonTrail('canvas-1');
+        new StardustTrail('canvas-2');
+        new LaserTrail('canvas-3');
+    </script>
+</body>
+</html>

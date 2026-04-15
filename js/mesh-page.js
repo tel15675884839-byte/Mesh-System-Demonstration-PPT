@@ -29,19 +29,21 @@
     time: 0,
     isActive: window.parent === window,
     frameHandle: 0,
-    lastTimestamp: 0
+    lastTimestamp: 0,
+    trailPoints: [],
+    isDrawingTrail: false
   };
 
   const nodes = [
     { id: 0, type: "main", x: 0, y: -164 },
     { id: 1, type: "main", x: -188, y: 86 },
     { id: 2, type: "main", x: 188, y: 86 },
-    { id: 3, type: "sub", x: -226, y: -124 },
-    { id: 4, type: "sub", x: 226, y: -124 },
+    { id: 3, type: "sub", x: -226, y: -124, sizeScale: 0.825 },
+    { id: 4, type: "sub", x: 226, y: -124, sizeScale: 0.825 },
     { id: 5, type: "sub", x: 0, y: -26 },
-    { id: 6, type: "sub", x: -324, y: 148 },
-    { id: 7, type: "sub", x: 324, y: 148 },
-    { id: 8, type: "sub", x: 0, y: 228 }
+    { id: 6, type: "sub", x: -324, y: 148, sizeScale: 0.75 },
+    { id: 7, type: "sub", x: 324, y: 148, sizeScale: 0.75 },
+    { id: 8, type: "sub", x: 0, y: 228, sizeScale: 0.825 }
   ];
 
   const edges = [
@@ -254,6 +256,7 @@
 
     edge.active = false;
     edge.broken = true;
+    edge.breakTime = stageState.time;
 
     const fallback = siblingEdges.find(function (candidate) {
       return candidate !== edge && !candidate.broken;
@@ -261,6 +264,7 @@
 
     if (fallback) {
       fallback.active = true;
+      fallback.healTime = stageState.time;
     }
 
     pushRipple(edge.source, "255, 132, 98");
@@ -317,49 +321,124 @@
       const midX = (points.start.x + points.end.x) / 2;
       const midY = (points.start.y + points.end.y) / 2;
 
-      context.beginPath();
-      context.moveTo(points.start.x, points.start.y);
-      context.lineTo(points.end.x, points.end.y);
-      context.lineCap = "round";
-
-      if (edge.type === "main") {
-        context.lineWidth = 2.8;
-        context.setLineDash([6, 14]);
-        context.strokeStyle = "rgba(95, 214, 255, 0.54)";
-      } else if (edge.broken) {
-        context.lineWidth = 2.2;
-        context.setLineDash([4, 11]);
-        context.strokeStyle = "rgba(255, 128, 104, 0.62)";
-      } else if (edge.active) {
-        context.lineWidth = 2.2;
-        context.setLineDash([4, 12]);
-        context.strokeStyle = "rgba(100, 242, 167, 0.54)";
-      } else {
-        context.lineWidth = 1.7;
-        context.setLineDash([4, 14]);
-        context.strokeStyle = "rgba(100, 242, 167, 0.18)";
-      }
-
-      context.stroke();
-      context.setLineDash([]);
-      context.lineCap = "butt";
-
       if (edge.broken) {
-        const pulse = 0.8 + Math.abs(Math.sin(stageState.time * 0.005)) * 0.35;
-        const markerRadius = 10 * stageState.scale * pulse;
+        const elapsed = stageState.time - (edge.breakTime || 0);
+        const glitchDuration = 1200;
 
+        // 1. Initial Glitch Animation (Effect 2)
+        if (elapsed < glitchDuration) {
+          const alpha = 1 - elapsed / glitchDuration;
+          const segments = 12;
+          const dx = (points.end.x - points.start.x) / segments;
+          const dy = (points.end.y - points.start.y) / segments;
+
+          context.beginPath();
+          context.lineWidth = 2.4 * stageState.scale;
+          context.strokeStyle = "rgba(255, 144, 114, " + alpha.toFixed(2) + ")";
+          context.moveTo(points.start.x, points.start.y);
+
+          for (let i = 1; i <= segments; i++) {
+            const t = stageState.time * 0.04;
+            const offsetX = (Math.random() - 0.5) * 6 * Math.sin(t + i);
+            const offsetY = (Math.random() - 0.5) * 6 * Math.cos(t + i);
+            const px = points.start.x + dx * i + offsetX;
+            const py = points.start.y + dy * i + offsetY;
+            context.lineTo(px, py);
+          }
+          context.stroke();
+
+          if (Math.random() > 0.85) {
+            const gx = points.start.x + Math.random() * (points.end.x - points.start.x);
+            const gy = points.start.y + Math.random() * (points.end.y - points.start.y);
+            const gl = 20 * stageState.scale;
+            context.beginPath();
+            context.moveTo(gx - gl, gy);
+            context.lineTo(gx + gl, gy);
+            context.stroke();
+          }
+        }
+
+        // 2. Persistent Breathing Pulse (Recommended choice)
+        // This keeps the red line visible but clearly in a "failed" state
+        const pulseAlpha = 0.3 + Math.abs(Math.sin(stageState.time * 0.0015)) * 0.5;
         context.beginPath();
-        context.strokeStyle = "rgba(255, 144, 114, 0.95)";
-        context.lineWidth = 2;
-        context.arc(midX, midY, markerRadius + 6, 0, Math.PI * 2);
+        context.lineWidth = 1.8 * stageState.scale;
+        context.setLineDash([5, 8]);
+        context.strokeStyle = "rgba(255, 132, 98, " + pulseAlpha.toFixed(3) + ")";
+        context.moveTo(points.start.x, points.start.y);
+        context.lineTo(points.end.x, points.end.y);
+        context.stroke();
+        context.setLineDash([]);
+
+        // 3. Status "X" Mark with Breathing Glow
+        const xSize = 7.5 * stageState.scale;
+        const breath = 0.5 + Math.abs(Math.sin(stageState.time * 0.0018)) * 0.5;
+        
+        context.save();
+        context.translate(midX, midY);
+        context.beginPath();
+        context.lineWidth = 1.8 * stageState.scale;
+        context.strokeStyle = `rgba(255, 110, 90, ${breath.toFixed(3)})`;
+        context.shadowBlur = 10 * breath * stageState.scale;
+        context.shadowColor = "rgba(255, 60, 40, 0.6)";
+        
+        // Draw the X
+        context.moveTo(-xSize, -xSize);
+        context.lineTo(xSize, xSize);
+        context.moveTo(xSize, -xSize);
+        context.lineTo(-xSize, xSize);
+        context.stroke();
+        context.restore();
+      } else {
+        context.beginPath();
+        context.moveTo(points.start.x, points.start.y);
+        context.lineTo(points.end.x, points.end.y);
+        context.lineCap = "round";
+
+        if (edge.type === "main") {
+          context.lineWidth = 2.8;
+          context.setLineDash([6, 14]);
+          context.strokeStyle = "rgba(95, 214, 255, 0.54)";
+        } else if (edge.active) {
+          context.lineWidth = 2.2;
+          context.setLineDash([4, 12]);
+          context.strokeStyle = "rgba(100, 242, 167, 0.54)";
+        } else {
+          context.lineWidth = 1.7;
+          context.setLineDash([4, 14]);
+          context.strokeStyle = "rgba(100, 242, 167, 0.18)";
+        }
+
         context.stroke();
 
-        context.beginPath();
-        context.moveTo(midX - markerRadius, midY - markerRadius);
-        context.lineTo(midX + markerRadius, midY + markerRadius);
-        context.moveTo(midX + markerRadius, midY - markerRadius);
-        context.lineTo(midX - markerRadius, midY + markerRadius);
-        context.stroke();
+        // 3. Self-Healing Highlight (Flash when activated as fallback)
+        if (edge.healTime) {
+          const elapsed = stageState.time - edge.healTime;
+          const duration = 1600;
+          if (elapsed < duration) {
+            const progress = elapsed / duration;
+            const alpha = 1 - progress;
+            const glowWidth = (2.2 + 8 * Math.pow(alpha, 2)) * stageState.scale;
+            
+            context.save();
+            context.beginPath();
+            context.lineWidth = glowWidth;
+            context.strokeStyle = `rgba(100, 242, 167, ${alpha * 0.45})`;
+            context.moveTo(points.start.x, points.start.y);
+            context.lineTo(points.end.x, points.end.y);
+            context.stroke();
+
+            // Bright core flash
+            context.beginPath();
+            context.lineWidth = (2.2 + 2 * alpha) * stageState.scale;
+            context.strokeStyle = `rgba(244, 255, 250, ${alpha * 0.6})`;
+            context.stroke();
+            context.restore();
+          }
+        }
+
+        context.setLineDash([]);
+        context.lineCap = "butt";
       }
     });
   }
@@ -421,17 +500,7 @@
     }
   }
 
-  function drawNodeShell(point, radius, fillStyle, glowStyle) {
-    context.beginPath();
-    context.fillStyle = glowStyle;
-    context.arc(point.x, point.y, radius * 1.9, 0, Math.PI * 2);
-    context.fill();
-
-    context.beginPath();
-    context.fillStyle = fillStyle;
-    context.arc(point.x, point.y, radius, 0, Math.PI * 2);
-    context.fill();
-  }
+  // Function drawNodeShell removed as it is no longer used per user request
 
   function drawFallbackIcon(node, point) {
     if (node.type === "main") {
@@ -454,14 +523,13 @@
     nodes.forEach(function (node) {
       const point = getNodePoint(node);
       const disconnected = node.type === "sub" && isNodeDisconnected(node.id);
-      const radius = (node.type === "main" ? 28 : 18) * stageState.scale;
-
-      if (node.type === "main") {
-        drawNodeShell(point, radius, "rgba(12, 26, 44, 0.98)", "rgba(95, 214, 255, 0.16)");
-      }
 
       const iconAsset = node.type === "main" ? iconAssets.main : iconAssets.sub;
-      const iconSize = (node.type === "main" ? 58 : 38) * stageState.scale;
+      let iconSize = (node.type === "main" ? 58 : 38) * stageState.scale;
+      
+      if (node.sizeScale) {
+        iconSize *= node.sizeScale;
+      }
 
       if (iconAsset.ready) {
         context.save();
@@ -477,14 +545,6 @@
       } else {
         drawFallbackIcon(node, point);
       }
-
-      if (node.type === "sub" && disconnected) {
-        context.beginPath();
-        context.strokeStyle = "rgba(255, 144, 114, 0.72)";
-        context.lineWidth = 1.5;
-        context.arc(point.x, point.y, radius + 8 * stageState.scale, 0, Math.PI * 2);
-        context.stroke();
-      }
     });
   }
 
@@ -493,7 +553,64 @@
     drawEdges();
     drawParticles(deltaFactor);
     drawRipples(deltaFactor);
+    drawTrail();
     drawNodes();
+  }
+
+  /**
+   * Laser Trail Effect (Scheme 3)
+   * Draws a high-intensity laser trail that fades over time
+   */
+  function drawTrail() {
+    if (stageState.trailPoints.length < 2) {
+      return;
+    }
+
+    const now = stageState.time;
+    const lifespan = 850; // ms
+
+    context.save();
+    context.lineCap = "round";
+    context.lineJoin = "round";
+
+    // 1. Red Outer Glow (Faint & Thick)
+    context.beginPath();
+    context.lineWidth = 12 * stageState.scale;
+    context.moveTo(stageState.trailPoints[0].x, stageState.trailPoints[0].y);
+    for (let i = 1; i < stageState.trailPoints.length; i++) {
+      const p = stageState.trailPoints[i];
+      const age = now - p.time;
+      const alpha = Math.max(0, (1 - age / lifespan) * 0.22);
+      context.strokeStyle = "rgba(255, 60, 0, " + alpha.toFixed(3) + ")";
+      context.lineTo(p.x, p.y);
+    }
+    context.stroke();
+
+    // 2. High-Intensity Core (Bright & Tapering Alpha)
+    context.beginPath();
+    context.lineWidth = 2.2 * stageState.scale;
+    context.moveTo(stageState.trailPoints[0].x, stageState.trailPoints[0].y);
+    for (let i = 1; i < stageState.trailPoints.length; i++) {
+      const p = stageState.trailPoints[i];
+      const age = now - p.time;
+      const alpha = Math.max(0, 1 - age / lifespan);
+      context.strokeStyle = "rgba(255, 144, 114, " + alpha.toFixed(3) + ")";
+      context.lineTo(p.x, p.y);
+    }
+    context.stroke();
+
+    // 3. Leading Spark Tip
+    if (stageState.isDrawingTrail && stageState.trailPoints.length > 0) {
+      const last = stageState.trailPoints[stageState.trailPoints.length - 1];
+      context.beginPath();
+      context.fillStyle = "#ffffff";
+      context.shadowBlur = 15 * stageState.scale;
+      context.shadowColor = "#ff9072";
+      context.arc(last.x, last.y, 4.5 * stageState.scale, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    context.restore();
   }
 
   function tick(timestamp) {
@@ -510,6 +627,12 @@
     const deltaFactor = delta / 16;
     stageState.lastTimestamp = timestamp || 16;
     stageState.time += delta;
+
+    // Background cleanup of trail points
+    const lifespan = 850;
+    stageState.trailPoints = stageState.trailPoints.filter(function (p) {
+      return stageState.time - p.time < lifespan;
+    });
 
     render(deltaFactor);
     stageState.frameHandle = window.requestAnimationFrame(tick);
@@ -539,7 +662,23 @@
   function updateCursor(event) {
     const point = getCanvasPoint(event);
     const edge = getInteractiveEdgeAt(point);
-    canvas.style.cursor = edge ? "pointer" : "crosshair";
+    
+    // Custom SVG Cursor for better visibility
+    const defaultCursor = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%235fd6ff'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%235fd6ff' stroke-width='1.5' stroke-opacity='0.4'/%3E%3C/svg%3E\") 16 16, crosshair";
+    
+    canvas.style.cursor = edge ? "pointer" : defaultCursor;
+
+    if (stageState.isDrawingTrail) {
+      stageState.trailPoints.push({
+        x: point.x,
+        y: point.y,
+        time: stageState.time
+      });
+    }
+  }
+
+  function handlePointerUp() {
+    stageState.isDrawingTrail = false;
   }
 
   function handlePointerDown(event) {
@@ -549,12 +688,18 @@
 
     const point = getCanvasPoint(event);
     const edge = getInteractiveEdgeAt(point);
-    if (!edge) {
-      return;
-    }
 
-    if (breakEdgeWithReroute(edge) && !stageState.isActive) {
-      renderStaticFrame();
+    if (edge) {
+      if (breakEdgeWithReroute(edge) && !stageState.isActive) {
+        renderStaticFrame();
+      }
+    } else {
+      stageState.isDrawingTrail = true;
+      stageState.trailPoints.push({
+        x: point.x,
+        y: point.y,
+        time: stageState.time
+      });
     }
   }
 
@@ -640,6 +785,7 @@
 
   canvas.addEventListener("pointerdown", handlePointerDown);
   canvas.addEventListener("pointermove", updateCursor);
+  window.addEventListener("pointerup", handlePointerUp);
   canvas.addEventListener("pointerleave", function () {
     canvas.style.cursor = "crosshair";
   });

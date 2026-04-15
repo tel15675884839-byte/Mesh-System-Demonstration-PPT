@@ -50,7 +50,7 @@
   overflow: hidden;
   isolation: isolate;
   border: none;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.015);
 }
 
 .battery-main-stage::before,
@@ -67,11 +67,11 @@
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 100% 100%, 62px 62px, 62px 62px;
-  opacity: 0.28;
+  opacity: 0.18;
 }
 
 .battery-main-stage::after {
-  background: radial-gradient(circle at 50% 52%, transparent 45%, rgba(0, 0, 0, 0.24) 100%);
+  background: radial-gradient(circle at 50% 52%, transparent 45%, rgba(0, 0, 0, 0.16) 100%);
 }
 
 .battery-feature-grid {
@@ -380,9 +380,10 @@
 
 .waste-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 14px;
   flex: 1;
+  align-items: stretch;
 }
 
 .waste-card {
@@ -450,6 +451,100 @@
   background: rgba(15, 235, 204, 0.08);
   border: 1px solid rgba(15, 235, 204, 0.4);
   box-shadow: 0 0 12px rgba(15, 235, 204, 0.15);
+}
+
+.waste-versus {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 78px;
+  min-width: 78px;
+  margin-block: -8px;
+  overflow: visible;
+}
+
+.waste-versus::before,
+.waste-versus::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.waste-versus::before {
+  top: 10px;
+  bottom: 10px;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(15, 235, 204, 0.16) 12%,
+      rgba(15, 235, 204, 0.72) 50%,
+      rgba(15, 235, 204, 0.16) 88%,
+      transparent 100%
+    );
+  box-shadow:
+    0 0 12px rgba(15, 235, 204, 0.3),
+    0 0 28px rgba(15, 235, 204, 0.16);
+}
+
+.waste-versus::after {
+  inset: 50% auto auto 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(15, 235, 204, 0.18) 0%, rgba(15, 235, 204, 0.08) 30%, transparent 72%);
+  filter: blur(8px);
+}
+
+.waste-versus-inner {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-title);
+  font-size: clamp(2.6rem, 1vw + 2rem, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  font-style: italic;
+  color: var(--page-accent);
+  background: linear-gradient(180deg, #b6fff1 0%, #4ff7da 38%, #0fecc7 68%, #98fff0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: rotate(-8deg) skewX(-9deg);
+  text-shadow:
+    0 0 14px rgba(15, 235, 204, 0.34),
+    0 0 26px rgba(15, 235, 204, 0.18);
+}
+
+.waste-versus-inner::before,
+.waste-versus-inner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(15, 235, 204, 0.88), transparent);
+  opacity: 0.72;
+  filter: drop-shadow(0 0 8px rgba(15, 235, 204, 0.2));
+}
+
+.waste-versus-inner::before {
+  right: calc(100% + 12px);
+  transform: translateY(-50%) rotate(-8deg);
+}
+
+.waste-versus-inner::after {
+  left: calc(100% + 12px);
+  transform: translateY(-50%) rotate(-8deg);
 }
 
 .battery-stack {
@@ -750,6 +845,54 @@
     gap: 14px;
   }
 
+  .waste-versus {
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
+    margin-block: 0;
+  }
+
+  .waste-versus::before {
+    top: 50%;
+    bottom: auto;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    height: 1px;
+    transform: translateY(-50%);
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(15, 235, 204, 0.16) 12%,
+        rgba(15, 235, 204, 0.72) 50%,
+        rgba(15, 235, 204, 0.16) 88%,
+        transparent 100%
+      );
+  }
+
+  .waste-versus::after {
+    width: 130px;
+    height: 82px;
+  }
+
+  .waste-versus-inner {
+    font-size: 2.05rem;
+  }
+
+  .waste-versus-inner::before,
+  .waste-versus-inner::after {
+    width: 16px;
+  }
+
+  .waste-versus-inner::before {
+    right: calc(100% + 8px);
+  }
+
+  .waste-versus-inner::after {
+    left: calc(100% + 8px);
+  }
+
   .waste-card {
     padding: 20px;
     min-height: 200px;
@@ -772,8 +915,6 @@
   .card-footer .count {
     font-size: 1.6rem;
   }
-}
-
   .circuit-area {
     width: min(100%, 260px);
     height: 260px;

@@ -3,6 +3,7 @@
   --response-cyan: #00e5ff;
   --response-green: #0febc6;
   --response-red: #ff3333;
+  --mesh-stage-border: rgba(137, 216, 255, 0.16);
   --dim-white: rgba(255, 255, 255, 0.4);
   --space-black: #020408;
   --nebula-purple: rgba(86, 44, 168, 0.15);
@@ -37,20 +38,40 @@
 .response-stage-shell {
   position: relative;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
   padding: 0;
   overflow: hidden;
-  /* removed border-radius */
-  background: transparent;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(13, 24, 40, 0.56), rgba(4, 10, 18, 0.58)),
+    radial-gradient(circle at top, rgba(95, 214, 255, 0.1), transparent 58%);
+  box-shadow:
+    inset 0 0 0 1px var(--mesh-stage-border),
+    0 24px 54px rgba(0, 0, 0, 0.24);
 }
 
 .response-stage {
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 460px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(79, 170, 255, 0.16), transparent 36%),
+    radial-gradient(circle at 50% 72%, rgba(54, 255, 150, 0.1), transparent 38%),
+    linear-gradient(180deg, rgba(7, 16, 30, 0.68), rgba(4, 9, 18, 0.72));
+  isolation: isolate;
+}
+
+.page-response .visual-card.response-stage-shell::before {
+  inset: -18px;
+  opacity: 0.2;
 }
 
 .response-reset-button {
@@ -84,26 +105,17 @@
   border-right: 1.8px solid currentColor;
 }
 
-/* Deep Space & Stars Background */
+/* Mesh Communication background transferred to Rapid Response */
 .response-stage::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* Layers of space: Grid -> Stars -> Nebula */
-  background: 
-    /* The scanning grid */
-    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px),
-    /* Starfield 1 */
-    radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.5), rgba(0,0,0,0)),
-    radial-gradient(1.5px 1.5px at 150px 150px, #fff, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 250px 50px, rgba(255,255,255,0.3), rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 450px 250px, #fff, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 350px 150px, rgba(255,255,255,0.4), rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 550px 450px, #fff, rgba(0,0,0,0));
-  background-size: 80px 80px, 80px 80px, 120px 120px, 180px 180px, 250px 250px, 300px 300px, 150px 150px, 200px 200px, 400px 400px;
-  opacity: 0.8;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.16;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.88), transparent 92%);
   pointer-events: none;
 }
 
@@ -111,12 +123,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(circle at 70% 20%, var(--nebula-purple), transparent 50%),
-    radial-gradient(circle at 30% 80%, var(--nebula-blue), transparent 60%);
-  filter: blur(40px);
+  background:
+    radial-gradient(circle at center, rgba(6, 14, 26, 0) 56%, rgba(6, 14, 26, 0.18) 78%, rgba(6, 14, 26, 0.42) 100%);
   pointer-events: none;
-  z-index: 1;
 }
 
 /* Global Alert Vignette */
@@ -342,6 +351,7 @@
 /* Responsive Overrides */
 @media (max-width: 960px) {
   .response-hero-spotlight h2 { font-size: clamp(3rem, 8.2vw, 4.2rem); }
+  .response-stage { min-height: 420px; }
   .device { width: 40px; height: 40px; }
   .node-main { width: 50px; height: 50px; }
   .response-reset-button { top: 18px; right: 18px; }
@@ -351,5 +361,14 @@
   .response-hero-spotlight h2 {
     font-size: clamp(2.4rem, 10.2vw, 3rem);
     white-space: nowrap;
+  }
+
+  .response-stage-shell,
+  .response-stage {
+    border-radius: 24px;
+  }
+
+  .response-stage {
+    min-height: 380px;
   }
 }

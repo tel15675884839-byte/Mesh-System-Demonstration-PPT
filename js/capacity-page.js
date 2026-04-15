@@ -29,14 +29,14 @@
     return;
   }
 
-  const panelCount = 8;
-  const loopsPerPanel = 2;
-  const devicesPerPanel = 250;
+  const panelCount = 4;
+  const loopsPerPanel = 4;
+  const devicesPerPanel = 500;
   const expansionLoopCount = 4;
   const nodesPerExpansionLoop = 32;
   const devicesPerNode = 32;
   const totalDevices = panelCount * devicesPerPanel;
-  const panelScale = 1.7;
+  const panelScale = 1;
   const arcStartAngle = Math.PI * 1.08;
   const arcEndAngle = Math.PI * 1.92;
 
@@ -203,7 +203,8 @@
       capacityExpansionCard.className = "capacity-expansion-card";
       capacityExpansionCard.setAttribute("aria-hidden", "true");
       capacityExpansionCard.innerHTML = [
-        '<img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">'
+        '<img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">',
+        '<p class="capacity-expansion-card-title">Wireless Loop Card</p>'
       ].join("");
     }
 
@@ -392,8 +393,8 @@
       };
     }
 
-    const panelVisual = capacityExpansionPanel;
-    const cardVisual = capacityExpansionCard;
+    const panelVisual = capacityExpansionPanel.querySelector(".capacity-expansion-panel-icon") || capacityExpansionPanel;
+    const cardVisual = capacityExpansionCard.querySelector(".capacity-expansion-card-image") || capacityExpansionCard;
     const panelBounds = getSvgBounds(panelVisual);
     const cardBounds = getSvgBounds(cardVisual);
 
@@ -677,7 +678,7 @@
 
     resetStageVisuals();
     setStageMessage(
-      "Eight enlarged network panels are dropping onto an even arc before the wired topology links them together.",
+      "Four enlarged network panels are dropping onto an even arc before the wired topology links them together.",
       "Panels landing..."
     );
 
@@ -732,7 +733,7 @@
     }
 
     setStageMessage(
-      "Each panel contributes 2 wireless loops and 250 devices. Click again to aggregate the full system capacity.",
+      "Each panel contributes 4 wireless loops and 500 devices. Click again to aggregate the full system capacity.",
       "Click to aggregate devices"
     );
   }

@@ -5,103 +5,70 @@ const path = require("node:path");
 
 const rootDir = path.resolve(__dirname, "..");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
-const overviewHtml = fs.readFileSync(path.join(rootDir, "pages", "overview.html"), "utf8");
 const capacityHtml = fs.readFileSync(path.join(rootDir, "pages", "capacity.html"), "utf8");
 const capacityCss = fs.readFileSync(path.join(rootDir, "css", "pages", "capacity.css"), "utf8");
 const capacityJs = fs.readFileSync(path.join(rootDir, "js", "capacity-page.js"), "utf8");
 
-test("presentation shell adds a System Capacity slide after Extended Distance", () => {
+test("presentation shell keeps the System Capacity slide wired into navigation", () => {
   assert.match(indexHtml, /<span class="nav-label">System Capacity<\/span>[\s\S]*?data-target="8"/);
   assert.match(indexHtml, /<iframe class="slide-frame" src="pages\/capacity\.html" title="System Capacity" loading="lazy"><\/iframe>/);
-  assert.match(indexHtml, /10-Year Battery<\/span>[\s\S]*?data-target="6"/);
-  assert.match(indexHtml, /Easy Installation<\/span>[\s\S]*?data-target="7"/);
 });
 
-test("overview page stays focused on the existing summary content", () => {
-  assert.match(overviewHtml, /Six Core Features/);
-  assert.doesNotMatch(overviewHtml, /feature-capacity|System Capacity/);
-});
+test("System Capacity expansion scene exposes the updated node and loop headings", () => {
+  assert.doesNotMatch(capacityHtml, /capacity-expansion-card-overline/);
+  assert.match(capacityHtml, /class="capacity-expansion-card-title">Wireless Loop Card<\/p>/);
 
-test("System Capacity page renders the first Network level stage and a second expansion-card scene", () => {
-  assert.match(capacityHtml, /<title>System Capacity<\/title>/);
-  assert.match(capacityHtml, /<h2>System Capacity<\/h2>/);
-  assert.match(capacityHtml, /class="page page-capacity" data-capacity-scene="network-level"/);
-  assert.match(capacityHtml, /class="visual-card capacity-stage-shell" id="capacity-stage-shell"/);
-  assert.match(capacityHtml, /class="capacity-stage" id="capacity-stage" aria-label="System Capacity stage"/);
-  assert.match(capacityHtml, /class="capacity-stage-title">Network Level<\/p>/);
-  assert.match(capacityHtml, /class="capacity-stage-status" id="capacity-stage-status">[\s\S]*?<\/p>/);
-  assert.match(capacityHtml, /class="capacity-stage-hint" id="capacity-stage-hint">Click to start<\/button>/);
-  assert.doesNotMatch(capacityHtml, /capacity-stage-eyebrow|SMALL STAGE/);
-  assert.match(capacityHtml, /class="capacity-network" id="capacity-network"><\/div>/);
-  assert.match(capacityHtml, /class="capacity-panels" id="capacity-panels"><\/div>/);
-  assert.match(capacityHtml, /class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"><\/div>/);
-  assert.match(capacityHtml, /class="capacity-aggregation" id="capacity-aggregation"/);
-  assert.match(capacityHtml, /class="capacity-value-wrapper">[\s\S]*?class="capacity-total-value" id="capacity-total-value">0<\/div>[\s\S]*?class="capacity-devices-label" id="capacity-devices-label">Devices<\/span>/);
-  assert.match(capacityHtml, /class="capacity-expansion" id="capacity-expansion" aria-hidden="true">/);
-  assert.match(capacityHtml, /class="capacity-expansion-panel" id="capacity-expansion-panel">[\s\S]*?class="capacity-expansion-kicker">Expansion view<\/p>[\s\S]*?class="capacity-expansion-title">Capacity scales into clustered loops\.<\/h3>[\s\S]*?class="capacity-expansion-copy">[\s\S]*?four orderly loop groups\./);
-  assert.match(capacityHtml, /class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"><\/div>/);
-  assert.match(capacityHtml, /class="capacity-expansion-card" id="capacity-expansion-card">[\s\S]*?class="capacity-expansion-card-image"[\s\S]*?loop expansion card\.svg/);
-  assert.match(capacityHtml, /class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"><\/div>/);
-  assert.match(capacityHtml, /<script src="\.\.\/js\/capacity-page\.js"><\/script>/);
+  assert.match(capacityCss, /--capacity-card-width:\s*138px;/);
+  assert.match(capacityCss, /--capacity-card-shift:\s*-96px;/);
+  assert.match(capacityCss, /--capacity-loops-shift:\s*-94px;/);
+  assert.match(capacityCss, /content:\s*"UP TO 64 NODES";/);
+  assert.match(capacityCss, /font-size:\s*0\.864rem;/);
+  assert.match(capacityCss, /transform:\s*translateX\(var\(--capacity-card-shift\)\)\s*scale\(0\.67\);/);
+  assert.match(capacityCss, /transform:\s*translateX\(var\(--capacity-card-shift\)\)\s*scale\(0\.7\);/);
+  assert.match(capacityCss, /transform:\s*translateX\(var\(--capacity-loops-shift\)\);/);
 
-  assert.match(capacityCss, /\.capacity-panel\b/);
-  assert.match(capacityCss, /\.capacity-aggregation\.is-visible\b/);
-  assert.match(capacityCss, /\.capacity-stage-shell\.is-aggregating\b/);
-  assert.match(capacityCss, /\.capacity-network-line\b/);
-  assert.match(capacityCss, /\.capacity-network-svg\b/);
-  assert.match(capacityCss, /\.capacity-device-particle\b/);
-  assert.match(capacityCss, /--panel-scale:\s*1\.7/);
-  assert.match(capacityCss, /--panel-base-size:\s*clamp\(70px,\s*5\.3vw,\s*92px\)/);
-  assert.match(capacityCss, /--panel-size:\s*calc\(var\(--panel-base-size\)\s*\*\s*var\(--panel-scale\)\)/);
-  assert.match(capacityCss, /\.capacity-expansion\b/);
-  assert.match(capacityCss, /\.capacity-stage\.is-scene-expansion\b/);
-  assert.match(capacityCss, /\.capacity-expansion-card-image\b/);
-  assert.match(capacityCss, /\.capacity-loop-track\b/);
-  assert.match(capacityCss, /\.capacity-node-cluster\b/);
-  assert.match(capacityCss, /\.capacity-node-count\b/);
-  assert.match(capacityCss, /transform:\s*translateY\(-6px\)/);
-
-  assert.match(capacityJs, /const panelCount = 8;/);
-  assert.match(capacityJs, /const loopsPerPanel = 2;/);
-  assert.match(capacityJs, /const devicesPerPanel = 250;/);
   assert.match(capacityJs, /const expansionLoopCount = 4;/);
   assert.match(capacityJs, /const nodesPerExpansionLoop = 32;/);
-  assert.match(capacityJs, /const panelScale = 1\.7;/);
-  assert.match(capacityJs, /const arcStartAngle =/);
-  assert.match(capacityJs, /const arcEndAngle =/);
-  assert.match(capacityJs, /function buildArcPanelPositions\(/);
-  assert.match(capacityJs, /function buildExpansionRows\(/);
-  assert.match(capacityJs, /32 Nodes/);
-  assert.match(capacityJs, /loop expansion card\.svg/);
-  assert.match(capacityJs, /const arcLength = Math\.abs\(arcEndAngle - arcStartAngle\) \* arcRadius;/);
-  assert.match(capacityJs, /const arcStep = arcLength \/ panelCount;/);
-  assert.match(capacityJs, /const travelDistance = arcStep \* \(index \+ 0\.5\);/);
-  assert.match(capacityJs, /buildArcPanelPositions\(\)/);
-  assert.match(capacityJs, /function runIntroSequence\(/);
-  assert.match(capacityJs, /function revealPanelStats\(/);
-  assert.match(capacityJs, /function animateAggregation\(/);
-  assert.match(capacityJs, /function showExpansionScene\(/);
-  assert.match(capacityJs, /function runExpansionSequence\(/);
-  assert.match(capacityJs, /function createArcConnection\(/);
-  assert.match(capacityJs, /setAttribute\("d", `M/);
-  assert.match(capacityJs, /let countAnimationRunId = 0;/);
-  assert.match(capacityJs, /const runId = countAnimationRunId \+ 1;/);
-  assert.match(capacityJs, /countAnimationRunId = runId;/);
-  assert.match(capacityJs, /const rawProgress = \(now - startTime\) \/ duration;/);
-  assert.match(capacityJs, /const progress = Math\.min\(Math\.max\(rawProgress,\s*0\),\s*1\);/);
-  assert.match(capacityJs, /const clampedValue = Math\.min\(Math\.max\(roundedValue,\s*0\),\s*targetValue\);/);
-  assert.match(capacityJs, /Wireless Loops: <strong>\$\{loopsPerPanel\}<\/strong>/);
-  assert.match(capacityJs, /Devices: <strong>\$\{devicesPerPanel\}<\/strong>/);
-  assert.match(capacityJs, /if \(runId !== countAnimationRunId\)\s*\{\s*return;\s*\}/s);
-  assert.match(capacityJs, /interactionStep = 1;/);
-  assert.match(capacityJs, /capacityTotalValue\.textContent = "0";/);
-  assert.match(capacityJs, /animateCountUp\(totalDevices,\s*totalSyncDuration\);/);
-  assert.match(capacityJs, /if \(interactionStep === 0\)\s*\{\s*runIntroSequence\(\);\s*return;/s);
-  assert.match(capacityJs, /if \(interactionStep === 1\)\s*\{\s*revealPanelStats\(\);\s*return;/s);
-  assert.match(capacityJs, /if \(interactionStep === 2\)\s*\{\s*animateAggregation\(\);\s*return;/s);
-  assert.match(capacityJs, /if \(interactionStep === 3\)\s*\{\s*showExpansionScene\(\);\s*return;/s);
-  assert.match(capacityJs, /if \(interactionStep === 4\)\s*\{\s*runExpansionSequence\(\);\s*return;/s);
-  assert.doesNotMatch(capacityJs, /buildPanels\(\);\s*resetStageVisuals\(\);\s*runIntroSequence\(\);/);
-  assert.doesNotMatch(capacityJs, /const panelPositions = \[/);
-  assert.match(capacityJs, /capacityStageShell\.addEventListener\("click"/);
+  assert.doesNotMatch(capacityJs, /capacity-expansion-card-overline/);
+  assert.match(capacityJs, /Wireless Loop Card/);
+  assert.match(capacityJs, /label\.textContent = "LOOP";/);
+  assert.match(capacityJs, /nodeUnit\.textContent = `\$\{nodesPerExpansionLoop\} NODES`;/);
+});
+
+test("System Capacity network view uses four enlarged panels with 4 loops and 500 devices each", () => {
+  assert.match(capacityCss, /--capacity-reference-panel-size:\s*210px;/);
+  assert.match(capacityCss, /--panel-scale:\s*1;/);
+  assert.match(capacityCss, /--panel-base-size:\s*clamp\(190px,\s*14vw,\s*var\(--capacity-reference-panel-size\)\);/);
+  assert.match(capacityCss, /width:\s*min\(100%,\s*var\(--capacity-reference-panel-size\)\);/);
+
+  assert.match(capacityJs, /const panelCount = 4;/);
+  assert.match(capacityJs, /const loopsPerPanel = 4;/);
+  assert.match(capacityJs, /const devicesPerPanel = 500;/);
+  assert.match(capacityJs, /const totalDevices = panelCount \* devicesPerPanel;/);
+  assert.match(capacityJs, /"Four enlarged network panels are dropping onto an even arc/);
+  assert.match(capacityJs, /"Each panel contributes 4 wireless loops and 500 devices\./);
+});
+
+test("System Capacity stage shifts the full infographic slightly up and left", () => {
+  assert.match(capacityCss, /--capacity-stage-shift-x:\s*-28px;/);
+  assert.match(capacityCss, /--capacity-stage-shift-y:\s*-32px;/);
+  assert.match(capacityCss, /transform:\s*translate\(var\(--capacity-stage-shift-x\),\s*var\(--capacity-stage-shift-y\)\);/);
+  assert.match(capacityCss, /\.capacity-stage-shell\.is-aggregating\s+\.capacity-stage-surface\s*\{\s*box-shadow:\s*none;\s*\}/s);
+});
+
+test("System Capacity stages an independent left-side three-panel cluster before the network view", () => {
+  assert.match(capacityHtml, /class="capacity-expansion-left-cluster" id="capacity-expansion-left-cluster"/);
+  assert.match(capacityHtml, /class="capacity-expansion-left-cluster-svg" id="capacity-expansion-left-cluster-svg"/);
+
+  assert.match(capacityCss, /\.capacity-expansion-left-cluster\b/);
+  assert.match(capacityCss, /\.capacity-linked-panel\b/);
+  assert.match(capacityCss, /\.capacity-linked-panel\.is-landed\b/);
+  assert.match(capacityCss, /--capacity-linked-panel-scale:\s*1\.18;/);
+  assert.match(capacityCss, /--capacity-linked-panel-scale:\s*0\.94;/);
+
+  assert.match(capacityJs, /const leftClusterPanelSpecs = \[/);
+  assert.match(capacityJs, /const STEP_EXPANSION_REVEAL_LEFT_CLUSTER = 3;/);
+  assert.match(capacityJs, /async function runLeftClusterSequence\(\)/);
+  assert.match(capacityJs, /interactionStep = STEP_EXPANSION_REVEAL_LEFT_CLUSTER;/);
+  assert.match(capacityJs, /"Click to reveal linked panels"/);
 });

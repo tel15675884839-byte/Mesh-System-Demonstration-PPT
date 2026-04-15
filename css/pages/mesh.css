@@ -46,8 +46,8 @@
   overflow: hidden;
   border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(13, 24, 40, 0.72), rgba(4, 10, 18, 0.9)),
-    radial-gradient(circle at top, rgba(95, 214, 255, 0.08), transparent 55%);
+    linear-gradient(180deg, rgba(13, 24, 40, 0.56), rgba(4, 10, 18, 0.58)),
+    radial-gradient(circle at top, rgba(95, 214, 255, 0.1), transparent 58%);
   box-shadow:
     inset 0 0 0 1px var(--mesh-stage-border),
     0 24px 54px rgba(0, 0, 0, 0.24);
@@ -66,9 +66,9 @@
   overflow: hidden;
   border-radius: 28px;
   background:
-    radial-gradient(circle at 50% 18%, rgba(79, 170, 255, 0.12), transparent 36%),
-    radial-gradient(circle at 50% 72%, rgba(54, 255, 150, 0.08), transparent 38%),
-    linear-gradient(180deg, rgba(7, 16, 30, 0.92), rgba(4, 9, 18, 0.98));
+    radial-gradient(circle at 50% 18%, rgba(79, 170, 255, 0.16), transparent 36%),
+    radial-gradient(circle at 50% 72%, rgba(54, 255, 150, 0.1), transparent 38%),
+    linear-gradient(180deg, rgba(7, 16, 30, 0.68), rgba(4, 9, 18, 0.72));
   isolation: isolate;
 }
 
@@ -91,7 +91,7 @@
 
 .mesh-self-healing-stage::after {
   background:
-    radial-gradient(circle at center, rgba(6, 14, 26, 0) 56%, rgba(6, 14, 26, 0.24) 78%, rgba(6, 14, 26, 0.54) 100%);
+    radial-gradient(circle at center, rgba(6, 14, 26, 0) 56%, rgba(6, 14, 26, 0.18) 78%, rgba(6, 14, 26, 0.42) 100%);
 }
 
 .mesh-stage-canvas {

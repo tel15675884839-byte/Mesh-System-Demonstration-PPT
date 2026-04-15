@@ -142,7 +142,7 @@
   isolation: isolate;
   container-type: inline-size;
   border: none;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.015);
 }
 
 .distance-stage-controls {
@@ -165,9 +165,9 @@
 
 .distance-cinematic-bg {
   background:
-    linear-gradient(180deg, rgba(4, 12, 20, 0.4) 0%, transparent 40%, transparent 60%, rgba(4, 12, 20, 0.4) 100%),
+    linear-gradient(180deg, rgba(4, 12, 20, 0.24) 0%, transparent 40%, transparent 60%, rgba(4, 12, 20, 0.24) 100%),
     url('../../assets/distance-map-bg.png') center center / cover no-repeat;
-  opacity: 0.25;
+  opacity: 0.22;
   filter: saturate(0.5) contrast(1.1);
   animation: stage-breath 12s ease-in-out infinite;
 }
@@ -181,13 +181,13 @@
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 56px 56px, 56px 56px;
-  opacity: 0.38;
+  opacity: 0.24;
   /* removed old mask */
 }
 
 .distance-cinematic-bg::after {
   content: "";
-  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.18) 100%);
+  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.12) 100%);
 }
 
 .distance-stage-mode {

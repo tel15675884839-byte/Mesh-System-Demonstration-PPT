@@ -2,6 +2,7 @@
   const STAGE_HEIGHT = 1080;
   const DISTANCE_SLIDE_INDEX = 5;
   const PRODUCT_SLIDE_INDEX = 9;
+  const PRODUCT_BACKGROUND_TRANSITION_MS = 720;
   const slideSlugs = [
     "opening",
     "overview",
@@ -14,15 +15,18 @@
     "capacity",
     "products"
   ];
-  const shellMode = document.documentElement.dataset.mode === "browser" ? "browser" : "presentation";
+  const rootElement = document.documentElement || null;
+  const shellMode = rootElement && rootElement.dataset && rootElement.dataset.mode === "browser" ? "browser" : "presentation";
   const isBrowserMode = shellMode === "browser";
   const slides = document.querySelectorAll(".slide");
   const navDots = document.querySelectorAll(".nav-dot");
   const progressIndicator = document.getElementById("progress-indicator");
   const slidesContainer = document.getElementById("slides");
   const slideFrames = document.querySelectorAll(".slide-frame");
+  const appShell = typeof document.querySelector === "function" ? document.querySelector(".app-shell") : null;
   let currentSlide = 0;
   let wheelLock = false;
+  let productBackgroundTransitionTimer = 0;
 
   function createSearchParams(search) {
     const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
@@ -150,6 +154,70 @@
     });
   }
 
+  function clearProductBackgroundTransitionTimer() {
+    if (!productBackgroundTransitionTimer) {
+      return;
+    }
+
+    window.clearTimeout(productBackgroundTransitionTimer);
+    productBackgroundTransitionTimer = 0;
+  }
+
+  function scheduleProductBackgroundTransition(callback) {
+    clearProductBackgroundTransitionTimer();
+    productBackgroundTransitionTimer = window.setTimeout(function () {
+      productBackgroundTransitionTimer = 0;
+      callback();
+    }, PRODUCT_BACKGROUND_TRANSITION_MS);
+  }
+
+  function syncShellBackgroundMode(previousSlide, options) {
+    if (!appShell) {
+      return;
+    }
+
+    const config = options || {};
+    const isProductSlide = currentSlide === PRODUCT_SLIDE_INDEX;
+    const isInitialSync = Boolean(config.instantBackground);
+
+    clearProductBackgroundTransitionTimer();
+
+    if (isProductSlide) {
+      appShell.classList.add("is-product-background");
+      appShell.classList.remove("is-product-background-exit");
+
+      if (isInitialSync || previousSlide === PRODUCT_SLIDE_INDEX) {
+        appShell.classList.remove("is-product-background-enter");
+        return;
+      }
+
+      appShell.classList.add("is-product-background-enter");
+      scheduleProductBackgroundTransition(function () {
+        appShell.classList.remove("is-product-background-enter");
+      });
+      return;
+    }
+
+    appShell.classList.remove("is-product-background-enter");
+
+    if (!appShell.classList.contains("is-product-background")) {
+      appShell.classList.remove("is-product-background-exit");
+      return;
+    }
+
+    if (isInitialSync) {
+      appShell.classList.remove("is-product-background");
+      appShell.classList.remove("is-product-background-exit");
+      return;
+    }
+
+    appShell.classList.add("is-product-background-exit");
+    scheduleProductBackgroundTransition(function () {
+      appShell.classList.remove("is-product-background");
+      appShell.classList.remove("is-product-background-exit");
+    });
+  }
+
   function updateSlidePosition(shouldScroll) {
     if (!slidesContainer) {
       return;
@@ -172,6 +240,7 @@
 
   function updateView(index, options) {
     const config = options || {};
+    const previousSlide = currentSlide;
     currentSlide = Math.max(0, Math.min(index, slides.length - 1));
     updateSlidePosition(Boolean(config.scroll));
 
@@ -189,6 +258,7 @@
       progressIndicator.style.width = (((currentSlide + 1) / slides.length) * 100) + "%";
     }
 
+    syncShellBackgroundMode(previousSlide, config);
     syncFrameVisibility();
     syncBackgroundActivity();
     syncUrlState(config.state || null);
@@ -262,5 +332,5 @@
     }
   });
 
-  updateView(getInitialSlideIndex(), { scroll: false });
+  updateView(getInitialSlideIndex(), { scroll: false, instantBackground: true });
 }());
