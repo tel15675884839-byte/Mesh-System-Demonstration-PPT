@@ -1,933 +1,655 @@
 (function () {
-  const meshStates = {
-    normal: {
-      title: "Multiple paths ready",
-      copy: "The default route carries the signal while backup relays stay available."
-    },
-    blocked: {
-      title: "Primary link lost",
-      copy: "One hop is removed, so the break is obvious before the message reaches the panel."
-    },
-    recovery: {
-      title: "Auto recovery active",
-      copy: function (result) {
-        return "Backup route " + result + " reroutes around the failed link and keeps the panel connected.";
-      }
-    },
-    diagnostic: {
-      title: "3D player check",
-      copy: "This mode bypasses JSON files and renders a hardcoded scene so we can verify the player itself is working."
-    }
-  };
+  const page = document.querySelector(".page-mesh");
+  const stage = document.getElementById("mesh-self-healing-stage");
+  const canvas = document.getElementById("mesh-stage-canvas");
 
-  const ASSET_VERSION = "20260407c";
-
-  function withVersion(path) {
-    return path + "?v=" + ASSET_VERSION;
+  if (!page || !stage || !canvas || typeof canvas.getContext !== "function") {
+    return;
   }
 
-  const LOCKED_STATE_BASE_PATH = "../assets/mesh-states";
-  const LOCKED_STATE_PATHS = {
-    normal: LOCKED_STATE_BASE_PATH + "/normal.json",
-    blocked: LOCKED_STATE_BASE_PATH + "/blocked.json",
-    recovery1: LOCKED_STATE_BASE_PATH + "/recovery-1.json",
-    recovery2: LOCKED_STATE_BASE_PATH + "/recovery-2.json"
-  };
-  const DEMO_SCENE_STORAGE_KEY = "mesh_demo_scene_v1";
-  const DEMO_SCENE_STORAGE_VERSION = 1;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
 
-  const diagnosticStateData = {
-    diagnostic: {
-      version: 1,
-      config: {
-        nodeSize: 4.4,
-        deviceSize: 1.4,
-        perspectiveStrength: 1.1,
-        deviceShellRadius: 12,
-        nodeRange: 80,
-        deviceRange: 42,
-        nodeLinkColor: "#5fd6ff",
-        nodeLinkDash: 1.4,
-        nodeLinkGap: 0.38,
-        nodeLinkWidth: 1.5,
-        deviceLinkColor: "#8effb3",
-        deviceLinkDash: 1.1,
-        deviceLinkGap: 0.4,
-        deviceLinkWidth: 1.2,
-        nodeLinkMotionMode: "quantum",
-        nodeLinkMotionSpeed: 1.2,
-        nodeLinkMotionIntensity: 2,
-        nodeLinkMotionSpacing: 0.18,
-        deviceLinkMotionMode: "standard",
-        deviceLinkMotionSpeed: 1,
-        deviceLinkMotionIntensity: 1,
-        deviceLinkMotionSpacing: 0.18,
-        bidirectionalMotion: true
-      },
-      view: {
-        camera: {
-          x: 0,
-          y: 20,
-          z: 68
-        },
-        target: {
-          x: 0,
-          y: 0,
-          z: 0
-        }
-      },
-      nodes: [
-        { id: "diag-1", position: { x: -18, y: 0, z: 0 }, shellRadius: 12 },
-        { id: "diag-2", position: { x: 0, y: 8, z: -10 }, shellRadius: 12 },
-        { id: "diag-3", position: { x: 0, y: -8, z: 10 }, shellRadius: 12 },
-        { id: "diag-4", position: { x: 18, y: 0, z: 0 }, shellRadius: 12 }
-      ],
-      devices: [
-        { nodeId: "diag-1", type: "smoke", position: { x: -28, y: 7, z: -4 }, offset: { x: -10, y: 7, z: -4 } },
-        { nodeId: "diag-2", type: "heat-mult", position: { x: 8, y: 15, z: -16 }, offset: { x: 8, y: 7, z: -6 } },
-        { nodeId: "diag-3", type: "sounder", position: { x: 8, y: -13, z: 16 }, offset: { x: 8, y: -5, z: 6 } },
-        { nodeId: "diag-4", type: "mcp", position: { x: 28, y: 7, z: 4 }, offset: { x: 10, y: 7, z: 4 } }
-      ]
-    }
+  const BASE_WIDTH = 960;
+  const BASE_HEIGHT = 540;
+  const ACTIVE_PARTICLE_SPEED = 3.4;
+  const INTERACTION_RADIUS = 16;
+  const MAIN_PARTICLES_PER_EDGE = 2;
+  const SUB_PARTICLES_PER_EDGE = 1;
+
+  const stageState = {
+    width: Math.max(stage.clientWidth || BASE_WIDTH, 1),
+    height: Math.max(stage.clientHeight || BASE_HEIGHT, 1),
+    centerX: BASE_WIDTH / 2,
+    centerY: BASE_HEIGHT / 2,
+    scale: 1,
+    dpr: 1,
+    time: 0,
+    isActive: window.parent === window,
+    frameHandle: 0,
+    lastTimestamp: 0
   };
 
-  const PLAYER_STATE_ORDER = ["normal", "blocked", "recovery", "recovery-2", "diagnostic"];
-  const RECOVERY_PLAYER_MODES = {
-    "1": "recovery",
-    "2": "recovery-2"
-  };
+  const nodes = [
+    { id: 0, type: "main", x: 0, y: -164 },
+    { id: 1, type: "main", x: -188, y: 86 },
+    { id: 2, type: "main", x: 188, y: 86 },
+    { id: 3, type: "sub", x: -226, y: -124 },
+    { id: 4, type: "sub", x: 226, y: -124 },
+    { id: 5, type: "sub", x: 0, y: -26 },
+    { id: 6, type: "sub", x: -324, y: 148 },
+    { id: 7, type: "sub", x: 324, y: 148 },
+    { id: 8, type: "sub", x: 0, y: 228 }
+  ];
 
-  function getStatePaths() {
+  const edges = [
+    { source: 0, target: 1, type: "main", active: true, broken: false },
+    { source: 1, target: 2, type: "main", active: true, broken: false },
+    { source: 2, target: 0, type: "main", active: true, broken: false },
+    { source: 3, target: 0, type: "sub", active: true, broken: false },
+    { source: 3, target: 1, type: "sub", active: false, broken: false },
+    { source: 4, target: 0, type: "sub", active: true, broken: false },
+    { source: 4, target: 2, type: "sub", active: false, broken: false },
+    { source: 5, target: 0, type: "sub", active: true, broken: false },
+    { source: 5, target: 1, type: "sub", active: false, broken: false },
+    { source: 5, target: 2, type: "sub", active: false, broken: false },
+    { source: 6, target: 1, type: "sub", active: true, broken: false },
+    { source: 7, target: 2, type: "sub", active: true, broken: false },
+    { source: 8, target: 1, type: "sub", active: true, broken: false },
+    { source: 8, target: 2, type: "sub", active: false, broken: false }
+  ];
+
+  const stars = Array.from({ length: 72 }, function (_value, index) {
     return {
-      normal: [withVersion(LOCKED_STATE_PATHS.normal)],
-      blocked: [withVersion(LOCKED_STATE_PATHS.blocked)],
-      recovery: [withVersion(LOCKED_STATE_PATHS.recovery1)],
-      "recovery-2": [withVersion(LOCKED_STATE_PATHS.recovery2)]
+      x: ((index * 97) % 1000) / 1000,
+      y: ((index * 53) % 1000) / 1000,
+      radius: 0.8 + (((index * 29) % 100) / 100) * 1.6,
+      drift: 0.12 + (((index * 11) % 100) / 100) * 0.26,
+      offset: index * 0.7
+    };
+  });
+
+  const ripples = [];
+  let particles = [];
+
+  const iconAssets = {
+    main: loadIcon("../assets/icons/node.svg"),
+    sub: loadIcon("../assets/icons/smoke.svg")
+  };
+
+  function loadIcon(relativePath) {
+    const image = new Image();
+    const asset = {
+      image: image,
+      ready: false
+    };
+
+    image.onload = function () {
+      asset.ready = true;
+    };
+    image.onerror = function () {
+      asset.ready = false;
+    };
+
+    try {
+      image.src = String(new URL(relativePath, document.baseURI || location.href));
+    } catch (_error) {
+      image.src = relativePath;
+    }
+
+    if (image.complete && image.naturalWidth > 0) {
+      asset.ready = true;
+    }
+
+    return asset;
+  }
+
+  function resizeStage() {
+    const rect = stage.getBoundingClientRect();
+    const width = Math.max(stage.clientWidth || rect.width || BASE_WIDTH, 1);
+    const height = Math.max(stage.clientHeight || rect.height || BASE_HEIGHT, 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    stageState.width = width;
+    stageState.height = height;
+    stageState.centerX = width / 2;
+    stageState.centerY = height / 2 + Math.min(height * 0.02, 10);
+    stageState.scale = Math.min(width / 860, height / 620);
+    stageState.dpr = dpr;
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    if (typeof context.setTransform === "function") {
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+  }
+
+  function getNodeById(id) {
+    return nodes.find(function (node) {
+      return node.id === id;
+    });
+  }
+
+  function getNodeFloat(nodeId) {
+    return Math.sin(stageState.time * 0.0018 + nodeId * 0.85) * 5.5;
+  }
+
+  function getNodePoint(node) {
+    return {
+      x: stageState.centerX + node.x * stageState.scale,
+      y: stageState.centerY + node.y * stageState.scale + getNodeFloat(node.id)
     };
   }
 
-  function getPlayerStateDataForSelection() {
-    return Object.assign({}, diagnosticStateData);
+  function getEdgePoints(edge) {
+    const sourceNode = getNodeById(edge.source);
+    const targetNode = getNodeById(edge.target);
+
+    return {
+      start: getNodePoint(sourceNode),
+      end: getNodePoint(targetNode)
+    };
   }
 
-  function isRecord(value) {
-    return !!value && typeof value === "object" && !Array.isArray(value);
-  }
-
-  function readDemoSceneSnapshot() {
-    try {
-      const raw = window.localStorage.getItem(DEMO_SCENE_STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw);
-      if (!isRecord(parsed)) {
-        return null;
-      }
-      if (typeof parsed.version === "number" && parsed.version !== DEMO_SCENE_STORAGE_VERSION) {
-        return null;
-      }
-      return parsed;
-    } catch (_error) {
-      return null;
-    }
-  }
-
-  function getDemoConfigOverride() {
-    const snapshot = readDemoSceneSnapshot();
-    if (!snapshot || !isRecord(snapshot.config)) {
-      return null;
-    }
-    return snapshot.config;
-  }
-
-  const dependencyScripts = [
-    {
-      name: "THREE",
-      isReady: function () {
-        return !!window.THREE;
-      },
-      sources: [
-        withVersion("../Mesh System Demonstration/three.min.js"),
-        withVersion("../Mesh System Demonstration/release/MeshDemo-portable/three.min.js")
-      ]
-    },
-    {
-      name: "OrbitControls",
-      isReady: function () {
-        return !!(window.THREE && window.THREE.OrbitControls);
-      },
-      sources: [
-        withVersion("../Mesh System Demonstration/OrbitControls.js"),
-        withVersion("../Mesh System Demonstration/release/MeshDemo-portable/OrbitControls.js")
-      ]
-    },
-    {
-      name: "LinkEffects",
-      isReady: function () {
-        return !!window.LinkEffects;
-      },
-      sources: [
-        withVersion("../Mesh System Demonstration/link-effects.js"),
-        withVersion("../Mesh System Demonstration/release/MeshDemo-portable/link-effects.js")
-      ]
-    },
-    {
-      name: "MeshScenePlayer",
-      isReady: function () {
-        return typeof window.MeshScenePlayer === "function";
-      },
-      sources: [
-        withVersion("../js/mesh-scene-player.js")
-      ]
-    }
-  ];
-
-  const iconBasePathCandidates = [
-    "../Mesh System Demonstration/assets/icons/",
-    "../Mesh System Demonstration/release/MeshDemo-portable/assets/icons/"
-  ];
-
-  const page = document.querySelector(".page-mesh");
-  const introTrigger = document.getElementById("mesh-intro-trigger");
-  const introTitle = page ? page.querySelector(".mesh-intro-title") : null;
-  const heroTitle = page ? page.querySelector(".mesh-hero h2") : null;
-  const meshStage = document.querySelector(".mesh-stage");
-  const meshPlayerHost = document.getElementById("mesh-player-host");
-  const meshPlayerMessage = document.getElementById("mesh-player-message");
-  const titleElement = document.getElementById("mesh-status-title");
-  const buttons = Array.from(document.querySelectorAll(".mode-button"));
-  const recoverySwitch = document.getElementById("mesh-recovery-switch");
-  const recoveryResultButtons = Array.from(document.querySelectorAll(".mesh-recovery-result"));
-
-  let mode = "normal";
-  let recoveryResult = "1";
-  let player = null;
-  let bootstrapPromise = null;
-  let diagnosticScene = null;
-  let resolvedIconBasePathPromise = null;
-  let playerAvailability = null;
-  let revealSyncTimeout = 0;
-  let introBaseWidth = 0;
-  const searchParams = new URLSearchParams(window.location.search);
-  const forceRevealOnLoad = searchParams.get("reveal") === "1";
-  const startsActive = forceRevealOnLoad || window.parent === window;
-  let isSlideActive = startsActive;
-  const prefersReducedMotion = window.matchMedia
-    ? window.matchMedia("(prefers-reduced-motion: reduce)")
-    : null;
-
-  function setMessage(message, kind) {
-    if (!meshPlayerMessage || !meshStage) {
-      return;
-    }
-
-    if (!message) {
-      meshPlayerMessage.hidden = true;
-      meshPlayerMessage.textContent = "";
-      meshPlayerMessage.dataset.kind = "";
-      meshStage.classList.remove("is-loading", "is-error");
-      return;
-    }
-
-    meshPlayerMessage.hidden = false;
-    meshPlayerMessage.textContent = message;
-    meshPlayerMessage.dataset.kind = kind || "info";
-    meshStage.classList.toggle("is-loading", kind === "loading");
-    meshStage.classList.toggle("is-error", kind === "error");
-  }
-
-  function setStatus(modeName) {
-    const state = meshStates[modeName];
-    if (!state || !titleElement) {
-      return;
-    }
-
-    titleElement.textContent = state.title;
-  }
-
-  function setModeButtons(activeMode) {
-    buttons.forEach((button) => {
-      const isActive = button.dataset.mode === activeMode;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-selected", String(isActive));
-    });
-    if (meshStage) {
-      meshStage.dataset.activeMode = activeMode;
-    }
-  }
-
-  function setRecoverySwitchVisibility(activeMode) {
-    if (!recoverySwitch) {
-      return;
-    }
-    const visible = activeMode === "recovery";
-    recoverySwitch.hidden = !visible;
-    recoverySwitch.setAttribute("aria-hidden", String(!visible));
-    recoverySwitch.style.display = visible ? "inline-grid" : "none";
-    recoverySwitch.style.pointerEvents = visible ? "auto" : "none";
-  }
-
-  function setRecoveryResultButtons(activeResult) {
-    recoveryResultButtons.forEach((button) => {
-      const isActive = button.dataset.recoveryResult === activeResult;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
+  function getSubEdgesForNode(nodeId) {
+    return edges.filter(function (edge) {
+      return edge.type === "sub" && edge.source === nodeId;
     });
   }
 
-  function setAvailability(statusMap) {
-    buttons.forEach((button) => {
-      if (button.dataset.mode === "diagnostic") {
-        button.disabled = false;
-        button.classList.remove("is-disabled");
-        button.setAttribute("aria-disabled", "false");
-        button.title = "Built-in diagnostic scene";
+  function isNodeDisconnected(nodeId) {
+    const nodeEdges = getSubEdgesForNode(nodeId);
+    return nodeEdges.length > 0 && nodeEdges.every(function (edge) {
+      return edge.broken;
+    });
+  }
+
+  function buildParticles() {
+    particles = [];
+
+    edges.forEach(function (edge) {
+      if (!edge.active || edge.broken) {
         return;
       }
 
-      const stateStatus = getUiModeAvailability(statusMap, button.dataset.mode);
-      const enabled = !!(stateStatus && stateStatus.ok);
-      button.disabled = !enabled;
-      button.classList.toggle("is-disabled", !enabled);
-      button.setAttribute("aria-disabled", String(!enabled));
-      if (stateStatus && stateStatus.error) {
-        button.title = stateStatus.error.message || "State file failed to load.";
-      } else {
-        button.removeAttribute("title");
+      const count = edge.type === "main" ? MAIN_PARTICLES_PER_EDGE : SUB_PARTICLES_PER_EDGE;
+      for (let index = 0; index < count; index += 1) {
+        particles.push({
+          edge: edge,
+          progress: index / count,
+          speed: ACTIVE_PARTICLE_SPEED * (edge.type === "main" ? 0.9 : 1.1)
+        });
       }
     });
   }
 
-  function getUiModeAvailability(statusMap, uiMode) {
-    if (!statusMap) {
-      return null;
-    }
-
-    if (uiMode !== "recovery") {
-      return statusMap[uiMode] || null;
-    }
-
-    const recoveryPrimary = statusMap.recovery || null;
-    const recoverySecondary = statusMap["recovery-2"] || null;
-
-    if ((recoveryPrimary && recoveryPrimary.ok) || (recoverySecondary && recoverySecondary.ok)) {
-      return { ok: true, error: null };
-    }
-
-    return recoveryPrimary || recoverySecondary || null;
-  }
-
-  function getPlayerModeForUiMode(uiMode, statusMap) {
-    if (uiMode !== "recovery") {
-      return uiMode;
-    }
-
-    const preferredMode = RECOVERY_PLAYER_MODES[recoveryResult] || "recovery";
-    const fallbackMode = preferredMode === "recovery" ? "recovery-2" : "recovery";
-    const preferredStatus = statusMap ? statusMap[preferredMode] : null;
-    const fallbackStatus = statusMap ? statusMap[fallbackMode] : null;
-
-    if (preferredStatus && preferredStatus.ok) {
-      return preferredMode;
-    }
-    if (fallbackStatus && fallbackStatus.ok) {
-      return fallbackMode;
-    }
-
-    return preferredMode;
-  }
-
-  function stopDiagnosticScene() {
-    if (!diagnosticScene) {
-      return;
-    }
-
-    if (diagnosticScene.frame) {
-      window.cancelAnimationFrame(diagnosticScene.frame);
-    }
-
-    if (diagnosticScene.onResize) {
-      window.removeEventListener("resize", diagnosticScene.onResize);
-    }
-
-    if (diagnosticScene.renderer) {
-      diagnosticScene.renderer.dispose();
-    }
-    if (diagnosticScene.controls && typeof diagnosticScene.controls.dispose === "function") {
-      diagnosticScene.controls.dispose();
-    }
-
-    if (meshPlayerHost) {
-      meshPlayerHost.innerHTML = "";
-    }
-
-    diagnosticScene = null;
-  }
-
-  function resetPlayerInstance() {
-    if (player && typeof player.destroy === "function") {
-      player.destroy();
-    }
-    player = null;
-    bootstrapPromise = null;
-    playerAvailability = null;
-  }
-
-  function startDiagnosticScene() {
-    stopDiagnosticScene();
-
-    if (!meshPlayerHost || !window.THREE) {
-      throw new Error("Three.js is unavailable for diagnostic mode.");
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.style.display = "block";
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    meshPlayerHost.innerHTML = "";
-    meshPlayerHost.appendChild(canvas);
-
-    const renderer = new window.THREE.WebGLRenderer({
-      canvas: canvas,
-      antialias: true,
-      alpha: false
+  function pushRipple(nodeId, color) {
+    ripples.push({
+      nodeId: nodeId,
+      radius: 0,
+      maxRadius: 96 * stageState.scale,
+      color: color
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  }
 
-    const scene = new window.THREE.Scene();
-    scene.background = new window.THREE.Color(0x07111c);
+  function pointToSegmentDistance(point, start, end) {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const lengthSquared = dx * dx + dy * dy;
 
-    const camera = new window.THREE.PerspectiveCamera(52, 1, 0.1, 1000);
-    camera.position.set(0, 6, 30);
-    const initialTarget = new window.THREE.Vector3(0, 0, 0);
-    camera.lookAt(initialTarget);
-
-    let controls = null;
-    if (window.THREE.OrbitControls) {
-      controls = new window.THREE.OrbitControls(camera, canvas);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-      controls.enablePan = true;
-      controls.minDistance = 14;
-      controls.maxDistance = 120;
-      controls.target.copy(initialTarget);
-      controls.update();
+    if (!lengthSquared) {
+      return Math.hypot(point.x - start.x, point.y - start.y);
     }
 
-    const ambient = new window.THREE.AmbientLight(0xffffff, 0.9);
-    const key = new window.THREE.DirectionalLight(0x7fe8ff, 1.1);
-    key.position.set(18, 20, 12);
-    scene.add(ambient);
-    scene.add(key);
+    const projection = ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared;
+    const clamped = Math.max(0, Math.min(1, projection));
+    const nearestX = start.x + dx * clamped;
+    const nearestY = start.y + dy * clamped;
+    return Math.hypot(point.x - nearestX, point.y - nearestY);
+  }
 
-    const cube = new window.THREE.Mesh(
-      new window.THREE.BoxGeometry(8, 8, 8),
-      new window.THREE.MeshStandardMaterial({
-        color: 0x25dfff,
-        emissive: 0x0b3b52,
-        metalness: 0.35,
-        roughness: 0.24
-      })
-    );
-    scene.add(cube);
-
-    const edges = new window.THREE.LineSegments(
-      new window.THREE.EdgesGeometry(new window.THREE.BoxGeometry(8.2, 8.2, 8.2)),
-      new window.THREE.LineBasicMaterial({ color: 0xffffff })
-    );
-    scene.add(edges);
-
-    const axes = new window.THREE.AxesHelper(10);
-    scene.add(axes);
-
-    const grid = new window.THREE.GridHelper(44, 12, 0x2ed8ff, 0x123042);
-    grid.position.y = -8;
-    scene.add(grid);
-
-    function resize() {
-      const width = Math.max(meshPlayerHost.clientWidth || 1, 1);
-      const height = Math.max(meshPlayerHost.clientHeight || 1, 1);
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      if (controls) {
-        controls.update();
-      }
-    }
-
-    function loop() {
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.015;
-      edges.rotation.x = cube.rotation.x;
-      edges.rotation.y = cube.rotation.y;
-      if (controls) {
-        controls.update();
-      }
-      renderer.render(scene, camera);
-      if (diagnosticScene) {
-        diagnosticScene.frame = window.requestAnimationFrame(loop);
-      }
-    }
-
-    diagnosticScene = {
-      scene: scene,
-      renderer: renderer,
-      frame: 0,
-      onResize: resize,
-      camera: camera,
-      controls: controls,
-      initialView: {
-        position: camera.position.clone(),
-        target: initialTarget.clone()
-      }
+  function getCanvasPoint(event) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (event.clientX !== undefined ? event.clientX : event.x) - rect.left,
+      y: (event.clientY !== undefined ? event.clientY : event.y) - rect.top
     };
-
-    resize();
-    loop();
-    window.addEventListener("resize", resize);
   }
 
-  function isDependencyReady(dependency) {
-    if (!dependency) {
+  function getInteractiveEdgeAt(point) {
+    let matchedEdge = null;
+    let matchedDistance = Infinity;
+
+    edges.forEach(function (edge) {
+      if (edge.type !== "sub") {
+        return;
+      }
+
+      const points = getEdgePoints(edge);
+      const distance = pointToSegmentDistance(point, points.start, points.end);
+
+      if (distance <= INTERACTION_RADIUS && distance < matchedDistance) {
+        matchedEdge = edge;
+        matchedDistance = distance;
+      }
+    });
+
+    return matchedEdge;
+  }
+
+  function breakEdgeWithReroute(edge) {
+    if (!edge || edge.type !== "sub" || !edge.active || edge.broken) {
       return false;
     }
-    if (typeof dependency.isReady === "function") {
-      return !!dependency.isReady();
+
+    const siblingEdges = getSubEdgesForNode(edge.source);
+    siblingEdges.forEach(function (sibling) {
+      if (sibling !== edge) {
+        sibling.active = false;
+      }
+    });
+
+    edge.active = false;
+    edge.broken = true;
+
+    const fallback = siblingEdges.find(function (candidate) {
+      return candidate !== edge && !candidate.broken;
+    });
+
+    if (fallback) {
+      fallback.active = true;
     }
-    return !!window[dependency.name];
+
+    pushRipple(edge.source, "255, 132, 98");
+    buildParticles();
+    return true;
   }
 
-  function loadScript(dependency, src) {
-    return new Promise((resolve, reject) => {
-      if (isDependencyReady(dependency)) {
-        resolve(true);
-        return;
+  function recoverEdge(edge) {
+    if (!edge || edge.type !== "sub" || !edge.broken) {
+      return false;
+    }
+
+    edge.broken = false;
+
+    const siblingEdges = getSubEdgesForNode(edge.source);
+    const hasActiveSibling = siblingEdges.some(function (candidate) {
+      return candidate.active && !candidate.broken;
+    });
+
+    if (!hasActiveSibling) {
+      edge.active = true;
+    }
+
+    pushRipple(edge.source, "100, 242, 167");
+    buildParticles();
+    return true;
+  }
+
+  function drawBackground() {
+    context.clearRect(0, 0, stageState.width, stageState.height);
+
+    const fill = context.createLinearGradient(0, 0, 0, stageState.height);
+    fill.addColorStop(0, "#081220");
+    fill.addColorStop(1, "#040913");
+    context.fillStyle = fill;
+    context.fillRect(0, 0, stageState.width, stageState.height);
+
+    stars.forEach(function (star) {
+      const x = star.x * stageState.width;
+      const y = ((star.y + stageState.time * 0.000006 * star.drift + star.offset) % 1) * stageState.height;
+      const alpha = 0.18 + Math.abs(Math.sin(stageState.time * 0.001 + star.offset)) * 0.44;
+
+      context.beginPath();
+      context.fillStyle = "rgba(200, 232, 255, " + alpha.toFixed(3) + ")";
+      context.arc(x, y, star.radius, 0, Math.PI * 2);
+      context.fill();
+    });
+
+  }
+
+  function drawEdges() {
+    edges.forEach(function (edge) {
+      const points = getEdgePoints(edge);
+      const midX = (points.start.x + points.end.x) / 2;
+      const midY = (points.start.y + points.end.y) / 2;
+
+      context.beginPath();
+      context.moveTo(points.start.x, points.start.y);
+      context.lineTo(points.end.x, points.end.y);
+      context.lineCap = "round";
+
+      if (edge.type === "main") {
+        context.lineWidth = 2.8;
+        context.setLineDash([6, 14]);
+        context.strokeStyle = "rgba(95, 214, 255, 0.54)";
+      } else if (edge.broken) {
+        context.lineWidth = 2.2;
+        context.setLineDash([4, 11]);
+        context.strokeStyle = "rgba(255, 128, 104, 0.62)";
+      } else if (edge.active) {
+        context.lineWidth = 2.2;
+        context.setLineDash([4, 12]);
+        context.strokeStyle = "rgba(100, 242, 167, 0.54)";
+      } else {
+        context.lineWidth = 1.7;
+        context.setLineDash([4, 14]);
+        context.strokeStyle = "rgba(100, 242, 167, 0.18)";
       }
 
-      const dependencyName = dependency && dependency.name ? dependency.name : "unknown";
-      const selector = 'script[data-mesh-dependency="' + dependencyName + '"][data-mesh-source="' + src + '"]';
-      const existing = document.querySelector(selector);
-      if (existing) {
-        existing.addEventListener("load", function () {
-          if (isDependencyReady(dependency)) {
-            resolve(true);
-            return;
-          }
-          reject(new Error("Dependency loaded but unavailable: " + dependencyName));
-        }, { once: true });
-        existing.addEventListener("error", function () {
-          reject(new Error("Failed to load dependency: " + src));
-        }, { once: true });
-        return;
-      }
+      context.stroke();
+      context.setLineDash([]);
+      context.lineCap = "butt";
 
-      const script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.dataset.meshDependency = dependencyName;
-      script.dataset.meshSource = src;
-      script.onload = function () {
-        if (isDependencyReady(dependency)) {
-          resolve(true);
-          return;
-        }
-        reject(new Error("Dependency loaded but unavailable: " + dependencyName));
-      };
-      script.onerror = function () {
-        reject(new Error("Failed to load dependency: " + src));
-      };
-      document.head.appendChild(script);
+      if (edge.broken) {
+        const pulse = 0.8 + Math.abs(Math.sin(stageState.time * 0.005)) * 0.35;
+        const markerRadius = 10 * stageState.scale * pulse;
+
+        context.beginPath();
+        context.strokeStyle = "rgba(255, 144, 114, 0.95)";
+        context.lineWidth = 2;
+        context.arc(midX, midY, markerRadius + 6, 0, Math.PI * 2);
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(midX - markerRadius, midY - markerRadius);
+        context.lineTo(midX + markerRadius, midY + markerRadius);
+        context.moveTo(midX + markerRadius, midY - markerRadius);
+        context.lineTo(midX - markerRadius, midY + markerRadius);
+        context.stroke();
+      }
     });
   }
 
-  async function loadDependencyWithFallback(dependency) {
-    const dependencyName = dependency && dependency.name ? dependency.name : "unknown";
-    const sources = Array.isArray(dependency.sources) ? dependency.sources.slice() : [];
-    const attempts = [];
+  function drawParticles(deltaFactor) {
+    particles.forEach(function (particle) {
+      if (!particle.edge.active || particle.edge.broken) {
+        return;
+      }
 
-    if (isDependencyReady(dependency)) {
-      return true;
-    }
+      particle.progress += particle.speed * deltaFactor * 0.004;
+      if (particle.progress >= 1) {
+        particle.progress -= 1;
+      }
 
-    for (let i = 0; i < sources.length; i += 1) {
-      const source = sources[i];
-      if (!source) {
+      const points = getEdgePoints(particle.edge);
+      const trailLength = particle.edge.type === "main" ? 7 : 5;
+
+      for (let index = trailLength; index >= 0; index -= 1) {
+        const offset = particle.progress - index * 0.022;
+        if (offset < 0) {
+          continue;
+        }
+
+        const x = points.start.x + (points.end.x - points.start.x) * offset;
+        const y = points.start.y + (points.end.y - points.start.y) * offset;
+        const alpha = 1 - index / (trailLength + 1);
+        const radius = Math.max((particle.edge.type === "main" ? 3.6 : 2.8) * alpha, 0.7);
+
+        context.beginPath();
+        context.fillStyle = particle.edge.type === "main"
+          ? "rgba(95, 214, 255, " + (0.28 + alpha * 0.66).toFixed(3) + ")"
+          : "rgba(100, 242, 167, " + (0.22 + alpha * 0.72).toFixed(3) + ")";
+        context.arc(x, y, radius * stageState.scale, 0, Math.PI * 2);
+        context.fill();
+      }
+    });
+  }
+
+  function drawRipples(deltaFactor) {
+    for (let index = ripples.length - 1; index >= 0; index -= 1) {
+      const ripple = ripples[index];
+      const node = getNodeById(ripple.nodeId);
+      const point = getNodePoint(node);
+      const alpha = 1 - ripple.radius / ripple.maxRadius;
+
+      if (alpha <= 0) {
+        ripples.splice(index, 1);
         continue;
       }
 
-      try {
-        await loadScript(dependency, source);
-        return true;
-      } catch (error) {
-        attempts.push((error && error.message) ? error.message : String(error));
-      }
-    }
+      ripple.radius += deltaFactor * 0.7 * stageState.scale;
 
-    throw new Error("Failed to load dependency " + dependencyName + ". Tried: " + attempts.join(" | "));
-  }
-
-  function probeIconBasePath(basePath) {
-    return new Promise((resolve) => {
-      const image = new Image();
-      let settled = false;
-
-      function finish(ok) {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        resolve(ok);
-      }
-
-      image.onload = function () {
-        finish(true);
-      };
-      image.onerror = function () {
-        finish(false);
-      };
-
-      image.src = withVersion(basePath + "node.svg");
-      window.setTimeout(function () {
-        finish(false);
-      }, 1600);
-    });
-  }
-
-  async function detectIconBasePath() {
-    for (let i = 0; i < iconBasePathCandidates.length; i += 1) {
-      const candidate = iconBasePathCandidates[i];
-      const isAvailable = await probeIconBasePath(candidate);
-      if (isAvailable) {
-        return candidate;
-      }
-    }
-    return iconBasePathCandidates[0];
-  }
-
-  async function ensureDependencies() {
-    for (let i = 0; i < dependencyScripts.length; i += 1) {
-      await loadDependencyWithFallback(dependencyScripts[i]);
+      context.beginPath();
+      context.lineWidth = Math.max(1.2, 3.4 * alpha);
+      context.strokeStyle = "rgba(" + ripple.color + ", " + Math.max(alpha * 0.85, 0).toFixed(3) + ")";
+      context.arc(point.x, point.y, ripple.radius, 0, Math.PI * 2);
+      context.stroke();
     }
   }
 
-  async function ensurePlayer() {
-    if (bootstrapPromise) {
-      return bootstrapPromise;
-    }
+  function drawNodeShell(point, radius, fillStyle, glowStyle) {
+    context.beginPath();
+    context.fillStyle = glowStyle;
+    context.arc(point.x, point.y, radius * 1.9, 0, Math.PI * 2);
+    context.fill();
 
-    bootstrapPromise = (async function () {
-      setMessage("Loading 3D mesh player...", "loading");
-      if (meshStage) {
-        meshStage.setAttribute("aria-busy", "true");
-      }
-
-      await ensureDependencies();
-
-      if (!resolvedIconBasePathPromise) {
-        resolvedIconBasePathPromise = detectIconBasePath();
-      }
-      const iconBasePath = await resolvedIconBasePathPromise;
-      const selectedStatePaths = getStatePaths();
-      const selectedStateData = getPlayerStateDataForSelection(recoveryResult);
-      const demoConfigOverride = getDemoConfigOverride();
-
-      if (typeof window.MeshScenePlayer !== "function") {
-        throw new Error("MeshScenePlayer is unavailable.");
-      }
-
-      player = new window.MeshScenePlayer({
-        container: meshPlayerHost,
-        stateOrder: PLAYER_STATE_ORDER,
-        statePaths: selectedStatePaths,
-        stateData: selectedStateData,
-        globalConfigOverride: demoConfigOverride,
-        iconBasePath: iconBasePath,
-        fallbackView: {
-          camera: { x: 0, y: 24, z: 88 },
-          target: { x: 0, y: 0, z: 0 }
-        },
-        initialMode: getPlayerModeForUiMode(mode),
-        autoFitView: false,
-        autostart: false,
-        startActive: isSlideActive
-      });
-
-      await player.preload();
-
-      const availability = typeof player.getStateAvailability === "function"
-        ? player.getStateAvailability()
-        : null;
-      playerAvailability = availability;
-      setAvailability(availability);
-
-      const selectableModes = ["normal", "blocked", "recovery"];
-      const preferredMode = selectableModes.indexOf(mode) >= 0 ? mode : "normal";
-      const preferredStatus = getUiModeAvailability(availability, preferredMode);
-      let nextMode = preferredStatus && preferredStatus.ok ? preferredMode : null;
-
-      if (!nextMode) {
-        for (let i = 0; i < selectableModes.length; i += 1) {
-          const modeName = selectableModes[i];
-          const modeStatus = getUiModeAvailability(availability, modeName);
-          if (modeStatus && modeStatus.ok) {
-            nextMode = modeName;
-            break;
-          }
-        }
-      }
-
-      if (!nextMode) {
-        throw new Error("Locked state files were not found under ../assets/mesh-states (normal.json, blocked.json, recovery-1.json, recovery-2.json).");
-      }
-
-      mode = nextMode;
-      setStatus(mode);
-      setModeButtons(mode);
-      setRecoverySwitchVisibility(mode);
-      setRecoveryResultButtons(recoveryResult);
-
-      const switched = await player.switchMode(getPlayerModeForUiMode(mode, availability));
-      if (!switched) {
-        throw new Error("Unable to activate the initial mesh state.");
-      }
-      if (typeof player.setActive === "function") {
-        player.setActive(isSlideActive);
-      }
-
-      if (meshStage) {
-        meshStage.removeAttribute("aria-busy");
-      }
-      setMessage("");
-      return player;
-    }()).catch(function (error) {
-      if (meshStage) {
-        meshStage.removeAttribute("aria-busy");
-      }
-      const protocolHint = window.location.protocol === "file:"
-        ? " Local file mode may block direct JSON loading. Open the project with start-local-server.bat and use http://127.0.0.1:8765/ instead."
-        : "";
-      setMessage(
-        "3D player failed to load. " + (error && error.message ? error.message : String(error)) + protocolHint,
-        "error"
-      );
-      throw error;
-    });
-
-    return bootstrapPromise;
+    context.beginPath();
+    context.fillStyle = fillStyle;
+    context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    context.fill();
   }
 
-  async function applyMeshMode(newMode) {
-    if (!meshStates[newMode]) {
+  function drawFallbackIcon(node, point) {
+    if (node.type === "main") {
+      context.beginPath();
+      context.strokeStyle = "rgba(244, 249, 255, 0.92)";
+      context.lineWidth = 2.4;
+      context.roundRect(point.x - 19, point.y - 13, 38, 26, 8);
+      context.stroke();
       return;
     }
 
-    const button = buttons.find(function (item) {
-      return item.dataset.mode === newMode;
-    });
+    context.beginPath();
+    context.strokeStyle = "rgba(244, 249, 255, 0.92)";
+    context.lineWidth = 2.2;
+    context.arc(point.x, point.y, 12, 0, Math.PI * 2);
+    context.stroke();
+  }
 
-    if (button && button.disabled) {
-      return;
-    }
+  function drawNodes() {
+    nodes.forEach(function (node) {
+      const point = getNodePoint(node);
+      const disconnected = node.type === "sub" && isNodeDisconnected(node.id);
+      const radius = (node.type === "main" ? 28 : 18) * stageState.scale;
 
-    mode = newMode;
-    setStatus(mode);
-    setModeButtons(mode);
-    setRecoverySwitchVisibility(mode);
-    setRecoveryResultButtons(recoveryResult);
-
-    try {
-      await ensureDependencies();
-
-      if (mode === "diagnostic") {
-        resetPlayerInstance();
-        startDiagnosticScene();
-        setMessage("");
-        return;
+      if (node.type === "main") {
+        drawNodeShell(point, radius, "rgba(12, 26, 44, 0.98)", "rgba(95, 214, 255, 0.16)");
       }
 
-      stopDiagnosticScene();
-      const readyPlayer = await ensurePlayer();
-      if (!readyPlayer) {
-        return;
-      }
+      const iconAsset = node.type === "main" ? iconAssets.main : iconAssets.sub;
+      const iconSize = (node.type === "main" ? 58 : 38) * stageState.scale;
 
-      const switched = await readyPlayer.switchMode(getPlayerModeForUiMode(mode, playerAvailability));
-      if (!switched) {
-        setMessage("Failed to switch the 3D player to " + mode + ".", "error");
-        return;
-      }
-
-      setMessage("");
-    } catch (error) {
-      setMessage(
-        "Failed to activate the 3D player. " + (error && error.message ? error.message : String(error)),
-        "error"
-      );
-    }
-  }
-
-  async function applyRecoveryResult(nextResult) {
-    if (nextResult !== "1" && nextResult !== "2") {
-      return;
-    }
-
-    if (recoveryResult === nextResult) {
-      return;
-    }
-
-    recoveryResult = nextResult;
-    setRecoveryResultButtons(recoveryResult);
-    setStatus(mode);
-
-    if (mode !== "recovery") {
-      return;
-    }
-
-    await applyMeshMode("recovery");
-  }
-
-  function shouldReduceMotion() {
-    return !!(prefersReducedMotion && prefersReducedMotion.matches);
-  }
-
-  function setRevealState(isRevealed) {
-    if (!page) {
-      return;
-    }
-    page.classList.toggle("is-revealed", !!isRevealed);
-    if (introTrigger) {
-      introTrigger.setAttribute("aria-expanded", String(!!isRevealed));
-    }
-  }
-
-  function syncStageAfterReveal() {
-    window.dispatchEvent(new Event("resize"));
-  }
-
-  function schedulePostRevealSync() {
-    if (revealSyncTimeout) {
-      window.clearTimeout(revealSyncTimeout);
-    }
-    window.requestAnimationFrame(syncStageAfterReveal);
-    revealSyncTimeout = window.setTimeout(function () {
-      syncStageAfterReveal();
-      revealSyncTimeout = 0;
-    }, 760);
-  }
-
-  function updateIntroTitleTarget() {
-    if (!page || !heroTitle) {
-      return;
-    }
-    const heroRect = heroTitle.getBoundingClientRect();
-    const pageRect = page.getBoundingClientRect();
-    const targetLeft = ((heroRect.left + (heroRect.width / 2) - pageRect.left) / Math.max(pageRect.width, 1)) * 100;
-    const targetTop = ((heroRect.top + (heroRect.height / 2) - pageRect.top) / Math.max(pageRect.height, 1)) * 100;
-    const introRect = introTitle ? introTitle.getBoundingClientRect() : null;
-    if (!introBaseWidth && introRect) {
-      introBaseWidth = introRect.width;
-    }
-    const scale = heroRect.width / Math.max(introBaseWidth || (introRect ? introRect.width : 1), 1);
-
-    page.style.setProperty("--mesh-intro-target-left", targetLeft + "%");
-    page.style.setProperty("--mesh-intro-target-top", targetTop + "%");
-    page.style.setProperty("--mesh-intro-target-scale", String(scale));
-  }
-
-  function enterStageState() {
-    if (!page) {
-      return;
-    }
-    if (revealSyncTimeout) {
-      window.clearTimeout(revealSyncTimeout);
-      revealSyncTimeout = 0;
-    }
-    updateIntroTitleTarget();
-    setRevealState(true);
-    window.requestAnimationFrame(syncStageAfterReveal);
-  }
-
-  function leaveStageState() {
-    if (revealSyncTimeout) {
-      window.clearTimeout(revealSyncTimeout);
-      revealSyncTimeout = 0;
-    }
-    setRevealState(false);
-  }
-
-  function syncPlayerVisibility() {
-    if (player && typeof player.setActive === "function") {
-      player.setActive(isSlideActive);
-    }
-  }
-
-  function handleSlideActivation() {
-    isSlideActive = true;
-    enterStageState();
-
-    if (mode === "diagnostic") {
-      try {
-        startDiagnosticScene();
-        setMessage("");
-      } catch (error) {
-        setMessage(
-          "Failed to activate the 3D player. " + (error && error.message ? error.message : String(error)),
-          "error"
+      if (iconAsset.ready) {
+        context.save();
+        context.globalAlpha = disconnected ? 0.45 : 1;
+        context.drawImage(
+          iconAsset.image,
+          point.x - iconSize / 2,
+          point.y - iconSize / 2,
+          iconSize,
+          iconSize
         );
+        context.restore();
+      } else {
+        drawFallbackIcon(node, point);
       }
+
+      if (node.type === "sub" && disconnected) {
+        context.beginPath();
+        context.strokeStyle = "rgba(255, 144, 114, 0.72)";
+        context.lineWidth = 1.5;
+        context.arc(point.x, point.y, radius + 8 * stageState.scale, 0, Math.PI * 2);
+        context.stroke();
+      }
+    });
+  }
+
+  function render(deltaFactor) {
+    drawBackground();
+    drawEdges();
+    drawParticles(deltaFactor);
+    drawRipples(deltaFactor);
+    drawNodes();
+  }
+
+  function tick(timestamp) {
+    if (!stageState.isActive) {
+      stageState.frameHandle = 0;
       return;
     }
 
-    if (player) {
-      syncPlayerVisibility();
+    if (!stageState.lastTimestamp) {
+      stageState.lastTimestamp = timestamp || 16;
+    }
+
+    const delta = Math.max(8, Math.min(32, (timestamp || 16) - stageState.lastTimestamp));
+    const deltaFactor = delta / 16;
+    stageState.lastTimestamp = timestamp || 16;
+    stageState.time += delta;
+
+    render(deltaFactor);
+    stageState.frameHandle = window.requestAnimationFrame(tick);
+  }
+
+  function startLoop() {
+    if (stageState.frameHandle) {
+      return;
+    }
+    stageState.lastTimestamp = 0;
+    stageState.frameHandle = window.requestAnimationFrame(tick);
+  }
+
+  function stopLoop() {
+    if (stageState.frameHandle && typeof window.cancelAnimationFrame === "function") {
+      window.cancelAnimationFrame(stageState.frameHandle);
+    }
+    stageState.frameHandle = 0;
+    stageState.lastTimestamp = 0;
+  }
+
+  function renderStaticFrame() {
+    stageState.time += 16;
+    render(1);
+  }
+
+  function updateCursor(event) {
+    const point = getCanvasPoint(event);
+    const edge = getInteractiveEdgeAt(point);
+    canvas.style.cursor = edge ? "pointer" : "crosshair";
+  }
+
+  function handlePointerDown(event) {
+    if (event.button !== 0) {
       return;
     }
 
-    ensurePlayer().catch(function () {
+    const point = getCanvasPoint(event);
+    const edge = getInteractiveEdgeAt(point);
+    if (!edge) {
+      return;
+    }
+
+    if (breakEdgeWithReroute(edge) && !stageState.isActive) {
+      renderStaticFrame();
+    }
+  }
+
+  function handleContextMenu(event) {
+    if (typeof event.preventDefault === "function") {
+      event.preventDefault();
+    }
+
+    const point = getCanvasPoint(event);
+    const edge = getInteractiveEdgeAt(point);
+    if (!edge) {
+      return;
+    }
+
+    if (recoverEdge(edge) && !stageState.isActive) {
+      renderStaticFrame();
+    }
+  }
+
+  function syncVisibility(isActive) {
+    stageState.isActive = !!isActive;
+
+    if (stageState.isActive) {
+      startLoop();
+      return;
+    }
+
+    stopLoop();
+    renderStaticFrame();
+  }
+
+  function getSnapshot() {
+    return {
+      edges: edges.map(function (edge) {
+        return {
+          source: edge.source,
+          target: edge.target,
+          type: edge.type,
+          active: edge.active,
+          broken: edge.broken
+        };
+      }),
+      nodes: nodes.map(function (node) {
+        return {
+          id: node.id,
+          type: node.type
+        };
+      })
+    };
+  }
+
+  function getDiagnostics() {
+    return {
+      flashIntensity: 0,
+      mainParticlesPerEdge: MAIN_PARTICLES_PER_EDGE,
+      subParticlesPerEdge: SUB_PARTICLES_PER_EDGE,
+      subNodeShellVisible: false,
+      subParticleSpeed: ACTIVE_PARTICLE_SPEED * 1.1,
+      mainParticleSpeed: ACTIVE_PARTICLE_SPEED * 0.9
+    };
+  }
+
+  function getEdgeMidpoint(source, target) {
+    const edge = edges.find(function (candidate) {
+      return candidate.source === source && candidate.target === target;
+    });
+
+    if (!edge) {
       return null;
-    });
+    }
+
+    const points = getEdgePoints(edge);
+    return {
+      x: (points.start.x + points.end.x) / 2,
+      y: (points.start.y + points.end.y) / 2
+    };
   }
 
-  function handleSlideDeactivation() {
-    isSlideActive = false;
-    leaveStageState();
-    stopDiagnosticScene();
-    syncPlayerVisibility();
-  }
+  page.classList.add("is-revealed");
+  resizeStage();
+  buildParticles();
+  render(1);
 
-  buttons.forEach(function (button) {
-    button.addEventListener("click", function () {
-      applyMeshMode(button.dataset.mode);
-    });
+  canvas.addEventListener("pointerdown", handlePointerDown);
+  canvas.addEventListener("pointermove", updateCursor);
+  canvas.addEventListener("pointerleave", function () {
+    canvas.style.cursor = "crosshair";
   });
-
-  recoveryResultButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-      applyRecoveryResult(button.dataset.recoveryResult).catch(function () {
-        return null;
-      });
-    });
-  });
+  canvas.addEventListener("contextmenu", handleContextMenu);
 
   window.addEventListener("resize", function () {
-    updateIntroTitleTarget();
-  });
-
-  window.addEventListener("storage", function (event) {
-    if (!event || event.key !== DEMO_SCENE_STORAGE_KEY) {
-      return;
+    resizeStage();
+    if (!stageState.isActive) {
+      renderStaticFrame();
     }
-    if (mode === "diagnostic") {
-      return;
-    }
-    resetPlayerInstance();
-    if (!isSlideActive) {
-      return;
-    }
-    applyMeshMode(mode).catch(function () {
-      return null;
-    });
   });
 
   window.addEventListener("message", function (event) {
@@ -935,34 +657,16 @@
       return;
     }
 
-    if (event.data.active) {
-      handleSlideActivation();
-      return;
-    }
-
-    handleSlideDeactivation();
+    syncVisibility(event.data.active);
   });
 
-  setStatus(mode);
-  setModeButtons(mode);
-  setRecoverySwitchVisibility(mode);
-  setRecoveryResultButtons(recoveryResult);
+  canvas.__meshController = {
+    getDiagnostics: getDiagnostics,
+    getSnapshot: getSnapshot,
+    getEdgeMidpoint: getEdgeMidpoint
+  };
 
-  if (startsActive) {
-    enterStageState();
-  } else {
-    leaveStageState();
-  }
-
-  if (forceRevealOnLoad) {
-    schedulePostRevealSync();
-  }
-
-  if (startsActive) {
-    ensurePlayer().catch(function () {
-      return null;
-    });
+  if (stageState.isActive) {
+    startLoop();
   }
 }());
-
-
