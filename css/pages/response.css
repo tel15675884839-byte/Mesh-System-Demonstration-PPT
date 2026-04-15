@@ -13,11 +13,8 @@
   padding-block: 18px;
 }
 
-.page-response .response-layout {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
+.page-response .page-stage-layout {
   gap: 16px;
-  height: calc(100vh - 36px);
 }
 
 .response-header {
@@ -60,39 +57,9 @@
   position: absolute;
   top: 22px;
   right: 22px;
-  z-index: 12;
-  display: grid;
-  place-items: center;
   width: 34px;
   height: 34px;
-  padding: 0;
-  border: 1px solid rgba(112, 240, 255, 0.16);
-  border-radius: 12px;
-  background: rgba(4, 12, 20, 0.74);
-  color: rgba(232, 248, 255, 0.88);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition:
-    background 0.16s ease,
-    border-color 0.16s ease,
-    transform 0.16s ease,
-    box-shadow 0.16s ease,
-    opacity 0.16s ease;
-}
-
-.response-reset-button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(112, 240, 255, 0.28);
-  background: rgba(8, 20, 34, 0.9);
-}
-
-.response-reset-button:focus-visible {
-  outline: 2px solid rgba(112, 240, 255, 0.65);
-  outline-offset: 3px;
-}
-
-.response-reset-button:active {
-  transform: translateY(0);
+  z-index: 12;
 }
 
 .response-reset-icon {
@@ -199,7 +166,9 @@
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
 }
 
@@ -210,7 +179,10 @@
   background-repeat: no-repeat;
   background-position: center;
   filter: brightness(0.4) grayscale(0.8) drop-shadow(0 0 5px rgba(255,255,255,0.1));
-  transition: all 0.4s ease;
+  transition:
+    filter 0.4s ease,
+    transform 0.4s ease,
+    opacity 0.4s ease;
 }
 
 .device-glow {
@@ -263,7 +235,9 @@
   white-space: nowrap;
   opacity: 0;
   transform: translateY(10px);
-  transition: all 0.4s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
 }
 
 .trigger-det.is-triggered .device-icon {
@@ -334,6 +308,35 @@
   background: linear-gradient(to left, currentColor, transparent);
   transform: translateY(-50%);
   transform-origin: right center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-overlay,
+  .device,
+  .device-icon,
+  .device-glow,
+  .trigger-det .trigger-label {
+    transition-duration: 0.01ms !important;
+  }
+
+  .page-response[data-is-alarming="true"] .stage-overlay,
+  .device.is-active .device-glow,
+  .trigger-det.is-triggered .device-icon,
+  .sounder.is-alarming .device-icon,
+  .sounder.is-alarming .device-glow {
+    animation: none !important;
+  }
+
+  .device.is-active .device-glow,
+  .sounder.is-alarming .device-glow {
+    transform: none;
+    opacity: 1 !important;
+  }
+
+  .trigger-det.is-triggered .device-icon,
+  .sounder.is-alarming .device-icon {
+    transform: none;
+  }
 }
 
 /* Responsive Overrides */

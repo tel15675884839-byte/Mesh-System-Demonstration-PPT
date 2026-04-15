@@ -16,26 +16,26 @@
       <span class="distance-intro-title">Extended Distance</span>
     </button>
 
-    <section class="page-grid distance-layout">
-      <header class="distance-header">
-        <div class="page-copy distance-hero distance-hero-spotlight">
+    <section class="page-grid distance-layout page-stage-layout">
+      <header class="distance-header page-stage-header">
+        <div class="page-copy distance-hero distance-hero-spotlight page-hero-spotlight">
           <h2>Extended Distance</h2>
         </div>
       </header>
 
       <div class="visual-card distance-main-stage-shell">
         <div class="distance-stage" id="distance-main-stage" data-scene="open" aria-label="Extended distance cinematic stage">
-          <div class="distance-stage-controls" role="group" aria-label="Distance scene switch">
-            <button type="button" class="scene-toggle is-active" data-scene-target="open" aria-controls="distance-scene-open" aria-pressed="true" aria-label="Show open area 500m scene">
+          <div class="distance-stage-controls" role="tablist" aria-label="Distance scene switch">
+            <button type="button" class="scene-toggle stage-control-button is-active" id="distance-scene-tab-open" role="tab" data-scene-target="open" aria-controls="distance-scene-open" aria-selected="true" tabindex="0" aria-label="Show open area 500m scene">
               <span class="scene-toggle-arrow scene-toggle-arrow-left" aria-hidden="true"></span>
             </button>
-            <button type="button" class="scene-toggle" data-scene-target="relay" aria-controls="distance-scene-relay" aria-pressed="false" aria-label="Show mesh relay 16km scene">
+            <button type="button" class="scene-toggle stage-control-button" id="distance-scene-tab-relay" role="tab" data-scene-target="relay" aria-controls="distance-scene-relay" aria-selected="false" tabindex="-1" aria-label="Show mesh relay 16km scene">
               <span class="scene-toggle-arrow scene-toggle-arrow-right" aria-hidden="true"></span>
             </button>
           </div>
           <span class="distance-stage-mode" id="distance-stage-mode">OPEN AREA</span>
           <div class="distance-cinematic-bg" aria-hidden="true"></div>
-          <section id="distance-scene-open" class="distance-scene distance-scene-open scene-open is-visible" data-scene="open" aria-label="Open area scene" aria-hidden="false">
+          <section id="distance-scene-open" class="distance-scene distance-scene-open scene-open is-visible" data-scene="open" role="tabpanel" aria-labelledby="distance-scene-tab-open" aria-label="Open area scene" aria-hidden="false">
             <div class="scene-link open-link" aria-hidden="true">
               <svg class="open-arc-svg" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" aria-hidden="true">
                 <path class="open-arc-path open-arc-path-upper" d="M 18 50 Q 56 32 83 35"></path>
@@ -47,15 +47,15 @@
             <div class="signal-pulse pulse-open pulse-open-lower" aria-hidden="true"></div>
             <div class="signal-pulse pulse-open pulse-open-lower pulse-open-lower-delayed" aria-hidden="true"></div>
             <div class="scene-node node-open-left-node" aria-hidden="true">
-              <img class="node-icon" src="../assets/icons/node.svg" alt="">
+              <img class="node-icon" src="../assets/icons/node.svg" alt="" aria-hidden="true">
               <span>Node</span>
             </div>
             <div class="scene-node node-open-right-top is-device" aria-hidden="true">
-              <img class="node-icon" src="../assets/icons/smoke.svg" alt="">
+              <img class="node-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
               <span>Device</span>
             </div>
             <div class="scene-node node-open-right-bottom is-device" aria-hidden="true">
-              <img class="node-icon" src="../assets/icons/sounder.svg" alt="">
+              <img class="node-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
               <span>Device</span>
             </div>
             <div class="metric-open-impact style1" id="metric-open-impact" aria-hidden="true">
@@ -63,7 +63,7 @@
               <p class="metric-open-highlight impact-text">Up to 500m</p>
             </div>
           </section>
-          <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" aria-label="Mesh relay scene" aria-hidden="true">
+          <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" role="tabpanel" aria-labelledby="distance-scene-tab-relay" aria-label="Mesh relay scene" aria-hidden="true">
             <div class="relay-arc-stage" aria-hidden="true">
               <svg class="relay-arc-svg" viewBox="0 0 1000 440" preserveAspectRatio="none" role="presentation">
                 <path id="relay-main-arc" class="relay-main-arc-geometry" d="M 70 280 Q 500 19 930 280"></path>
@@ -88,20 +88,20 @@
               <span class="relay-hop-distance dist-6">500m</span>
 
               <div class="relay-entry-panel">
-                <img src="../assets/icons/panel.svg" alt="">
+                <img src="../assets/icons/panel.svg" alt="" aria-hidden="true">
               </div>
-              <div class="relay-point is-leader"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt=""></div>
+              <div class="relay-point is-leader"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
               <div class="relay-end-device relay-end-device-smoke">
-                <img src="../assets/icons/smoke.svg" alt="">
+                <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
               </div>
               <div class="relay-end-device relay-end-device-sounder">
-                <img src="../assets/icons/sounder.svg" alt="">
+                <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
               </div>
               <div class="relay-total-impact style1" id="relay-total-impact" aria-hidden="true">
                 <span class="shockwave" aria-hidden="true"></span>

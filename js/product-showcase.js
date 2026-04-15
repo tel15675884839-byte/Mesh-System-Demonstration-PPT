@@ -1,6 +1,20 @@
 (function () {
+  function createSearchParams(search) {
+    const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
+    if (SearchParams) {
+      return new SearchParams(search || "");
+    }
+
+    return {
+      get() {
+        return null;
+      }
+    };
+  }
+
   const products = [
     {
+      slug: "expansion-card",
       name: "Expansion Card",
       category: "Wireless Loop Expansion Card",
       title: "Wireless Loop Expansion Card",
@@ -17,6 +31,7 @@
       ]
     },
     {
+      slug: "leader-node",
       name: "Leader / Node",
       category: "Wireless Leader / Node",
       title: "Wireless Leader / Node",
@@ -32,6 +47,7 @@
       ]
     },
     {
+      slug: "detectors",
       name: "Detectors",
       category: "Wireless Detectors",
       title: "Wireless Detectors",
@@ -47,6 +63,7 @@
       ]
     },
     {
+      slug: "call-point",
       name: "Call Point",
       category: "Wireless Manual Call Point",
       title: "Wireless Manual Call Point",
@@ -64,6 +81,7 @@
       ]
     },
     {
+      slug: "av-alarm",
       name: "A/V Alarm",
       category: "Wireless Audio/Visual Alarm",
       title: "Wireless Audio/Visual Alarm",
@@ -79,6 +97,7 @@
       ]
     },
     {
+      slug: "io-module",
       name: "I/O Module",
       category: "Wireless Input/Output Module",
       title: "Wireless Input/Output Module",
@@ -104,7 +123,31 @@
   const statsEl = document.getElementById("product-stats");
   const buttons = Array.from(document.querySelectorAll(".product-switch-btn"));
   const switcher = document.getElementById("product-switcher");
+  const detailsPanel = document.getElementById("product-details-panel");
+  const presentationMessaging = window.meshPresentationMessaging || null;
   let activeIndex = 0;
+
+  function getInitialProductIndex() {
+    const searchParams = presentationMessaging && typeof presentationMessaging.getSharedSearchParams === "function"
+      ? presentationMessaging.getSharedSearchParams()
+      : createSearchParams((window.location && window.location.search) || "");
+    const requestedProduct = searchParams.get("product");
+
+    if (!requestedProduct) {
+      return 0;
+    }
+
+    const numericIndex = Number(requestedProduct);
+    if (Number.isInteger(numericIndex) && numericIndex >= 0 && numericIndex < products.length) {
+      return numericIndex;
+    }
+
+    const slugIndex = products.findIndex(function (product) {
+      return product.slug === requestedProduct;
+    });
+
+    return slugIndex >= 0 ? slugIndex : 0;
+  }
 
   function renderStats(stats) {
     statsEl.innerHTML = stats
@@ -120,14 +163,22 @@
   function activateButton(index) {
     buttons.forEach((button, buttonIndex) => {
       const isActive = buttonIndex === index;
+      const tabId = "product-tab-" + buttonIndex;
       button.classList.toggle("is-active", isActive);
+      button.id = tabId;
+      button.setAttribute("aria-controls", "product-details-panel");
       button.setAttribute("aria-selected", String(isActive));
       button.setAttribute("tabindex", isActive ? "0" : "-1");
     });
+
+    if (detailsPanel) {
+      detailsPanel.setAttribute("aria-labelledby", "product-tab-" + index);
+    }
   }
 
-  function renderProduct(index) {
+  function renderProduct(index, options) {
     const product = products[index];
+    const config = options || {};
     activeIndex = index;
 
     stage.style.setProperty("--product-accent-rgb", product.accentRgb);
@@ -159,25 +210,40 @@
     };
     imageEl.src = product.image;
     imageEl.alt = product.name;
+
+    if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
+      presentationMessaging.syncPresentationState({
+        product: product.slug
+      });
+    }
   }
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      renderProduct(Number(button.dataset.productIndex));
+      renderProduct(Number(button.dataset.productIndex), { syncUrl: true });
     });
   });
 
   switcher.addEventListener("keydown", (event) => {
-    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") {
       return;
     }
 
     event.preventDefault();
-    const step = event.key === "ArrowRight" ? 1 : -1;
-    const nextIndex = (activeIndex + step + products.length) % products.length;
+
+    let nextIndex = activeIndex;
+    if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = products.length - 1;
+    } else {
+      const step = event.key === "ArrowRight" ? 1 : -1;
+      nextIndex = (activeIndex + step + products.length) % products.length;
+    }
+
     buttons[nextIndex].focus();
-    renderProduct(nextIndex);
+    renderProduct(nextIndex, { syncUrl: true });
   });
 
-  renderProduct(0);
+  renderProduct(getInitialProductIndex(), { syncUrl: false });
 }());

@@ -1,4 +1,17 @@
 (function () {
+  function createSearchParams(search) {
+    const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
+    if (SearchParams) {
+      return new SearchParams(search || "");
+    }
+
+    return {
+      get() {
+        return null;
+      }
+    };
+  }
+
   const page = document.querySelector(".page-distance");
   if (!page) {
     return;
@@ -55,7 +68,8 @@
   const relayPoints = relayScene ? Array.from(relayScene.querySelectorAll(".relay-point")) : [];
   const relayDistances = relayScene ? Array.from(relayScene.querySelectorAll(".relay-hop-distance")) : [];
   const relayGeometryTargets = [relayArcStage, relayArcSvg, relaySideLinksSvg, relayMainArc, relayArcLeft, relayArcRight].filter(Boolean);
-  const searchParams = new URLSearchParams(window.location.search);
+  const presentationMessaging = window.meshPresentationMessaging || null;
+  const searchParams = createSearchParams(window.location.search);
   const forceRevealOnLoad = searchParams.get("reveal") === "1";
   const reducedMotionQuery = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -558,6 +572,7 @@
   }
 
   function applyScene(sceneName) {
+    const config = arguments.length > 1 && arguments[1] ? arguments[1] : {};
     const next = sceneName;
     if (!sceneMeta[next] || !stage) {
       console.warn("Distance page controller ignored unknown scene key:", next);
@@ -576,7 +591,8 @@
     sceneButtons.forEach(function (button) {
       const isActive = getSceneTarget(button) === next;
       button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
+      button.setAttribute("aria-selected", String(isActive));
+      button.setAttribute("tabindex", isActive ? "0" : "-1");
     });
 
     if (modeElement) {
@@ -597,6 +613,12 @@
       resetInteractiveState();
       scheduleRelayGeometrySync();
     }
+
+    if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
+      presentationMessaging.syncPresentationState({
+        scene: next
+      });
+    }
   }
 
   function handleToggleClick(event) {
@@ -604,7 +626,53 @@
     if (!target) {
       return;
     }
-    applyScene(target);
+    applyScene(target, { syncUrl: true });
+  }
+
+  function handleToggleKeydown(event) {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") {
+      return;
+    }
+
+    event.preventDefault();
+
+    const currentIndex = sceneButtons.indexOf(event.currentTarget);
+    if (currentIndex < 0) {
+      return;
+    }
+
+    let nextIndex = currentIndex;
+    if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = sceneButtons.length - 1;
+    } else {
+      const step = event.key === "ArrowRight" ? 1 : -1;
+      nextIndex = (currentIndex + step + sceneButtons.length) % sceneButtons.length;
+    }
+
+    const nextButton = sceneButtons[nextIndex];
+    if (!nextButton) {
+      return;
+    }
+
+    applyScene(getSceneTarget(nextButton), { syncUrl: true });
+    if (typeof nextButton.focus === "function") {
+      nextButton.focus();
+    }
+  }
+
+  function getInitialSceneName() {
+    const sharedSearchParams = presentationMessaging && typeof presentationMessaging.getSharedSearchParams === "function"
+      ? presentationMessaging.getSharedSearchParams()
+      : searchParams;
+    const requestedScene = sharedSearchParams.get("scene");
+
+    if (requestedScene && sceneMeta[requestedScene]) {
+      return requestedScene;
+    }
+
+    return stage.dataset.scene;
   }
 
   function handleOpenSceneClick() {
@@ -659,6 +727,7 @@
 
   sceneButtons.forEach(function (button) {
     button.addEventListener("click", handleToggleClick);
+    button.addEventListener("keydown", handleToggleKeydown);
   });
 
   if (openScene) {
@@ -682,13 +751,13 @@
     }
   });
 
-  const initialSceneName = stage.dataset.scene;
+  const initialSceneName = getInitialSceneName();
   if (!sceneMeta[initialSceneName]) {
     console.warn("Distance page controller skipped: invalid initial scene key.", initialSceneName);
     return;
   }
 
-  applyScene(initialSceneName);
+  applyScene(initialSceneName, { syncUrl: false });
   resetInteractiveState();
   enterStageState();
   if (forceRevealOnLoad) {

@@ -11,15 +11,6 @@
   padding-block: 18px;
 }
 
-.page-distance .distance-layout {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 14px;
-  height: calc(100vh - 36px);
-  min-height: 0;
-  align-items: stretch;
-}
-
 .distance-intro-overlay {
   appearance: none;
   position: absolute;
@@ -85,13 +76,6 @@
   transform: translate(-50%, -50%) scale(var(--distance-intro-target-scale, 0.3));
 }
 
-.distance-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  min-width: 0;
-}
-
 .page-distance .page-copy {
   align-self: start;
 }
@@ -104,49 +88,15 @@
   max-width: none;
 }
 
-.distance-hero-spotlight h2 {
-  font-size: clamp(3.8rem, 5.3vw, 4.9rem);
-  line-height: 0.96;
-  letter-spacing: -0.055em;
-  white-space: nowrap;
-  color: rgba(244, 249, 255, 0.98);
+.scene-toggle {
   opacity: 1;
   user-select: auto;
   pointer-events: auto;
 }
 
-.scene-toggle {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(112, 240, 255, 0.16);
-  border-radius: 12px;
-  padding: 0;
-  background: rgba(4, 12, 20, 0.74);
-  color: rgba(232, 248, 255, 0.88);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition:
-    background 0.16s ease,
-    border-color 0.16s ease,
-    transform 0.16s ease,
-    box-shadow 0.16s ease;
-}
-
-.scene-toggle:hover {
-  transform: translateY(-1px);
-  border-color: rgba(112, 240, 255, 0.28);
-  background: rgba(8, 20, 34, 0.9);
-}
-
 .scene-toggle:focus-visible {
   outline: 2px solid rgba(112, 240, 255, 0.65);
   outline-offset: 3px;
-}
-
-.scene-toggle:active {
-  transform: translateY(0);
 }
 
 .scene-toggle.is-active {

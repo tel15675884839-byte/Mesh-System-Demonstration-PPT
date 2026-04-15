@@ -276,6 +276,15 @@ button {
   transform: scale(1.18);
 }
 
+.nav-dot:focus-visible {
+  outline: 2px solid rgba(112, 240, 255, 0.92);
+  outline-offset: 4px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    0 0 0 5px rgba(15, 235, 198, 0.16),
+    0 0 22px rgba(112, 240, 255, 0.38);
+}
+
 .nav-dot.active {
   transform: scale(1.25);
   background: var(--accent);
@@ -348,6 +357,119 @@ button {
 
 .slide-frame-shell--flat .slide-frame {
   border-radius: 0;
+}
+
+html[data-mode="browser"],
+html[data-mode="browser"] body {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+html[data-mode="browser"] .stage-viewport {
+  position: relative;
+  inset: auto;
+  display: block;
+  overflow: visible;
+  min-height: 100vh;
+  padding: 28px 0 40px;
+}
+
+html[data-mode="browser"] .stage-scaler {
+  width: min(100%, var(--stage-width));
+  height: auto;
+  margin: 0 auto;
+}
+
+html[data-mode="browser"] .fixed-stage {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+  height: auto;
+  transform: none;
+  transform-origin: top center;
+}
+
+html[data-mode="browser"] .app-shell {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+  padding-bottom: 32px;
+}
+
+html[data-mode="browser"] .stage-background {
+  position: fixed;
+}
+
+html[data-mode="browser"] .topbar {
+  position: sticky;
+  top: 0;
+  padding: 18px 20px 12px;
+  background: linear-gradient(180deg, rgba(3, 10, 13, 0.94), rgba(3, 10, 13, 0.55) 72%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+html[data-mode="browser"] .progress-wrap {
+  width: min(240px, 34vw);
+}
+
+html[data-mode="browser"] .side-nav {
+  position: fixed;
+  top: 104px;
+  right: 18px;
+  transform: none;
+  gap: 12px;
+}
+
+html[data-mode="browser"] .slides {
+  width: 100%;
+  height: auto;
+  transition: none;
+}
+
+html[data-mode="browser"] .slide {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  padding: 96px clamp(20px, 4vw, 72px) 24px;
+}
+
+html[data-mode="browser"] .slide-frame-shell {
+  width: min(1480px, 100%);
+  height: clamp(640px, 78vh, 952px);
+  margin: 0 auto;
+}
+
+@media (max-width: 1100px) {
+  html[data-mode="browser"] .topbar {
+    position: relative;
+    padding-inline: 20px 80px;
+  }
+
+  html[data-mode="browser"] .progress-wrap {
+    display: none;
+  }
+
+  html[data-mode="browser"] .side-nav {
+    top: 78px;
+    right: 12px;
+  }
+
+  html[data-mode="browser"] .nav-label {
+    display: none;
+  }
+
+  html[data-mode="browser"] .slide {
+    min-height: auto;
+    padding-top: 36px;
+  }
+
+  html[data-mode="browser"] .slide-frame-shell {
+    height: clamp(560px, 70vh, 820px);
+  }
 }
 
 @keyframes stageBackdropCycle {

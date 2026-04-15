@@ -12,9 +12,9 @@
 </head>
 <body>
   <main class="page page-product-showcase">
-    <section class="page-grid product-layout">
-      <header class="product-header">
-        <div class="page-copy product-hero product-hero-spotlight">
+    <section class="page-grid product-layout page-stage-layout">
+      <header class="product-header page-stage-header">
+        <div class="page-copy product-hero product-hero-spotlight page-hero-spotlight">
           <h2>Product Showcase</h2>
         </div>
       </header>
@@ -30,19 +30,19 @@
               </div>
             </section>
 
-            <section class="product-details-panel">
+            <section class="product-details-panel" id="product-details-panel" role="tabpanel" aria-labelledby="product-tab-0">
               <h3 class="product-title" id="product-title"></h3>
               <div class="product-stats-grid" id="product-stats"></div>
             </section>
           </div>
 
           <div class="product-switcher" id="product-switcher" role="tablist" aria-label="Switch products">
-            <button type="button" class="product-switch-btn is-active" role="tab" aria-selected="true" data-product-index="0">Expansion Card</button>
-            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="1">Leader/Node</button>
-            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="2">Det</button>
-            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="3">MCP</button>
-            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="4">Sounder</button>
-            <button type="button" class="product-switch-btn" role="tab" aria-selected="false" data-product-index="5">I/O</button>
+            <button type="button" class="product-switch-btn is-active" id="product-tab-0" role="tab" aria-selected="true" aria-controls="product-details-panel" data-product-index="0">Expansion Card</button>
+            <button type="button" class="product-switch-btn" id="product-tab-1" role="tab" aria-selected="false" aria-controls="product-details-panel" data-product-index="1">Leader/Node</button>
+            <button type="button" class="product-switch-btn" id="product-tab-2" role="tab" aria-selected="false" aria-controls="product-details-panel" data-product-index="2">Det</button>
+            <button type="button" class="product-switch-btn" id="product-tab-3" role="tab" aria-selected="false" aria-controls="product-details-panel" data-product-index="3">MCP</button>
+            <button type="button" class="product-switch-btn" id="product-tab-4" role="tab" aria-selected="false" aria-controls="product-details-panel" data-product-index="4">Sounder</button>
+            <button type="button" class="product-switch-btn" id="product-tab-5" role="tab" aria-selected="false" aria-controls="product-details-panel" data-product-index="5">I/O</button>
           </div>
         </section>
       </div>
