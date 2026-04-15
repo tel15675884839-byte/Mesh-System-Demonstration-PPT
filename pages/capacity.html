@@ -22,13 +22,16 @@
       <div class="visual-card capacity-stage-shell" id="capacity-stage-shell">
         <div class="capacity-stage" id="capacity-stage" aria-label="System Capacity stage">
           <div class="capacity-stage-head">
-            <p class="capacity-stage-title">Network Level</p>
+            <p class="capacity-stage-title">Network</p>
             <p class="capacity-stage-status" id="capacity-stage-status"></p>
           </div>
 
           <div class="capacity-stage-surface" id="capacity-stage-surface">
             <div class="capacity-network" id="capacity-network"></div>
             <div class="capacity-panels" id="capacity-panels"></div>
+            <div class="capacity-total-loops-badge" id="capacity-total-loops-badge" aria-hidden="true">
+              up to 16 wireless loops
+            </div>
             <div class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"></div>
 
             <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
@@ -52,9 +55,11 @@
                 <img class="capacity-expansion-panel-icon" src="../assets/icons/panel.svg" alt="">
               </div>
 
+              <div class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"></div>
+
               <div class="capacity-expansion-card" id="capacity-expansion-card">
                 <img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="">
-                <p class="capacity-expansion-card-title">Loop Expansion Card</p>
+                <p class="capacity-expansion-card-title">Wireless Loop Expansion Card</p>
               </div>
 
               <div class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"></div>

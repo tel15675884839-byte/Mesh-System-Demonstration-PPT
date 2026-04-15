@@ -42,8 +42,8 @@
   height: 100%;
   padding: 0;
   overflow: hidden;
-  border-radius: 24px;
-  background: var(--stage-bg);
+  /* removed border-radius */
+  background: transparent;
 }
 
 .response-stage {

@@ -10,6 +10,7 @@
   const capacityDeviceOverlay = document.getElementById("capacity-device-overlay");
   const capacityAggregation = document.getElementById("capacity-aggregation");
   const capacityTotalValue = document.getElementById("capacity-total-value");
+  const capacityTotalLoopsBadge = document.getElementById("capacity-total-loops-badge");
   const capacityStageTitle = capacityStage ? capacityStage.querySelector(".capacity-stage-title") : null;
 
   if (
@@ -33,6 +34,7 @@
   const devicesPerPanel = 250;
   const expansionLoopCount = 4;
   const nodesPerExpansionLoop = 32;
+  const devicesPerNode = 32;
   const totalDevices = panelCount * devicesPerPanel;
   const panelScale = 1.7;
   const arcStartAngle = Math.PI * 1.08;
@@ -42,8 +44,15 @@
   const lineRecords = [];
   const expansionRowRecords = [];
   const activeParticleAnimations = new Set();
+  const STEP_EXPANSION_STAGED = 0;
+  const STEP_EXPANSION_ANIMATE = 1;
+  const STEP_EXPANSION_REVEAL_NODES = 2;
+  const STEP_NETWORK_INTRO = 3;
+  const STEP_NETWORK_REVEAL_STATS = 4;
+  const STEP_NETWORK_AGGREGATE = 5;
+  const STEP_REPLAY = 6;
   let connectionSvg = null;
-  let interactionStep = 0;
+  let interactionStep = STEP_EXPANSION_STAGED;
   let introRunId = 0;
   let aggregationFrame = 0;
   let countAnimationRunId = 0;
@@ -152,7 +161,7 @@
     capacityStage.classList.toggle("is-scene-expansion", isExpansionScene);
 
     if (capacityStageTitle) {
-      capacityStageTitle.textContent = isExpansionScene ? "Advanced Scaling Architecture" : "Network Level";
+      capacityStageTitle.textContent = isExpansionScene ? "Hybrid System Scalability" : "Network";
     }
   }
 
@@ -219,6 +228,14 @@
       capacityExpansion.appendChild(capacityExpansionPanel);
     }
 
+    if (!capacityExpansionLink.parentNode) {
+      capacityExpansion.appendChild(capacityExpansionLink);
+    }
+
+    if (capacityExpansionLink && capacityExpansionLinkLine && !capacityExpansionLinkLine.parentNode) {
+      capacityExpansionLink.appendChild(capacityExpansionLinkLine);
+    }
+
     if (!capacityExpansionCard.parentNode) {
       capacityExpansion.appendChild(capacityExpansionCard);
     }
@@ -245,30 +262,89 @@
       row.className = "capacity-expansion-row";
       row.dataset.loopIndex = String(index + 1);
 
-      const track = document.createElement("div");
-      track.className = "capacity-loop-track";
-      track.setAttribute("aria-hidden", "true");
+      const capsule = document.createElement("div");
+      capsule.className = "capacity-loop-capsule";
+      
+      const label = document.createElement("span");
+      label.className = "capacity-loop-label";
+      label.textContent = "LOOP";
 
-      const icon = document.createElement("img");
-      icon.className = "capacity-row-icon";
-      icon.src = "../assets/icons/node.svg";
-      icon.alt = "";
-      icon.setAttribute("aria-hidden", "true");
+      const connector = document.createElement("div");
+      connector.className = "capacity-loop-connector";
 
-      const nodeCount = document.createElement("span");
-      nodeCount.className = "capacity-node-count";
-      nodeCount.textContent = `32 nodes`;
+      const trunk = document.createElement("span");
+      trunk.className = "capacity-loop-trunk";
 
-      row.appendChild(track);
-      row.appendChild(icon);
-      row.appendChild(nodeCount);
+      const fan = document.createElement("span");
+      fan.className = "capacity-loop-fan";
+
+      for (let fanIndex = 1; fanIndex <= 3; fanIndex += 1) {
+        const fanLine = document.createElement("span");
+        fanLine.className = `capacity-loop-fan-line capacity-loop-fan-line-${fanIndex}`;
+        fan.appendChild(fanLine);
+      }
+
+      const nodeCluster = document.createElement("div");
+      nodeCluster.className = "capacity-node-cluster";
+
+      for (let nodeIndex = 1; nodeIndex <= 6; nodeIndex += 1) {
+        const nodeIcon = document.createElement("img");
+        nodeIcon.className = `capacity-node-icon capacity-node-icon-${nodeIndex}`;
+        nodeIcon.src = "../assets/icons/node.svg";
+        nodeIcon.alt = "";
+        nodeIcon.setAttribute("aria-hidden", "true");
+        nodeCluster.appendChild(nodeIcon);
+      }
+
+      const nodeDeviceLink = document.createElement("span");
+      nodeDeviceLink.className = "capacity-node-device-link";
+
+      const deviceCluster = document.createElement("div");
+      deviceCluster.className = "capacity-device-cluster";
+
+      const deviceIcons = [
+        { type: "smoke", src: "../assets/icons/smoke.svg" },
+        { type: "sounder", src: "../assets/icons/sounder.svg" },
+        { type: "mcp", src: "../assets/icons/mcp.svg" },
+        { type: "smoke", src: "../assets/icons/smoke.svg" },
+        { type: "sounder", src: "../assets/icons/sounder.svg" },
+        { type: "mcp", src: "../assets/icons/mcp.svg" }
+      ];
+
+      deviceIcons.forEach((iconInfo, iconIndex) => {
+        const deviceIcon = document.createElement("img");
+        deviceIcon.className = `capacity-device-icon capacity-device-icon-${iconIndex + 1} capacity-device-icon-${iconInfo.type}`;
+        deviceIcon.src = iconInfo.src;
+        deviceIcon.alt = "";
+        deviceIcon.setAttribute("aria-hidden", "true");
+        deviceCluster.appendChild(deviceIcon);
+      });
+
+      const nodeUnit = document.createElement("span");
+      nodeUnit.className = "capacity-node-unit";
+      nodeUnit.textContent = `${nodesPerExpansionLoop} NODES`;
+
+      const deviceUnit = document.createElement("span");
+      deviceUnit.className = "capacity-device-unit";
+      deviceUnit.textContent = `${devicesPerNode} DEVICES PER NODE`;
+
+      nodeCluster.appendChild(nodeUnit);
+      deviceCluster.appendChild(deviceUnit);
+
+      connector.appendChild(trunk);
+      connector.appendChild(fan);
+      connector.appendChild(nodeCluster);
+      connector.appendChild(nodeDeviceLink);
+      connector.appendChild(deviceCluster);
+
+      capsule.appendChild(label);
+      row.appendChild(capsule);
+      row.appendChild(connector);
       container.appendChild(row);
 
       expansionRowRecords.push({
         element: row,
-        track,
-        icon,
-        count: nodeCount
+        capsule
       });
     }
 
@@ -280,8 +356,57 @@
       return;
     }
 
-    const start = getPanelCenter(capacityExpansionPanel);
-    const end = getPanelCenter(capacityExpansionCard);
+    function getSvgAnchorPoint(element, anchorX = "center", anchorY = "center") {
+      const svg = capacityExpansionSvg;
+      const rect = element.getBoundingClientRect();
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+
+      const inverse = ctm.inverse();
+      const point = svg.createSVGPoint();
+
+      if (anchorX === "left") point.x = rect.left;
+      else if (anchorX === "right") point.x = rect.right;
+      else point.x = rect.left + rect.width / 2;
+
+      if (anchorY === "top") point.y = rect.top;
+      else if (anchorY === "bottom") point.y = rect.bottom;
+      else point.y = rect.top + rect.height / 2;
+
+      return point.matrixTransform(inverse);
+    }
+
+    function getSvgBounds(element) {
+      const leftTop = getSvgAnchorPoint(element, "left", "top");
+      const rightBottom = getSvgAnchorPoint(element, "right", "bottom");
+      const width = Math.max(rightBottom.x - leftTop.x, 0);
+      const height = Math.max(rightBottom.y - leftTop.y, 0);
+
+      return {
+        left: leftTop.x,
+        top: leftTop.y,
+        right: rightBottom.x,
+        bottom: rightBottom.y,
+        width,
+        height
+      };
+    }
+
+    const panelVisual = capacityExpansionPanel;
+    const cardVisual = capacityExpansionCard;
+    const panelBounds = getSvgBounds(panelVisual);
+    const cardBounds = getSvgBounds(cardVisual);
+
+    // Use inset anchors (instead of raw outer edges) so transparent padding in assets
+    // doesn't collapse the visible connector length.
+    const start = {
+      x: panelBounds.left + panelBounds.width * 0.78,
+      y: panelBounds.top + panelBounds.height * 0.5
+    };
+    const end = {
+      x: cardBounds.left + cardBounds.width * 0.16,
+      y: cardBounds.top + cardBounds.height * 0.5
+    };
     const clampedProgress = Math.min(Math.max(revealProgress, 0), 1);
     
     expansionLinkRevealProgress = clampedProgress;
@@ -294,13 +419,25 @@
       line.setAttribute("stroke", "rgba(94, 230, 255, 0.92)");
       line.setAttribute("stroke-width", "2");
       line.setAttribute("stroke-dasharray", "6,4");
+      line.setAttribute("stroke-linecap", "round");
       capacityExpansionSvg.appendChild(line);
     }
 
-    const currentX = start.x + (end.x - start.x) * clampedProgress;
+    const startX = start.x + 2;
+    const startY = start.y;
+    const endX = end.x - 2;
+    const endY = end.y;
+    const currentX = startX + (endX - startX) * clampedProgress;
+    const currentY = startY + (endY - startY) * clampedProgress;
 
-    line.setAttribute("d", `M ${start.x} ${start.y} L ${currentX} ${start.y}`);
+    line.setAttribute("d", `M ${startX} ${startY} L ${currentX} ${currentY}`);
     line.style.opacity = clampedProgress > 0 ? "0.8" : "0";
+
+    if (capacityExpansionLinkLine) {
+      // Keep the legacy DOM line hidden; SVG path above is the single visible connector.
+      capacityExpansionLinkLine.style.width = "0";
+      capacityExpansionLinkLine.style.opacity = "0";
+    }
   }
 
   function renderExpansionConnections() {
@@ -308,13 +445,32 @@
       return;
     }
 
-    const cardImage = capacityExpansionCard.querySelector(".capacity-expansion-card-image");
-    const imageRect = (cardImage || capacityExpansionCard).getBoundingClientRect();
-    const stageRect = capacityStageSurface.getBoundingClientRect();
-    
-    // Origin is the right edge of the card image
-    const originX = imageRect.right - stageRect.left - 4; // slight padding inward
-    const originY = imageRect.top - stageRect.top + imageRect.height / 2;
+    function getSvgAnchorPoint(element, anchorX = "center", anchorY = "center") {
+      const svg = capacityExpansionSvg;
+      const visual = element.querySelector("img") || element.querySelector("svg") || element;
+      const rect = visual.getBoundingClientRect();
+      const pt = svg.createSVGPoint();
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+      const inv = ctm.inverse();
+      
+      if (anchorX === "left") pt.x = rect.left;
+      else if (anchorX === "right") pt.x = rect.right;
+      else pt.x = rect.left + rect.width / 2;
+
+      if (anchorY === "top") pt.y = rect.top;
+      else if (anchorY === "bottom") pt.y = rect.bottom;
+      else pt.y = rect.top + rect.height / 2;
+
+      return pt.matrixTransform(inv);
+    }
+
+    // Origin is the right edge center of the card
+    const origin = getSvgAnchorPoint(capacityExpansionCard, "right", "center");
+
+    // To ensure perfect alignment even during scale animations, 
+    // we find a stable X coordinate for all targets.
+    let commonTargetX = null;
 
     expansionRowRecords.forEach((record, index) => {
       let line = expansionConnections[index];
@@ -331,11 +487,17 @@
         expansionConnections[index] = line;
       }
 
-      const iconRect = record.icon.getBoundingClientRect();
-      const targetX = iconRect.left - stageRect.left + iconRect.width / 2;
-      const targetY = iconRect.top - stageRect.top + iconRect.height / 2;
+      // Target point calculation
+      const targetPt = getSvgAnchorPoint(record.capsule, "left", "center");
+      
+      // Use the first record's X as the master X for all, 
+      // but only if it's already reasonably "open" or if we reach the end of loop.
+      // This ensures all 4 lines are perfectly aligned vertically.
+      if (commonTargetX === null) {
+          commonTargetX = targetPt.x;
+      }
 
-      line.setAttribute("d", `M ${originX} ${originY} L ${targetX} ${targetY}`);
+      line.setAttribute("d", `M ${origin.x} ${origin.y} L ${commonTargetX} ${targetPt.y}`);
     });
   }
 
@@ -355,6 +517,16 @@
       capacityExpansionPanel.setAttribute("aria-hidden", "true");
     }
 
+    if (capacityExpansionLink) {
+      capacityExpansionLink.classList.remove("is-visible");
+      capacityExpansionLink.setAttribute("aria-hidden", "true");
+    }
+
+    if (capacityExpansionLinkLine) {
+      capacityExpansionLinkLine.style.width = "0";
+      capacityExpansionLinkLine.style.opacity = "0";
+    }
+
     if (capacityExpansionSvg) {
       capacityExpansionSvg.innerHTML = "";
     }
@@ -368,9 +540,7 @@
 
     expansionRowRecords.forEach((record) => {
       record.element.classList.remove("is-visible");
-      record.track.classList.remove("is-visible");
-      record.icon.classList.remove("is-visible");
-      record.count.classList.remove("is-visible");
+      if (record.capsule) record.capsule.classList.remove("is-visible");
     });
   }
 
@@ -399,7 +569,8 @@
 
   function getPanelCenter(panel) {
     const stageRect = capacityStageSurface.getBoundingClientRect();
-    const panelRect = panel.getBoundingClientRect();
+    const visual = panel.querySelector("img") || panel.querySelector("svg") || panel;
+    const panelRect = visual.getBoundingClientRect();
 
     return {
       x: panelRect.left - stageRect.left + panelRect.width / 2,
@@ -487,6 +658,10 @@
     }
     countAnimationRunId += 1;
 
+    if (capacityTotalLoopsBadge) {
+      capacityTotalLoopsBadge.classList.remove("is-visible");
+    }
+
     capacityAggregation.classList.remove("is-visible", "is-finished");
     capacityStageShell.classList.remove("is-aggregating");
     capacityTotalValue.textContent = "0";
@@ -496,7 +671,7 @@
   async function runIntroSequence() {
     const runId = introRunId + 1;
     introRunId = runId;
-    interactionStep = 0;
+    interactionStep = STEP_NETWORK_INTRO;
     isIntroRunning = true;
     isAggregating = false;
 
@@ -533,7 +708,7 @@
     }
 
     isIntroRunning = false;
-    interactionStep = 1;
+    interactionStep = STEP_NETWORK_REVEAL_STATS;
     setStageMessage(
       "The wired Network level layout is in place. Click once to reveal each panel's loops and connected devices.",
       "Click to reveal capacity"
@@ -541,16 +716,20 @@
   }
 
   function revealPanelStats() {
-    if (isIntroRunning || isAggregating || interactionStep !== 1) {
+    if (isIntroRunning || isAggregating || interactionStep !== STEP_NETWORK_REVEAL_STATS) {
       return;
     }
 
-    interactionStep = 2;
+    interactionStep = STEP_NETWORK_AGGREGATE;
     panelRecords.forEach((record, index) => {
       window.setTimeout(() => {
         record.element.classList.add("is-stats-visible");
       }, index * 70);
     });
+
+    if (capacityTotalLoopsBadge) {
+      capacityTotalLoopsBadge.classList.add("is-visible");
+    }
 
     setStageMessage(
       "Each panel contributes 2 wireless loops and 250 devices. Click again to aggregate the full system capacity.",
@@ -654,6 +833,12 @@
         capacityTotalValue.textContent = String(targetValue);
         capacityAggregation.classList.add("is-finished");
         isAggregating = false;
+        if (interactionStep === STEP_REPLAY) {
+          setStageMessage(
+            "The Network page is complete at 2000 devices. Click to replay from the Expansion page.",
+            "Click to replay"
+          );
+        }
       }
     }
 
@@ -661,11 +846,11 @@
   }
 
   function animateAggregation() {
-    if (isIntroRunning || isAggregating || interactionStep !== 2) {
+    if (isIntroRunning || isAggregating || interactionStep !== STEP_NETWORK_AGGREGATE) {
       return;
     }
 
-    interactionStep = 3;
+    interactionStep = STEP_REPLAY;
     isAggregating = true;
     capacityStageShell.classList.add("is-aggregating");
     capacityAggregation.classList.add("is-visible");
@@ -675,8 +860,8 @@
     animateCountUp(totalDevices, totalSyncDuration);
 
     setStageMessage(
-      "All panel capacity is now converging into the lower stage hub, combining into the full Network level total of 2000 devices. Click again to open the 2 Loop Expansion Card.",
-      "Click to open expansion card"
+      "All panel capacity is converging into the lower stage hub to reach the full Network total of 2000 devices.",
+      "Aggregating..."
     );
 
     const target = getAggregationCenter();
@@ -695,7 +880,7 @@
   }
 
   function showExpansionScene() {
-    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 3) {
+    if (isIntroRunning || isAggregating || isExpansionRunning) {
       return;
     }
 
@@ -703,25 +888,30 @@
     clearParticles();
     clearNetworkLines();
     resetPanels();
+
+    if (capacityTotalLoopsBadge) {
+      capacityTotalLoopsBadge.classList.remove("is-visible");
+    }
+
     buildExpansionRows();
     setSceneMode("expansion-card");
     capacityStageShell.classList.remove("is-aggregating");
 
     expansionSceneVisible = true;
-    interactionStep = 4;
+    interactionStep = STEP_EXPANSION_ANIMATE;
 
     capacityExpansion.setAttribute("aria-hidden", "false");
     capacityExpansion.classList.add("is-visible");
     positionExpansionLink(0);
 
     setStageMessage(
-      "The 2 Loop Expansion Card is staged. Click again to play the one-time 4 loop and 32 Nodes infographic.",
+      "The 2 Loop Expansion Card is staged. Click to play the one-time 4 loop and 32 Nodes infographic.",
       "Click to animate expansion"
     );
   }
 
   async function runExpansionSequence() {
-    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 4) {
+    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== STEP_EXPANSION_ANIMATE) {
       return;
     }
 
@@ -775,12 +965,14 @@
     }
 
     capacityExpansionCard.classList.add("is-visible");
+    positionExpansionLink(1);
+
     setStageMessage(
-      "The card is visible. Four loops now reveal from top to bottom.",
+      "The card is successfully installed. Revealing available wireless loops...",
       "Revealing loops..."
     );
 
-    await sleep(220);
+    await sleep(400);
 
     if (runId !== expansionRunId) {
       return;
@@ -794,41 +986,39 @@
       // Reveal the connection line to this row
       renderExpansionConnections();
       if (expansionConnections[index]) {
-        expansionConnections[index].style.opacity = "0.8";
+        expansionConnections[index].style.opacity = "0.7";
       }
 
-      await sleep(120);
+      await sleep(150);
 
       if (runId !== expansionRunId) {
         return;
       }
 
-      record.icon.classList.add("is-visible");
-      record.count.classList.add("is-visible");
+      record.capsule.classList.add("is-visible");
     }
 
     capacityExpansion.classList.add("is-loops-visible");
+    
+    // Final pass to ensure all lines are perfectly aligned after scale animations finish
+    await sleep(420);
+    renderExpansionConnections();
+    positionExpansionLink(1);
+    
+    capacityExpansion.classList.add("is-complete");
     isExpansionRunning = false;
-    interactionStep = 5;
+    interactionStep = STEP_NETWORK_INTRO;
 
     setStageMessage(
-      "The loop infrastructure is established. Click once more to reveal the wireless node capacity.",
-      "Click to reveal node capacity"
+      "The loop capacity is available. Click to continue to the Network page.",
+      "Click to continue to Network"
     );
   }
 
   function revealNodeCapacity() {
-    if (isIntroRunning || isAggregating || isExpansionRunning || interactionStep !== 5) {
-      return;
-    }
-
-    capacityExpansion.classList.add("is-complete");
-    interactionStep = 0;
-
-    setStageMessage(
-      "The Advanced Scaling Architecture is now fully demonstrated. Click to replay from the beginning.",
-      "Click to replay"
-    );
+    // This is now skipped. Proceeding to network intro.
+    interactionStep = STEP_NETWORK_INTRO;
+    runIntroSequence();
   }
 
   function handleAdvance() {
@@ -836,38 +1026,37 @@
       return;
     }
 
-    if (interactionStep === 0) {
-      runIntroSequence();
-      return;
-    }
-
-    if (interactionStep === 1) {
-      revealPanelStats();
-      return;
-    }
-
-    if (interactionStep === 2) {
-      animateAggregation();
-      return;
-    }
-
-    if (interactionStep === 3) {
-      showExpansionScene();
-      return;
-    }
-
-    if (interactionStep === 4) {
+    if (interactionStep === STEP_EXPANSION_STAGED || interactionStep === STEP_EXPANSION_ANIMATE) {
       runExpansionSequence();
       return;
     }
 
-    if (interactionStep === 5) {
+    if (interactionStep === STEP_EXPANSION_REVEAL_NODES) {
       revealNodeCapacity();
       return;
     }
 
-    interactionStep = 0;
-    runIntroSequence();
+    if (interactionStep === STEP_NETWORK_INTRO) {
+      runIntroSequence();
+      return;
+    }
+
+    if (interactionStep === STEP_NETWORK_REVEAL_STATS) {
+      revealPanelStats();
+      return;
+    }
+
+    if (interactionStep === STEP_NETWORK_AGGREGATE) {
+      animateAggregation();
+      return;
+    }
+
+    if (interactionStep === STEP_REPLAY) {
+      showExpansionScene();
+      return;
+    }
+
+    showExpansionScene();
   }
 
   function handleResize() {
@@ -888,10 +1077,7 @@
   ensureExpansionScene();
   buildExpansionRows();
   resetStageVisuals();
-  setStageMessage(
-    "Click to start the panel drop. The first click launches the arc landing, the next reveals per-panel capacity, the third totals the system, and the fourth opens the 2 Loop Expansion Card.",
-    "Click to start"
-  );
+  showExpansionScene();
 
   capacityStageShell.addEventListener("click", handleAdvance);
   capacityStageHint.addEventListener("click", (event) => {

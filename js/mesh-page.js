@@ -211,6 +211,8 @@
   let introBaseWidth = 0;
   const searchParams = new URLSearchParams(window.location.search);
   const forceRevealOnLoad = searchParams.get("reveal") === "1";
+  const startsActive = forceRevealOnLoad || window.parent === window;
+  let isSlideActive = startsActive;
   const prefersReducedMotion = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
@@ -647,7 +649,8 @@
         },
         initialMode: getPlayerModeForUiMode(mode),
         autoFitView: false,
-        autostart: false
+        autostart: false,
+        startActive: isSlideActive
       });
 
       await player.preload();
@@ -687,6 +690,9 @@
       const switched = await player.switchMode(getPlayerModeForUiMode(mode, availability));
       if (!switched) {
         throw new Error("Unable to activate the initial mesh state.");
+      }
+      if (typeof player.setActive === "function") {
+        player.setActive(isSlideActive);
       }
 
       if (meshStage) {
@@ -842,6 +848,54 @@
     window.requestAnimationFrame(syncStageAfterReveal);
   }
 
+  function leaveStageState() {
+    if (revealSyncTimeout) {
+      window.clearTimeout(revealSyncTimeout);
+      revealSyncTimeout = 0;
+    }
+    setRevealState(false);
+  }
+
+  function syncPlayerVisibility() {
+    if (player && typeof player.setActive === "function") {
+      player.setActive(isSlideActive);
+    }
+  }
+
+  function handleSlideActivation() {
+    isSlideActive = true;
+    enterStageState();
+
+    if (mode === "diagnostic") {
+      try {
+        startDiagnosticScene();
+        setMessage("");
+      } catch (error) {
+        setMessage(
+          "Failed to activate the 3D player. " + (error && error.message ? error.message : String(error)),
+          "error"
+        );
+      }
+      return;
+    }
+
+    if (player) {
+      syncPlayerVisibility();
+      return;
+    }
+
+    ensurePlayer().catch(function () {
+      return null;
+    });
+  }
+
+  function handleSlideDeactivation() {
+    isSlideActive = false;
+    leaveStageState();
+    stopDiagnosticScene();
+    syncPlayerVisibility();
+  }
+
   buttons.forEach(function (button) {
     button.addEventListener("click", function () {
       applyMeshMode(button.dataset.mode);
@@ -868,6 +922,9 @@
       return;
     }
     resetPlayerInstance();
+    if (!isSlideActive) {
+      return;
+    }
     applyMeshMode(mode).catch(function () {
       return null;
     });
@@ -879,21 +936,33 @@
     }
 
     if (event.data.active) {
-      enterStageState();
+      handleSlideActivation();
+      return;
     }
+
+    handleSlideDeactivation();
   });
 
   setStatus(mode);
   setModeButtons(mode);
   setRecoverySwitchVisibility(mode);
   setRecoveryResultButtons(recoveryResult);
-  enterStageState();
+
+  if (startsActive) {
+    enterStageState();
+  } else {
+    leaveStageState();
+  }
+
   if (forceRevealOnLoad) {
     schedulePostRevealSync();
   }
-  ensurePlayer().catch(function () {
-    return null;
-  });
+
+  if (startsActive) {
+    ensurePlayer().catch(function () {
+      return null;
+    });
+  }
 }());
 
 

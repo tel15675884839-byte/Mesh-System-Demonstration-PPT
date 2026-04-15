@@ -61,6 +61,8 @@
   let player = null;
   let bootstrapPromise = null;
   let resolvedIconBasePathPromise = null;
+  const startsActive = window.parent === window;
+  let isSlideActive = startsActive;
 
   if (!openingStage || !openingPlayerHost) {
     return;
@@ -311,13 +313,17 @@
           target: { x: 0, y: 0, z: 0 }
         },
         autoFitView: false,
-        autostart: false
+        autostart: false,
+        startActive: isSlideActive
       });
 
       await player.preload();
       const switched = await player.switchMode(openingStateMode);
       if (!switched) {
         throw new Error("Unable to activate opening scene.");
+      }
+      if (typeof player.setActive === "function") {
+        player.setActive(isSlideActive);
       }
       hideOpeningNodeOrbs(player);
 
@@ -339,15 +345,30 @@
     return bootstrapPromise;
   }
 
+  function syncPlayerVisibility() {
+    if (player && typeof player.setActive === "function") {
+      player.setActive(isSlideActive);
+    }
+  }
+
   window.addEventListener("message", function (event) {
     if (!event.data || event.data.type !== "slideVisibility") {
       return;
     }
     if (event.data.active) {
+      isSlideActive = true;
+      if (player) {
+        syncPlayerVisibility();
+        return;
+      }
       ensurePlayer().catch(function () {
         return null;
       });
+      return;
     }
+
+    isSlideActive = false;
+    syncPlayerVisibility();
   });
 
   window.addEventListener("beforeunload", function () {
@@ -356,7 +377,9 @@
     }
   });
 
-  ensurePlayer().catch(function () {
-    return null;
-  });
+  if (startsActive) {
+    ensurePlayer().catch(function () {
+      return null;
+    });
+  }
 }());

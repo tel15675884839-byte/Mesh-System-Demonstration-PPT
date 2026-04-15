@@ -1,487 +1,569 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numens Wireless Products Showcase</title>
-    <!-- 引入 Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Mesh Network 框架</title>
     <style>
-        :root {
-            --bg-dark: #0a0b10;
-            --brand-red: #e6192b;
-            /* Numens 标志性的红色 */
-            --brand-red-glow: rgba(230, 25, 43, 0.4);
-            --card-bg: rgba(25, 27, 35, 0.7);
-            --text-main: #ffffff;
-            --text-muted: #8892b0;
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
+        body,
+        html {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(circle at 15% 50%, rgba(230, 25, 43, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.05), transparent 25%);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* 顶部品牌与标题 */
-        header {
-            padding: 30px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--brand-red);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-style: italic;
-            letter-spacing: 2px;
-        }
-
-        .logo svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .title-badge {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* 主体展示区 */
-        main {
-            flex: 1;
-            display: flex;
-            padding: 0 50px;
-            gap: 60px;
-            align-items: center;
-            position: relative;
-        }
-
-        /* 左侧产品图展示 */
-        .product-visual {
-            flex: 0.45;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* 产品背后的发光圆环 */
-        .glow-ring {
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--brand-red-glow) 0%, transparent 70%);
-            z-index: 1;
-            transition: all 0.5s ease;
-        }
-
-        .product-image-container {
-            position: relative;
-            z-index: 2;
-            width: 320px;
-            height: 320px;
-            /* 模拟一个悬浮的红色设备 */
-            background: linear-gradient(135deg, #ff3344, #b30011);
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 2px 10px rgba(255, 255, 255, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
-        }
-
-        /* 倒影效果 */
-        .product-image-container::after {
-            content: '';
-            position: absolute;
-            bottom: -340px;
-            left: 0;
             width: 100%;
             height: 100%;
-            background: inherit;
-            border-radius: inherit;
-            transform: scaleY(-1);
-            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 40%);
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 40%);
-            opacity: 0.6;
+            background-color: #050508;
+            /* 深邃的星空背景色 */
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* 右侧详情面板 */
-        .product-details {
-            flex: 0.55;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            opacity: 0;
-            transform: translateX(30px);
-            animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .product-title {
-            font-size: 48px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.1;
-            position: relative;
-            display: inline-block;
-        }
-
-        /* 标题下的科技感红线 */
-        .product-title::after {
-            content: '';
+        #ui-layer {
             position: absolute;
-            bottom: -15px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--brand-red);
-            border-radius: 2px;
-            box-shadow: 0 0 10px var(--brand-red);
+            top: 20px;
+            left: 20px;
+            color: #ffffff;
+            pointer-events: none;
         }
 
-        /* 参数卡片网格 (Bento Grid) */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            transition: transform 0.3s, background 0.3s, border-color 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            background: rgba(35, 38, 48, 0.8);
-            border-color: rgba(230, 25, 43, 0.5);
-        }
-
-        .feature-icon {
-            color: var(--brand-red);
-            background: rgba(230, 25, 43, 0.1);
-            padding: 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .feature-content h4 {
+        h1 {
+            font-size: 24px;
             margin: 0 0 5px 0;
-            font-size: 14px;
-            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            color: #00d2ff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
         }
 
-        .feature-content p {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        /* 底部设备切换轨道 */
-        footer {
-            height: 120px;
-            padding: 0 50px 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            z-index: 10;
-        }
-
-        .thumb-btn {
-            background: transparent;
-            border: 2px solid transparent;
-            padding: 10px 20px;
-            border-radius: 12px;
-            color: var(--text-muted);
-            cursor: pointer;
+        p {
             font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .thumb-btn .indicator {
-            width: 30px;
-            height: 4px;
-            background: #333;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        .thumb-btn:hover {
-            color: var(--text-main);
-        }
-
-        .thumb-btn:hover .indicator {
-            background: #555;
-        }
-
-        .thumb-btn.active {
-            color: var(--text-main);
-        }
-
-        .thumb-btn.active .indicator {
-            background: var(--brand-red);
-            box-shadow: 0 0 10px var(--brand-red-glow);
-            width: 40px;
-        }
-
-        /* 动画类 */
-        .fade-out {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        .fade-in {
-            opacity: 1;
-            transform: scale(1);
+            color: #8892b0;
+            margin: 0;
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <div class="logo">
-            <!-- 模拟火焰 Logo -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path
-                    d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z">
-                </path>
-            </svg>
-            NUMENS
-        </div>
-        <div class="title-badge">Product Showcase 2026</div>
-    </header>
+    <div id="ui-layer">
+        <h1>Mesh Network</h1>
+        <p>交互: 🖱️ 左键点击粒子流切断线路 | ⌨️ Ctrl+左键点击红色故障线恢复</p>
+    </div>
 
-    <main>
-        <div class="product-visual">
-            <div class="glow-ring"></div>
-            <div class="product-image-container" id="product-img">
-            </div>
-        </div>
-
-        <div class="product-details" id="product-details">
-            <!-- 内容由 JS 动态渲染 -->
-        </div>
-    </main>
-
-    <footer>
-        <button class="thumb-btn active" onclick="switchProduct(0)">
-            <div class="indicator"></div>
-            Call Point
-        </button>
-        <button class="thumb-btn" onclick="switchProduct(1)">
-            <div class="indicator"></div>
-            A/V Alarms
-        </button>
-        <button class="thumb-btn" onclick="switchProduct(2)">
-            <div class="indicator"></div>
-            I/O Module
-        </button>
-        <button class="thumb-btn" onclick="switchProduct(3)">
-            <div class="indicator"></div>
-            Detectors
-        </button>
-        <button class="thumb-btn" onclick="switchProduct(4)">
-            <div class="indicator"></div>
-            Leader/Node
-        </button>
-        <button class="thumb-btn" onclick="switchProduct(5)">
-            <div class="indicator"></div>
-            Expansion Card
-        </button>
-    </footer>
+    <canvas id="meshCanvas"></canvas>
 
     <script>
-        // 初始化 Lucide 图标
-        lucide.createIcons();
+        const canvas = document.getElementById('meshCanvas');
+        const ctx = canvas.getContext('2d');
 
-        // 产品数据结构 (提取自您的 PPT 图片)
-        const products = [
-            {
-                title: "Wireless Manual Call Point",
-                imgText: "Call Point Image",
-                color: "linear-gradient(135deg, #ff3344, #b30011)",
-                features: [
-                    { icon: "battery-charging", label: "Power Source", value: "10-year Lithium battery" },
-                    { icon: "radio-tower", label: "Antenna", value: "Internal antenna" },
-                    { icon: "network", label: "Topology", value: "Mesh Communication" },
-                    { icon: "ruler", label: "Range", value: "500m (in open area)" }
-                ]
-            },
-            {
-                title: "Wireless Audio/Visual Alarms",
-                imgText: "A/V Alarm Image",
-                color: "linear-gradient(135deg, #ff4d4d, #cc0000)",
-                features: [
-                    { icon: "volume-2", label: "Models Available", value: "Audible, visual, audio/visual" },
-                    { icon: "battery", label: "Power Source", value: "Lithium batteries" },
-                    { icon: "network", label: "Topology", value: "Mesh Communication" },
-                    { icon: "shield-check", label: "Enclosure", value: "Weatherproof (IP-65)" }
-                ]
-            },
-            {
-                title: "Wireless Input/Output Module",
-                imgText: "I/O Module Image",
-                color: "linear-gradient(135deg, #e0e0e0, #9e9e9e)", // 白色/灰色外壳
-                features: [
-                    { icon: "battery-charging", label: "Power Source", value: "10-year Lithium battery" },
-                    { icon: "radio-tower", label: "Antenna", value: "Internal antenna" },
-                    { icon: "network", label: "Topology", value: "Mesh Communication" },
-                    { icon: "ruler", label: "Range", value: "500m (in open area)" }
-                ]
-            },
-            {
-                title: "Wireless Detectors",
-                imgText: "Detector Image",
-                color: "linear-gradient(135deg, #f5f5f5, #bdbdbd)", // 白色外壳
-                features: [
-                    { icon: "flame", label: "Detection Type", value: "Smoke, heat or smoke/heat" },
-                    { icon: "battery-charging", label: "Power Source", value: "10-year Lithium battery" },
-                    { icon: "network", label: "Topology", value: "Mesh Communication" },
-                    { icon: "ruler", label: "Range", value: "500m (in open area)" }
-                ]
-            },
-            {
-                title: "Wireless Leader/Node",
-                imgText: "Leader Node Image",
-                color: "linear-gradient(135deg, #e0e0e0, #9e9e9e)", // 白色外壳
-                features: [
-                    { icon: "plug", label: "Power Input", value: "DC 24 V" },
-                    { icon: "activity", label: "Monitoring", value: "Quiescent, alarm, fault" },
-                    { icon: "cpu", label: "Capacity", value: "32 devices supported" },
-                    { icon: "network", label: "Topology", value: "Mesh Communication" }
-                ]
-            },
-            {
-                title: "Wireless Loop Expansion Card",
-                imgText: "PCB Board Image",
-                color: "linear-gradient(135deg, #4caf50, #2e7d32)", // 绿色 PCB 板
-                features: [
-                    { icon: "server", label: "Installation", value: "Installed in the CIE" },
-                    { icon: "layers", label: "Loop Support", value: "Up to 4 wireless loops" },
-                    { icon: "users", label: "Device Capacity", value: "125 devices per loop" },
-                    { icon: "git-merge", label: "Node Structure", value: "1 leader + 31 nodes per loop" }
-                ]
-            }
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        // 基础坐标缩放系数，适配不同屏幕
+        const scale = Math.min(width / 1000, height / 800) * 1.2;
+
+        // 定义节点数据 (参照原图的近似相对位置)
+        const nodes = [
+            // 3个主节点 (Main)
+            { id: 0, type: 'main', x: 0, y: -160 },    // 顶部中心
+            { id: 1, type: 'main', x: -180, y: 80 },   // 左下
+            { id: 2, type: 'main', x: 180, y: 80 },    // 右下
+
+            // 6个子节点 (Sub)
+            { id: 3, type: 'sub', x: -220, y: -120 },  // 左上
+            { id: 4, type: 'sub', x: 220, y: -120 },   // 右上
+            { id: 5, type: 'sub', x: 0, y: -30 },      // 正中间小节点
+            { id: 6, type: 'sub', x: -320, y: 140 },   // 最左下
+            { id: 7, type: 'sub', x: 320, y: 140 },    // 最右下
+            { id: 8, type: 'sub', x: 0, y: 220 }       // 底部正中
         ];
 
-        // 渲染产品内容
-        function renderProduct(index) {
-            const product = products[index];
-            const detailsContainer = document.getElementById('product-details');
-            const imgContainer = document.getElementById('product-img');
+        // 定义线路/连接
+        const edges = [
+            // 主节点之间的蓝色连接 (核心骨干网)
+            { source: 0, target: 1, type: 'main', active: true },
+            { source: 1, target: 2, type: 'main', active: true },
+            { source: 2, target: 0, type: 'main', active: true },
 
-            // 1. 生成右侧 HTML (重置动画)
-            detailsContainer.style.animation = 'none';
-            detailsContainer.offsetHeight; // 触发重绘
+            // 子节点连接 (绿色连接)
+            // 设定每个子节点当前只激活一条到主节点的路径进行数据传输
+            { source: 3, target: 0, type: 'sub', active: true },
+            { source: 3, target: 1, type: 'sub', active: false }, // 备用路径
+            { source: 4, target: 0, type: 'sub', active: true },
+            { source: 4, target: 2, type: 'sub', active: false }, // 备用路径
+            { source: 5, target: 0, type: 'sub', active: true },
+            { source: 5, target: 1, type: 'sub', active: false }, // 备用路径
+            { source: 5, target: 2, type: 'sub', active: false }, // 备用路径
+            { source: 6, target: 1, type: 'sub', active: true },
+            { source: 7, target: 2, type: 'sub', active: true },
+            { source: 8, target: 1, type: 'sub', active: true },
+            { source: 8, target: 2, type: 'sub', active: false }  // 备用路径
+        ];
 
-            let featuresHtml = product.features.map(f => `
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i data-lucide="${f.icon}"></i>
-                    </div>
-                    <div class="feature-content">
-                        <h4>${f.label}</h4>
-                        <p>${f.value}</p>
-                    </div>
-                </div>
-            `).join('');
+        // 生成星空背景粒子
+        const stars = Array.from({ length: 150 }, () => ({
+            x: Math.random() * 2000 - 1000,
+            y: Math.random() * 2000 - 1000,
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random()
+        }));
 
-            detailsContainer.innerHTML = `
-                <h1 class="product-title">${product.title}</h1>
-                <div class="features-grid">
-                    ${featuresHtml}
-                </div>
-            `;
-            detailsContainer.style.animation = 'slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+        let time = 0; // 用于动画时间推移
 
-            // 2. 更新左侧图片占位 (模拟图片切换)
-            imgContainer.style.background = product.color;
-            imgContainer.innerHTML = ` || 'Product'}]`;
+        // 信号粒子数组
+        let particles = [];
+        // 水波纹特效数组
+        let ripples = [];
 
-            // 3. 重新渲染新插入的图标
-            lucide.createIcons();
+        // 初始化信号粒子
+        function initParticles() {
+            particles = []; // 清空现有粒子
+            // 为每条“激活”的线路创建几个处于不同进度的粒子
+            edges.forEach(edge => {
+                if (edge.active) {
+                    const count = edge.type === 'main' ? 4 : 2; // 主线路粒子更密集
+                    for (let i = 0; i < count; i++) {
+                        particles.push({
+                            edge: edge,
+                            progress: i / count, // 进度 0 到 1 之间
+                            speed: edge.type === 'main' ? 0.003 : 0.004 // 移动速度
+                        });
+                    }
+                }
+            });
+        }
+        initParticles();
+
+        // 交互逻辑：点击断开并触发自愈，或Ctrl+点击恢复
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            // 检查是否点击了任何 'sub' 类型的线路
+            let clickedEdge = null;
+
+            for (let edge of edges) {
+                if (edge.type === 'main') continue; // 目前只允许操作子节点线路
+
+                const sourceNode = nodes.find(n => n.id === edge.source);
+                const targetNode = nodes.find(n => n.id === edge.target);
+
+                const sFloatY = Math.sin(time * 0.002 + sourceNode.id) * 5;
+                const tFloatY = Math.sin(time * 0.002 + targetNode.id) * 5;
+
+                const startX = centerX + sourceNode.x * scale;
+                const startY = centerY + sourceNode.y * scale + sFloatY;
+                const endX = centerX + targetNode.x * scale;
+                const endY = centerY + targetNode.y * scale + tFloatY;
+
+                // 简单的线段碰撞检测：计算鼠标点到线段的距离
+                const dist = pointToLineDistance(mouseX, mouseY, startX, startY, endX, endY);
+
+                if (dist < 15) { // 增加点击容差区域
+                    clickedEdge = edge;
+                    break;
+                }
+            }
+
+            if (clickedEdge) {
+                if (event.ctrlKey) {
+                    // Ctrl + 左键：尝试恢复线路
+                    if (clickedEdge.broken) {
+                        recoverNetwork(clickedEdge);
+                    }
+                } else {
+                    // 仅左键：尝试切断线路
+                    if (clickedEdge.active) {
+                        healNetwork(clickedEdge);
+                    }
+                }
+            }
+        });
+
+        // 核心自愈逻辑 (断开)
+        function healNetwork(brokenEdge) {
+            // 1. 断开当前线路
+            brokenEdge.active = false;
+            brokenEdge.broken = true; // 标记为故障
+
+            // 2. 寻找该子节点的备用线路
+            const affectedSubNodeId = brokenEdge.source;
+            const backupEdges = edges.filter(e =>
+                e.source === affectedSubNodeId &&
+                e !== brokenEdge &&
+                !e.broken // 不选择之前已经坏掉的线
+            );
+
+            // 3. 激活备用线路
+            if (backupEdges.length > 0) {
+                // 选择第一个可用的备用线路
+                backupEdges[0].active = true;
+            } else {
+                console.log(`子节点 ${affectedSubNodeId} 已完全断网！`);
+                // 如果没有备用线路被激活，重新初始化时该节点将自动不再产生粒子
+            }
+
+            // 重新初始化粒子系统以反映新的路由状态
+            initParticles();
+
+            // 触发一个红色的视觉反馈，表示线路故障
+            document.body.style.backgroundColor = '#1a0505';
+            setTimeout(() => document.body.style.backgroundColor = '#050508', 150);
+
+            // 触发断开时的水波纹涟漪
+            ripples.push({ nodeId: affectedSubNodeId, radius: 0, maxRadius: 120, type: 'break' });
         }
 
-        // 切换产品事件
-        function switchProduct(index) {
-            // 更新按钮状态
-            document.querySelectorAll('.thumb-btn').forEach((btn, i) => {
-                if (i === index) btn.classList.add('active');
-                else btn.classList.remove('active');
+        // 恢复网络逻辑
+        function recoverNetwork(recoveredEdge) {
+            recoveredEdge.broken = false;
+
+            const affectedSubNodeId = recoveredEdge.source;
+
+            // 检查该节点当前是否还有正在传输的线路
+            const hasActiveEdge = edges.some(e => e.source === affectedSubNodeId && e.active);
+
+            // 如果该节点目前处于完全断网状态，则直接激活刚修好的这条线
+            if (!hasActiveEdge) {
+                recoveredEdge.active = true;
+            }
+
+            initParticles();
+
+            // 触发一个绿色的视觉反馈，表示线路恢复
+            document.body.style.backgroundColor = '#051a0a';
+            setTimeout(() => document.body.style.backgroundColor = '#050508', 150);
+
+            // 触发恢复时的水波纹涟漪
+            ripples.push({ nodeId: affectedSubNodeId, radius: 0, maxRadius: 120, type: 'recover' });
+        }
+
+        // 数学辅助函数：点到线段的最短距离
+        function pointToLineDistance(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+
+            const dot = A * C + B * D;
+            const len_sq = C * C + D * D;
+            let param = -1;
+            if (len_sq != 0) // 线段长度不为0
+                param = dot / len_sq;
+
+            let xx, yy;
+
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            }
+            else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            }
+            else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // 绘制具有科技感的节点图标
+        function drawNode(node, currentX, currentY) {
+            ctx.save();
+            ctx.translate(currentX, currentY);
+
+            // 浮动效果
+            const floatY = Math.sin(time * 0.002 + node.id) * 5;
+            ctx.translate(0, floatY);
+
+            // 判断子节点是否完全断网
+            let isDisconnected = false;
+            if (node.type === 'sub') {
+                const subEdges = edges.filter(e => e.source === node.id);
+                // 如果该节点拥有的所有线路都被标记为 broken，则判定为断网
+                if (subEdges.length > 0 && subEdges.every(e => e.broken)) {
+                    isDisconnected = true;
+                }
+            }
+
+            if (node.type === 'main') {
+                // 主节点：较大，带有浅蓝色发光
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = "rgba(173, 216, 230, 0.8)";
+
+                // 绘制外壳
+                ctx.fillStyle = "#e0e8f0";
+                ctx.beginPath();
+                ctx.roundRect(-30, -20, 60, 40, 8);
+                ctx.fill();
+
+                // 绘制内部细节线
+                ctx.strokeStyle = "#4a6b8c";
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.moveTo(-20, 0); ctx.lineTo(20, 0);
+                ctx.moveTo(-15, -10); ctx.lineTo(15, -10);
+                ctx.stroke();
+
+                // 底部指示灯
+                ctx.fillStyle = "#00d2ff";
+                ctx.beginPath();
+                ctx.arc(-15, 20, 3, 0, Math.PI * 2);
+                ctx.arc(15, 20, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+            } else {
+                // 子节点：较小，带有白色/浅绿色发光
+                if (isDisconnected) {
+                    // 断网状态：失去发光，整体变为暗灰色
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = "#4a4d52";
+                } else {
+                    // 正常状态
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "rgba(255, 255, 255, 0.6)";
+                    ctx.fillStyle = "#d0d5dc";
+                }
+
+                // 绘制圆盘主体
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 18, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 顶部突起
+                ctx.fillStyle = isDisconnected ? "#33363a" : "#a0a5b0";
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(0, -6, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 底部连接器
+                ctx.fillStyle = isDisconnected ? "#222" : "#808590";
+                ctx.fillRect(-3, 8, 6, 6);
+            }
+
+            ctx.restore();
+        }
+
+        // 动画主循环
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. 绘制星空背景 (随时间缓慢闪烁和移动)
+            ctx.fillStyle = "#ffffff";
+            stars.forEach(star => {
+                ctx.globalAlpha = Math.abs(Math.sin(time * 0.001 + star.x)) * 0.5 + 0.1;
+                ctx.beginPath();
+                // 让星空以中心点为基础，受缩放影响较小
+                ctx.arc(centerX + star.x, centerY + star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+
+            // 2. 绘制线路 (Edges) - 改为静态的网状虚线 (保留所有连线可见)
+            edges.forEach(edge => {
+                const sourceNode = nodes.find(n => n.id === edge.source);
+                const targetNode = nodes.find(n => n.id === edge.target);
+
+                // 计算浮动后的实际坐标 (保持线条与节点连接紧密)
+                const sFloatY = Math.sin(time * 0.002 + sourceNode.id) * 5;
+                const tFloatY = Math.sin(time * 0.002 + targetNode.id) * 5;
+
+                const startX = centerX + sourceNode.x * scale;
+                const startY = centerY + sourceNode.y * scale + sFloatY;
+                const endX = centerX + targetNode.x * scale;
+                const endY = centerY + targetNode.y * scale + tFloatY;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+
+                // 让线条末端呈圆形，配合短线段形成原图中的圆点虚线效果
+                ctx.lineCap = 'round';
+
+                if (edge.type === 'main') {
+                    // 主干网络
+                    ctx.strokeStyle = edge.active ? "rgba(0, 136, 255, 0.6)" : "rgba(0, 136, 255, 0.25)";
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([4, 15]);
+                } else {
+                    // 子节点网络
+                    if (edge.broken) {
+                        // 如果被点击判定为故障，显示红色虚线
+                        ctx.strokeStyle = "rgba(255, 50, 50, 0.5)";
+                    } else {
+                        ctx.strokeStyle = edge.active ? "rgba(0, 255, 102, 0.5)" : "rgba(0, 255, 102, 0.25)";
+                    }
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([3, 12]);
+                }
+
+                ctx.stroke();
+
+                // 重置样式，避免影响其他绘制
+                ctx.shadowBlur = 0;
+                ctx.setLineDash([]);
+                ctx.lineCap = 'butt';
+
+                // 绘制断开的警告图标
+                if (edge.broken) {
+                    const midX = (startX + endX) / 2;
+                    const midY = (startY + endY) / 2;
+
+                    ctx.save();
+                    ctx.translate(midX, midY);
+
+                    // 呼吸闪烁效果
+                    const pulse = Math.abs(Math.sin(time * 0.005));
+
+                    ctx.strokeStyle = `rgba(255, 50, 50, ${0.7 + pulse * 0.3})`;
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "rgba(255, 0, 0, 0.8)";
+
+                    const size = 6 + pulse * 2; // 图标大小随呼吸微调
+
+                    // 绘制 X 符号
+                    ctx.beginPath();
+                    ctx.moveTo(-size, -size);
+                    ctx.lineTo(size, size);
+                    ctx.moveTo(size, -size);
+                    ctx.lineTo(-size, size);
+                    ctx.stroke();
+
+                    // 绘制外层圆圈
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, size + 5, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    ctx.restore();
+                }
             });
 
-            // 添加淡出动画
-            const imgContainer = document.getElementById('product-img');
-            imgContainer.classList.add('fade-out');
+            // 2.5 绘制信号粒子 (Particles) - 引入彗星尾迹特效
+            particles.forEach(p => {
+                p.progress += p.speed;
+                if (p.progress >= 1) p.progress = 0; // 进度满1后重置为0，形成循环
 
-            setTimeout(() => {
-                renderProduct(index);
-                imgContainer.classList.remove('fade-out');
-            }, 250);
+                const sourceNode = nodes.find(n => n.id === p.edge.source);
+                const targetNode = nodes.find(n => n.id === p.edge.target);
+
+                const sFloatY = Math.sin(time * 0.002 + sourceNode.id) * 5;
+                const tFloatY = Math.sin(time * 0.002 + targetNode.id) * 5;
+
+                const startX = centerX + sourceNode.x * scale;
+                const startY = centerY + sourceNode.y * scale + sFloatY;
+                const endX = centerX + targetNode.x * scale;
+                const endY = centerY + targetNode.y * scale + tFloatY;
+
+                // 绘制拖尾效果 (生成多个逐渐变小、变透明的尾随圆圈)
+                const trailLength = 8;
+                for (let j = trailLength; j >= 0; j--) {
+                    // 计算尾迹所在进度
+                    let tProg = p.progress - (j * 0.008);
+                    if (tProg < 0) continue; // 如果还没从起点发出，则不绘制这段尾迹
+
+                    const currentX = startX + (endX - startX) * tProg;
+                    const currentY = startY + (endY - startY) * tProg;
+
+                    const alpha = 1 - (j / trailLength);
+                    const baseRadius = p.edge.type === 'main' ? 3.5 : 2.5;
+                    const radius = Math.max(baseRadius * alpha, 0.5);
+
+                    ctx.beginPath();
+                    ctx.arc(currentX, currentY, radius, 0, Math.PI * 2);
+
+                    if (j === 0) {
+                        // 头部的发光主粒子
+                        if (p.edge.type === 'main') {
+                            ctx.fillStyle = "#00d2ff";
+                            ctx.shadowColor = "#00d2ff";
+                            ctx.shadowBlur = 15;
+                        } else {
+                            ctx.fillStyle = "#00ff66";
+                            ctx.shadowColor = "#00ff66";
+                            ctx.shadowBlur = 10;
+                        }
+                    } else {
+                        // 身后的半透明拖尾（去除阴影优化性能）
+                        ctx.shadowBlur = 0;
+                        if (p.edge.type === 'main') {
+                            ctx.fillStyle = `rgba(0, 210, 255, ${alpha * 0.5})`;
+                        } else {
+                            ctx.fillStyle = `rgba(0, 255, 102, ${alpha * 0.5})`;
+                        }
+                    }
+                    ctx.fill();
+                }
+                ctx.shadowBlur = 0; // 重置阴影
+            });
+
+            // 2.8 绘制水波纹涟漪 (Ripples)
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                let r = ripples[i];
+                r.radius += 3; // 波纹扩散速度
+                let alpha = 1 - (r.radius / r.maxRadius);
+
+                // 如果透明度降到0以下，从数组中移除该特效
+                if (alpha <= 0) {
+                    ripples.splice(i, 1);
+                    continue;
+                }
+
+                const node = nodes.find(n => n.id === r.nodeId);
+                const nX = centerX + node.x * scale;
+                const nY = centerY + node.y * scale + Math.sin(time * 0.002 + node.id) * 5; // 追踪节点当前浮动位置
+
+                ctx.beginPath();
+                ctx.arc(nX, nY, r.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = r.type === 'break' ? `rgba(255, 50, 50, ${alpha})` : `rgba(0, 255, 102, ${alpha})`;
+                ctx.lineWidth = 3 * alpha; // 越到边缘线越细
+                ctx.stroke();
+            }
+
+            // 3. 绘制节点 (Nodes)
+            // 在线条之后绘制，确保节点在线条上方
+            nodes.forEach(node => {
+                const currentX = centerX + node.x * scale;
+                const currentY = centerY + node.y * scale;
+                drawNode(node, currentX, currentY);
+            });
+
+            time += 16; // 假设60fps，每次增加16ms
+            requestAnimationFrame(animate);
         }
 
-        // 初始化加载第一个产品
-        window.onload = () => {
-            renderProduct(0);
-        };
+        // 启动动画
+        animate();
+
     </script>
 </body>
 

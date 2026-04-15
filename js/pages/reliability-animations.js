@@ -52,12 +52,16 @@
   };
 
   const stageState = {};
+  const startsActive = window.parent === window;
+  let isStageActive = startsActive;
+  let stageKeys = [];
+  let renderAll = function () {};
   let particleLoopId = null;
 
   init();
 
   function init() {
-    const stageKeys = Object.keys(STAGE_CONFIGS).filter((stageKey) => {
+    stageKeys = Object.keys(STAGE_CONFIGS).filter((stageKey) => {
       const config = STAGE_CONFIGS[stageKey];
       return document.getElementById(config.mapId) && document.getElementById(config.layerId);
     });
@@ -76,20 +80,56 @@
       }
     });
 
-    const renderAll = () => {
+    renderAll = () => {
       stageKeys.forEach((stageKey) => renderStage(stageKey, STAGE_CONFIGS[stageKey]));
     };
 
-    renderAll();
-    window.addEventListener("resize", renderAll);
+    window.addEventListener("resize", function () {
+      if (!isStageActive) {
+        return;
+      }
+      renderAll();
+    });
 
-    if (particleLoopId !== null) {
-      window.clearInterval(particleLoopId);
+    window.addEventListener("message", function (event) {
+      if (!event.data || event.data.type !== "slideVisibility") {
+        return;
+      }
+
+      if (event.data.active) {
+        isStageActive = true;
+        renderAll();
+        startParticleLoop();
+        return;
+      }
+
+      isStageActive = false;
+      stopParticleLoop();
+    });
+
+    if (startsActive) {
+      renderAll();
+      startParticleLoop();
+    }
+  }
+
+  function startParticleLoop() {
+    if (particleLoopId !== null || !isStageActive) {
+      return;
     }
 
     particleLoopId = window.setInterval(() => {
       stageKeys.forEach((stageKey) => spawnParticlesForStage(stageKey, STAGE_CONFIGS[stageKey]));
     }, PARTICLE_INTERVAL_MS);
+  }
+
+  function stopParticleLoop() {
+    if (particleLoopId === null) {
+      return;
+    }
+
+    window.clearInterval(particleLoopId);
+    particleLoopId = null;
   }
 
   function renderStage(stageKey, stageConfig) {

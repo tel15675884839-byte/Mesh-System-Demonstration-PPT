@@ -27,7 +27,7 @@
       stats: [
         { label: "Power Input", value: "DC 24V" },
         { label: "Monitoring", value: "Quiescent, alarm, fault" },
-        { label: "Device Capacity", value: "32 devices supported" },
+        { label: "Antenna", value: "Internal antenna" },
         { label: "Communication", value: "Mesh topology" }
       ]
     },

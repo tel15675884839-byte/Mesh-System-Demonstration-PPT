@@ -32,7 +32,26 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
-  padding: 12px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: hidden;
+}
+
+.product-stage-shell::before {
+  content: none;
+}
+
+.page-product-showcase .visual-card.product-stage-shell {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.page-product-showcase .visual-card.product-stage-shell::before {
+  content: none !important;
 }
 
 .product-stage {

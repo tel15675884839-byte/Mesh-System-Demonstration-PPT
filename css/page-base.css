@@ -214,18 +214,30 @@ p {
   position: relative;
   border-radius: 28px;
   background: linear-gradient(180deg, rgba(7, 18, 24, 0.68), rgba(3, 10, 13, 0.8));
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(2px);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(0.6px);
 }
 
-.visual-card::before,
+.visual-card::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 120% at 50% 50%, rgba(112, 240, 255, 0) 74%, rgba(112, 240, 255, 0.08) 88%, rgba(255, 255, 255, 0.03) 100%);
+  filter: blur(26px);
+  opacity: 0.16;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .status-panel::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(145deg, rgba(112, 240, 255, 0.35), rgba(255, 255, 255, 0.04));
+  background: linear-gradient(145deg, rgba(112, 240, 255, 0.26), rgba(255, 255, 255, 0.035));
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);

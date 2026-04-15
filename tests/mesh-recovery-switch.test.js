@@ -300,6 +300,10 @@ function createMeshPageHarness() {
       modeButtons,
       recoveryButtons
     },
+    dispatchMessage(data) {
+      const handlers = windowListeners.get("message") || [];
+      handlers.forEach((handler) => handler.call(context.window, { data }));
+    },
     getInstanceCount() {
       return instances.length;
     },
@@ -321,10 +325,14 @@ test("switching auto recovery result does not recreate the mesh player", async (
   await flushTasks();
   await flushTasks();
 
+  harness.dispatchMessage({ type: "slideVisibility", active: true });
+  await flushTasks();
+  await flushTasks();
+
   assert.equal(
     harness.getInstanceCount(),
     1,
-    "Expected mesh page bootstrap to create one player instance."
+    "Expected mesh page to create one player instance after activation."
   );
 
   harness.controls.modeButtons[2].click();

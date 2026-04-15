@@ -191,6 +191,8 @@
   overflow: hidden;
   isolation: isolate;
   container-type: inline-size;
+  border: none;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .distance-stage-controls {
@@ -230,7 +232,7 @@
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 56px 56px, 56px 56px;
   opacity: 0.38;
-  mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+  /* removed old mask */
 }
 
 .distance-cinematic-bg::after {
@@ -417,10 +419,7 @@
 }
 
 .scene-open .scene-node {
-  box-shadow:
-    inset 0 0 0 1px rgba(112, 240, 255, 0.22),
-    0 0 0 12px rgba(3, 10, 19, 0.45),
-    0 0 36px rgba(112, 240, 255, 0.08);
+  box-shadow: none;
 }
 
 .scene-open .scene-node span {

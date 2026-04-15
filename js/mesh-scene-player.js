@@ -336,6 +336,7 @@
       this.autostart = this.options.autostart !== false;
       this.autoFitView = this.options.autoFitView !== false;
       this.debugEnabled = !!this.options.debug;
+      this._isActive = this.options.startActive !== false;
 
       this.scene = null;
       this.camera = null;
@@ -349,6 +350,7 @@
       this.backgroundGroup = null;
       this.statesRoot = null;
       this._states = new Map();
+      this._stateDefinitions = new Map();
       this._activeMode = null;
       this._activeState = null;
       this._elapsed = 0;
@@ -386,9 +388,32 @@
       return this._activateMode(mode);
     }
 
+    setActive(isActive) {
+      if (this._destroyed) {
+        return false;
+      }
+
+      this._isActive = !!isActive;
+
+      if (this.controls) {
+        this.controls.enabled = this._isActive;
+      }
+
+      if (this._isActive) {
+        this._lastFrameTime = 0;
+        this._startRenderLoop();
+        this._renderOnce();
+      } else {
+        this._stopRenderLoop();
+      }
+
+      this._updateDebugOverlay("active " + (this._isActive ? "on" : "off"));
+      return true;
+    }
+
     _activateMode(mode) {
       const nextMode = this.stateOrder.includes(mode) ? mode : this.initialMode;
-      const nextState = this._states.get(nextMode);
+      const nextState = this._ensureBuiltState(nextMode);
       if (!nextState || nextState.error) {
         this._setStatus(nextState && nextState.error ? "Unable to load " + nextMode + " state" : "Unknown mesh state: " + nextMode, true);
         return false;
@@ -412,7 +437,7 @@
     getStateAvailability() {
       const availability = {};
       for (const mode of this.stateOrder) {
-        const state = this._states.get(mode);
+        const state = this._stateDefinitions.get(mode);
         availability[mode] = {
           ok: !!(state && !state.error),
           error: state && state.error ? state.error : null,
@@ -424,7 +449,7 @@
 
     getFirstAvailableMode() {
       for (const mode of this.stateOrder) {
-        const state = this._states.get(mode);
+        const state = this._stateDefinitions.get(mode);
         if (state && !state.error) {
           return mode;
         }
@@ -471,8 +496,7 @@
     destroy() {
       if (this._destroyed) return;
       this._destroyed = true;
-      cancelAnimationFrame(this._frameHandle);
-      this._frameHandle = 0;
+      this._stopRenderLoop();
 
       if (this._resizeObserver) {
         this._resizeObserver.disconnect();
@@ -482,6 +506,7 @@
 
       for (const state of this._states.values()) this._disposeState(state);
       this._states.clear();
+      this._stateDefinitions.clear();
       this._disposeBackground();
       if (this.controls && typeof this.controls.dispose === "function") this.controls.dispose();
       this.controls = null;
@@ -587,6 +612,7 @@
         this.controls.enablePan = true;
         this.controls.minDistance = 24;
         this.controls.maxDistance = 220;
+        this.controls.enabled = this._isActive;
         this.controls.update();
       }
 
@@ -630,7 +656,26 @@
       this._resize();
       this._setStatus("Loading mesh states", false);
       this._updateDebugOverlay("three initialized");
+      if (this._isActive) {
+        this._startRenderLoop();
+      } else {
+        this._renderOnce();
+      }
+    }
+
+    _startRenderLoop() {
+      if (this._destroyed || !this._isActive || this._frameHandle) {
+        return;
+      }
       this._frameHandle = requestAnimationFrame(this._boundAnimate);
+    }
+
+    _stopRenderLoop() {
+      if (!this._frameHandle) {
+        return;
+      }
+      cancelAnimationFrame(this._frameHandle);
+      this._frameHandle = 0;
     }
 
     _attachResizeHandling() {
@@ -661,37 +706,64 @@
           throw new Error("Invalid state payload for " + mode);
         }
 
-        return { mode, state: this._buildState(mode, raw) };
+        return { mode, raw: raw };
       }));
 
-      let firstReady = null;
+      let firstReadyMode = null;
       for (let i = 0; i < results.length; i += 1) {
         const mode = this.stateOrder[i];
         const result = results[i];
         if (result.status === "fulfilled") {
-          const state = result.value.state;
-          this._states.set(mode, state);
-          if (!firstReady) firstReady = state;
+          this._stateDefinitions.set(mode, {
+            mode: mode,
+            raw: result.value.raw,
+            error: null
+          });
+          if (!firstReadyMode) firstReadyMode = mode;
         } else {
-          this._states.set(mode, { mode, error: result.reason instanceof Error ? result.reason : new Error(String(result.reason)) });
+          this._stateDefinitions.set(mode, {
+            mode: mode,
+            raw: null,
+            error: result.reason instanceof Error ? result.reason : new Error(String(result.reason))
+          });
         }
       }
 
-      if (!firstReady) {
+      if (!firstReadyMode) {
         const firstError = results.find(function (item) { return item.status === "rejected"; });
         throw firstError && firstError.reason ? firstError.reason : new Error("Failed to load mesh states");
       }
 
-      for (const state of this._states.values()) {
-        if (state && !state.error) this._setStateVisible(state, false);
-      }
-
-      const bootMode = this._states.has(this.initialMode) && this._states.get(this.initialMode) && !this._states.get(this.initialMode).error
+      const bootMode = this._stateDefinitions.has(this.initialMode) && this._stateDefinitions.get(this.initialMode) && !this._stateDefinitions.get(this.initialMode).error
         ? this.initialMode
-        : firstReady.mode;
-      this._activateMode(bootMode);
+        : firstReadyMode;
+      this._activeMode = bootMode;
       this._updateDebugOverlay("preload complete");
       return this;
+    }
+
+    _ensureBuiltState(mode) {
+      const existingState = this._states.get(mode);
+      if (existingState) {
+        return existingState;
+      }
+
+      const definition = this._stateDefinitions.get(mode);
+      if (!definition) {
+        return null;
+      }
+      if (definition.error) {
+        return { mode: mode, error: definition.error };
+      }
+
+      try {
+        const state = this._buildState(mode, definition.raw);
+        this._states.set(mode, state);
+        return state;
+      } catch (error) {
+        definition.error = error instanceof Error ? error : new Error(String(error));
+        return { mode: mode, error: definition.error };
+      }
     }
 
     async _loadStateFromCandidates(mode) {
@@ -1136,6 +1208,10 @@
     }
     _animate(time) {
       if (this._destroyed) return;
+      if (!this._isActive) {
+        this._frameHandle = 0;
+        return;
+      }
       this._frameHandle = requestAnimationFrame(this._boundAnimate);
       const now = typeof time === "number" ? time : performance.now();
       const delta = Math.max(0, now - (this._lastFrameTime || now));
@@ -1370,13 +1446,18 @@
 
       for (let i = 0; i < this.stateOrder.length; i += 1) {
         const mode = this.stateOrder[i];
-        const state = this._states.get(mode);
-        if (!state) {
+        const definition = this._stateDefinitions.get(mode);
+        if (!definition) {
           lines.push(mode + ": pending");
           continue;
         }
-        if (state.error) {
+        if (definition.error) {
           lines.push(mode + ": error");
+          continue;
+        }
+        const state = this._states.get(mode);
+        if (!state) {
+          lines.push(mode + ": loaded not built");
           continue;
         }
         lines.push(

@@ -8,6 +8,22 @@
   let currentSlide = 0;
   let wheelLock = false;
 
+  function syncBackgroundActivity() {
+    const eventDetail = {
+      active: currentSlide <= 1,
+      slide: currentSlide
+    };
+    const BackgroundEvent = typeof CustomEvent === "function"
+      ? CustomEvent
+      : function FallbackEvent(type, init) {
+          this.type = type;
+          this.detail = init ? init.detail : undefined;
+        };
+    window.dispatchEvent(new BackgroundEvent("stageBackgroundActive", {
+      detail: eventDetail
+    }));
+  }
+
   function syncFrameVisibility() {
     slideFrames.forEach((frame, frameIndex) => {
       if (!frame.contentWindow) {
@@ -33,6 +49,7 @@
     }
 
     syncFrameVisibility();
+    syncBackgroundActivity();
   }
 
   function goToSlide(index) {
