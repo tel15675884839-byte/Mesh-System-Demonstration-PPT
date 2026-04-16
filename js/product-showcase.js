@@ -1,4 +1,7 @@
 (function () {
+  const PRODUCT_SWITCH_EXIT_MS = 320;
+  const PRODUCT_SWITCH_SETTLE_MS = 1120;
+
   function createSearchParams(search) {
     const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
     if (SearchParams) {
@@ -16,6 +19,7 @@
     {
       slug: "expansion-card",
       name: "Expansion Card",
+      imageScale: 0.78,
       category: "Wireless Loop Expansion Card",
       title: "Wireless Loop Expansion Card",
       titleNoWrap: true,
@@ -68,8 +72,6 @@
       category: "Wireless Manual Call Point",
       title: "Wireless Manual Call Point",
       image: "../assets/images/products/mcp.png",
-      imageScale: 1.3,
-      imageOffsetY: "20%",
       fallbackImage: "../assets/icons/mcp.svg",
       accentRgb: "255, 89, 89",
       accentSoftRgb: "255, 140, 102",
@@ -116,16 +118,45 @@
   ];
 
   const stage = document.getElementById("product-stage");
-  const imageShell = document.getElementById("product-image-shell");
-  const imageEl = document.getElementById("product-image");
-  const fallbackEl = document.getElementById("product-fallback");
-  const titleEl = document.getElementById("product-title");
-  const statsEl = document.getElementById("product-stats");
-  const buttons = Array.from(document.querySelectorAll(".product-switch-btn"));
-  const switcher = document.getElementById("product-switcher");
-  const detailsPanel = document.getElementById("product-details-panel");
+  const stageMain = document.getElementById("product-stage-main");
+  const btnPrev = document.getElementById("nav-prev");
+  const btnNext = document.getElementById("nav-next");
+  const counterEl = document.getElementById("product-counter");
   const presentationMessaging = window.meshPresentationMessaging || null;
-  let activeIndex = 0;
+  let activeIndex = -1;
+  let transitionExitTimer = 0;
+  let transitionSettleTimer = 0;
+
+  function prefersReducedMotion() {
+    return Boolean(
+      window.matchMedia &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function clearTransitionTimers() {
+    if (transitionExitTimer) {
+      window.clearTimeout(transitionExitTimer);
+      transitionExitTimer = 0;
+    }
+
+    if (transitionSettleTimer) {
+      window.clearTimeout(transitionSettleTimer);
+      transitionSettleTimer = 0;
+    }
+  }
+
+  function resetTransitionState() {
+    if (!stage) {
+      return;
+    }
+
+    stage.classList.remove("is-transitioning");
+    stage.classList.remove("is-exiting");
+    stage.classList.remove("is-enter-prep");
+    stage.removeAttribute("data-product-direction");
+  }
 
   function getInitialProductIndex() {
     const searchParams = presentationMessaging && typeof presentationMessaging.getSharedSearchParams === "function"
@@ -149,8 +180,8 @@
     return slugIndex >= 0 ? slugIndex : 0;
   }
 
-  function renderStats(stats) {
-    statsEl.innerHTML = stats
+  function renderStatsHTML(stats) {
+    return stats
       .map((item) => (
         "<article class=\"product-stat-card\">" +
           "<p class=\"product-stat-label\">" + item.label + "</p>" +
@@ -160,56 +191,69 @@
       .join("");
   }
 
-  function activateButton(index) {
-    buttons.forEach((button, buttonIndex) => {
-      const isActive = buttonIndex === index;
-      const tabId = "product-tab-" + buttonIndex;
-      button.classList.toggle("is-active", isActive);
-      button.id = tabId;
-      button.setAttribute("aria-controls", "product-details-panel");
-      button.setAttribute("aria-selected", String(isActive));
-      button.setAttribute("tabindex", isActive ? "0" : "-1");
-    });
-
+  function updateAria(slide, index) {
+    const detailsPanel = slide.querySelector(".product-details-panel");
     if (detailsPanel) {
       detailsPanel.setAttribute("aria-labelledby", "product-tab-" + index);
     }
   }
 
   function renderProduct(index, options) {
+    if (index === activeIndex) return;
+
     const product = products[index];
     const config = options || {};
-    activeIndex = index;
+    
+    // Mark previous slide
+    const currentSlide = stageMain.querySelector(".product-slide.active");
+    if (currentSlide) {
+      currentSlide.classList.remove("active");
+      currentSlide.classList.add("prev");
+      // Clean up after animation
+      setTimeout(() => {
+        if (currentSlide.parentNode) {
+          currentSlide.parentNode.removeChild(currentSlide);
+        }
+      }, 850);
+    }
 
+    // Create new slide
+    const newSlide = document.createElement("div");
+    newSlide.className = "product-slide";
+    newSlide.innerHTML = 
+      "<section class=\"product-visual-panel\" aria-live=\"polite\">" +
+        "<div class=\"product-aura\" aria-hidden=\"true\"></div>" +
+        "<div class=\"product-image-shell\">" +
+          "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\" decoding=\"async\">" +
+          "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\" decoding=\"async\">" +
+        "</div>" +
+      "</section>" +
+      "<section class=\"product-details-panel\" role=\"tabpanel\">" +
+        "<h3 class=\"product-title\">" + product.title + "</h3>" +
+        "<div class=\"product-stats-grid\">" + renderStatsHTML(product.stats) + "</div>" +
+      "</section>";
+
+    const imageEl = newSlide.querySelector(".product-image");
+    imageEl.style.setProperty("--image-scale", String(product.imageScale || 1.3));
+    imageEl.style.setProperty("--image-offset-y", "-3%");
+
+    stageMain.appendChild(newSlide);
+    
+    // Set accent colors
     stage.style.setProperty("--product-accent-rgb", product.accentRgb);
     stage.style.setProperty("--product-accent-soft-rgb", product.accentSoftRgb);
-    stage.classList.toggle("is-title-nowrap", Boolean(product.titleNoWrap));
-    titleEl.textContent = product.title;
-    imageEl.style.setProperty("--image-scale", String(product.imageScale || 1));
-    imageEl.style.setProperty("--image-offset-y", product.imageOffsetY || "0%");
-    fallbackEl.style.setProperty("--image-scale", "1");
-    fallbackEl.style.setProperty("--image-offset-y", "0%");
-    renderStats(product.stats);
-    activateButton(index);
 
-    imageEl.classList.remove("is-hidden");
-    fallbackEl.classList.add("is-hidden");
-    fallbackEl.src = product.fallbackImage;
-    fallbackEl.alt = product.name + " icon";
-    imageShell.classList.remove("is-fallback");
+    // Trigger animation
+    setTimeout(() => {
+      newSlide.classList.add("active");
+    }, 20);
 
-    imageEl.onerror = function () {
-      imageEl.classList.add("is-hidden");
-      fallbackEl.classList.remove("is-hidden");
-      imageShell.classList.add("is-fallback");
-    };
-    imageEl.onload = function () {
-      imageEl.classList.remove("is-hidden");
-      fallbackEl.classList.add("is-hidden");
-      imageShell.classList.remove("is-fallback");
-    };
-    imageEl.src = product.image;
-    imageEl.alt = product.name;
+    activeIndex = index;
+    updateAria(newSlide, index);
+
+    if (counterEl) {
+      counterEl.textContent = String(index + 1).padStart(2, "0") + " / " + String(products.length).padStart(2, "0");
+    }
 
     if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
       presentationMessaging.syncPresentationState({
@@ -218,32 +262,81 @@
     }
   }
 
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      renderProduct(Number(button.dataset.productIndex), { syncUrl: true });
-    });
-  });
+  function animateProductSwitch(index, direction, options) {
+    const config = options || {};
 
-  switcher.addEventListener("keydown", (event) => {
-    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") {
+    if (!stage || prefersReducedMotion()) {
+      clearTransitionTimers();
+      resetTransitionState();
+      renderProduct(index, config);
       return;
     }
 
-    event.preventDefault();
+    clearTransitionTimers();
+    stage.setAttribute("data-product-direction", direction);
+    stage.classList.add("is-transitioning");
+    stage.classList.add("is-exiting");
+    stage.classList.remove("is-enter-prep");
 
-    let nextIndex = activeIndex;
-    if (event.key === "Home") {
-      nextIndex = 0;
-    } else if (event.key === "End") {
-      nextIndex = products.length - 1;
-    } else {
-      const step = event.key === "ArrowRight" ? 1 : -1;
-      nextIndex = (activeIndex + step + products.length) % products.length;
-    }
+    transitionExitTimer = window.setTimeout(function () {
+      transitionExitTimer = 0;
+      renderProduct(index, config);
+      stage.classList.remove("is-exiting");
+      stage.classList.add("is-enter-prep");
 
-    buttons[nextIndex].focus();
-    renderProduct(nextIndex, { syncUrl: true });
-  });
+      const scheduleFrame = window.requestAnimationFrame || function (callback) {
+        return window.setTimeout(callback, 16);
+      };
+      scheduleFrame(function () {
+        stage.classList.remove("is-enter-prep");
+      });
+    }, PRODUCT_SWITCH_EXIT_MS);
+
+    transitionSettleTimer = window.setTimeout(function () {
+      transitionSettleTimer = 0;
+      resetTransitionState();
+    }, PRODUCT_SWITCH_SETTLE_MS);
+  }
+
+  if (btnPrev) {
+    btnPrev.addEventListener("click", () => {
+      const nextIndex = (activeIndex - 1 + products.length) % products.length;
+      animateProductSwitch(nextIndex, "backward", { syncUrl: true });
+    });
+  }
+
+  if (btnNext) {
+    btnNext.addEventListener("click", () => {
+      const nextIndex = (activeIndex + 1) % products.length;
+      animateProductSwitch(nextIndex, "forward", { syncUrl: true });
+    });
+  }
+
+  if (typeof document.addEventListener === "function") {
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") {
+        return;
+      }
+
+      event.preventDefault();
+
+      let nextIndex = activeIndex;
+      let direction = "forward";
+      if (event.key === "Home") {
+        nextIndex = 0;
+        direction = nextIndex < activeIndex ? "backward" : "forward";
+      } else if (event.key === "End") {
+        nextIndex = products.length - 1;
+        direction = nextIndex < activeIndex ? "backward" : "forward";
+      } else {
+        const step = event.key === "ArrowRight" ? 1 : -1;
+        direction = step > 0 ? "forward" : "backward";
+        nextIndex = (activeIndex + step + products.length) % products.length;
+      }
+
+      animateProductSwitch(nextIndex, direction, { syncUrl: true });
+    });
+  }
 
   renderProduct(getInitialProductIndex(), { syncUrl: false });
 }());
