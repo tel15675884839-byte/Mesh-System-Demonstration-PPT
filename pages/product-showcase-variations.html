@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Showcase - 5 Design Variations (Linear/Vercel Style)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-base: #000000;
+      --bg-surface: #0a0a0a;
+      --bg-elevated: #111111;
+      --border-dim: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.2);
+      --text-main: #ffffff;
+      --text-muted: #888888;
+      --text-faint: #444444;
+      --font-ui: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --accent: #eee;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-ui);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- global UI Switcher (App Shell) --- */
+    .controls-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.6);
+      border-bottom: 1px solid var(--border-dim);
+      z-index: 1000;
+      padding: 0 24px;
+    }
+
+    .controls-brand {
+      position: absolute;
+      left: 24px;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+      color: var(--text-muted);
+    }
+
+    .style-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: var(--font-ui);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .style-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-surface);
+    }
+    .style-btn.active {
+      color: var(--text-main);
+      background: var(--bg-elevated);
+      border-color: var(--border-dim);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .variation-container {
+      margin-top: 60px;
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .v-wrapper {
+      display: none;
+      width: 100%;
+      min-height: 100%;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .v-wrapper.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* common image styling */
+    .p-img { width: 100%; height: auto; object-fit: contain; }
+
+    /* ==========================================================================
+       Variation 1: The Bento Grid (Linear Style)
+       ========================================================================== */
+    .v1-bento {
+      padding: 80px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .v1-header {
+      margin-bottom: 60px;
+      text-align: center;
+    }
+    .v1-header h1 {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .v1-header p { color: var(--text-muted); margin-top: 8px; font-size: 15px; }
+
+    .v1-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      grid-auto-rows: 380px;
+    }
+    .v1-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .v1-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+    /* Make first element span 2 cols */
+    .v1-card:first-child { grid-column: span 2; flex-direction: row; align-items: center; gap: 40px; }
+    
+    .v1-card-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .v1-card-content { z-index: 2; flex: 1; }
+    .v1-card-title { font-weight: 500; font-size: 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .v1-card-title span { font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); padding: 4px 8px; background: var(--bg-elevated); border-radius: 4px; border: 1px solid var(--border-dim); }
+    
+    .v1-stats { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+    .v1-stat { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-dim); padding-bottom: 8px; font-size: 13px; }
+    .v1-stat-lbl { color: var(--text-muted); }
+    .v1-stat-val { color: var(--text-main); font-weight: 500; }
+
+    .v1-img-wrap { flex: 1; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 2; }
+    .v1-img-wrap img { max-height: 200px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5)); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .v1-card:hover .v1-img-wrap img { transform: scale(1.05) translateY(-5px); }
+    .v1-card:first-child .v1-img-wrap img { max-height: 280px; }
+
+    /* ==========================================================================
+       Variation 2: Tabbed Spotlight (Vercel Style)
+       ========================================================================== */
+    .v2-tabbed {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 60px);
+    }
+    .v2-sidebar {
+      width: 320px;
+      border-right: 1px solid var(--border-dim);
+      background: var(--bg-base);
+      padding: 40px 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .v2-sidebar-title {
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); padding: 0 32px; margin-bottom: 24px; font-weight: 600;
+    }
+    .v2-nav { list-style: none; display: flex; flex-direction: column; gap: 4px; padding: 0 16px; }
+    .v2-btn {
+      width: 100%; text-align: left; background: transparent; border: none; font-family: var(--font-ui); color: var(--text-muted); font-size: 14px; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center;
+    }
+    .v2-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
+    .v2-btn.active { background: var(--bg-surface); color: var(--text-main); box-shadow: inset 0 0 0 1px var(--border-dim); }
+    .v2-btn.active::after { content: '→'; font-family: var(--font-mono); font-size: 12px; }
+    
+    .v2-content {
+      flex: 1;
+      padding: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, var(--bg-surface) 0%, var(--bg-base) 100%);
+      position: relative;
+    }
+    .v2-product {
+      display: flex; gap: 80px; align-items: center; max-width: 1000px; width: 100%;
+      animation: slideUp 0.4s ease-out;
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+    
+    .v2-img-col {
+      flex: 1;
+      position: relative;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .v2-img-col::before {
+      content:''; position: absolute; width: 300px; height: 300px; background: var(--product-color, rgba(255,255,255,0.1)); filter: blur(120px); z-index: 0; opacity: 0.3; border-radius: 50%;
+    }
+    .v2-img-col img { max-height: 400px; z-index: 1; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8)); }
+    
+    .v2-info-col { flex: 1; z-index: 2; }
+    .v2-cat { font-family: var(--font-mono); font-size: 12px; color: var(--product-color, var(--text-muted)); margin-bottom: 12px; }
+    .v2-title { font-size: 40px; font-weight: 600; letter-spacing: -0.04em; margin-bottom: 32px; line-height: 1.1; }
+    
+    .v2-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .v2-stat { display: flex; flex-direction: column; gap: 4px; }
+    .v2-stat-lbl { font-size: 13px; color: var(--text-muted); }
+    .v2-stat-val { font-size: 14px; font-weight: 500; font-family: var(--font-mono); color: var(--text-main); }
+
+    /* ==========================================================================
+       Variation 3: Command Palette / Data Dense Table
+       ========================================================================== */
+    .v3-table-view {
+      padding: 80px 40px; margin: 0 auto; max-width: 1200px; width: 100%;
+    }
+    .v3-header {
+      font-size: 24px; font-weight: 500; margin-bottom: 40px; letter-spacing: -0.02em; padding-bottom: 20px; border-bottom: 1px solid var(--border-dim);
+    }
+    .v3-row {
+      border-bottom: 1px solid var(--border-dim);
+      transition: background 0.2s;
+    }
+    .v3-row:hover { background: rgba(255,255,255,0.02); }
+    
+    .v3-row-header {
+      display: grid; grid-template-columns: 2fr 1.5fr 1.5fr auto; align-items: center; padding: 24px 16px; cursor: pointer;
+    }
+    .v3-col-title { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 16px; }
+    .v3-col-title::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--product-color, var(--text-muted)); }
+    .v3-col-desc { font-size: 14px; color: var(--text-muted); }
+    .v3-col-mono { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+    .v3-icon { font-family: var(--font-mono); transition: transform 0.3s; }
+    
+    .v3-row.active .v3-row-header { background: var(--bg-surface); }
+    .v3-row.active .v3-icon { transform: rotate(45deg); }
+    
+    .v3-row-body {
+      display: none; padding: 0 16px 40px 16px; background: var(--bg-surface); border-bottom: 1px solid var(--border-dim);
+    }
+    .v3-row.active .v3-row-body { display: flex; gap: 60px; }
+    
+    .v3-body-img { flex: 0 0 300px; background: var(--bg-base); padding: 40px; border-radius: 8px; border: 1px solid var(--border-dim); display: flex; align-items: center; justify-content: center; }
+    .v3-body-img img { max-height: 200px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+    
+    .v3-body-stats { flex: 1; display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 32px; }
+    .v3-stat-item { border-left: 2px solid var(--border-dim); padding-left: 16px; }
+    .v3-stat-lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; }
+    .v3-stat-val { font-size: 16px; color: var(--text-main); font-weight: 400; }
+
+    /* ==========================================================================
+       Variation 4: Cinematic Minimalist Overlay
+       ========================================================================== */
+    .v4-cinematic {
+      position: relative; height: calc(100vh - 60px); width: 100%; overflow: hidden; background: #000;
+    }
+    .v4-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.05) 0%, transparent 60%); pointer-events: none; }
+    
+    .v4-carousel { display: flex; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); height: 100%; }
+    .v4-slide { min-width: 100vw; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+    
+    .v4-img-wrapper { position: relative; z-index: 10; text-align: center; }
+    .v4-img-wrapper img { max-height: 60vh; filter: drop-shadow(0 40px 60px rgba(0,0,0,0.9)); transition: transform 1s ease; }
+    .v4-slide.active .v4-img-wrapper img { animation: cineFloat 6s ease-in-out infinite alternate; }
+    @keyframes cineFloat { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
+    
+    .v4-ui-overlay {
+      position: absolute; bottom: 60px; left: 80px; z-index: 20; max-width: 400px;
+    }
+    .v4-title { font-size: 48px; font-weight: 300; letter-spacing: -0.05em; margin-bottom: 24px; }
+    .v4-stats { display: flex; flex-direction: column; gap: 12px; }
+    .v4-stat { display: flex; gap: 16px; align-items: baseline;font-family: var(--font-mono); font-size: 13px; }
+    .v4-stat-lbl { color: var(--text-muted); width: 120px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px;}
+    .v4-stat-val { color: var(--text-main); }
+
+    .v4-nav { position: absolute; right: 80px; bottom: 60px; display: flex; gap: 16px; z-index: 20; }
+    .v4-btn { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border-dim); background: rgba(255,255,255,0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: all 0.3s; }
+    .v4-btn:hover { background: white; color: black; }
+    
+    .v4-counter { position: absolute; left: 80px; top: 40px; font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); z-index: 20;}
+
+    /* ==========================================================================
+       Variation 5: The Glass & Glow Cards (Horizontal Scroll)
+       ========================================================================== */
+    .v5-glow {
+      padding: 100px 60px;
+      width: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      /* Hide scrollbar */
+      -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .v5-glow::-webkit-scrollbar { display: none; }
+    
+    .v5-card {
+      scroll-snap-align: center;
+      flex: 0 0 380px;
+      height: 560px;
+      background: rgba(25, 25, 25, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid var(--border-dim);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: crosshair;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .v5-card:hover { transform: translateY(-10px) scale(1.02); }
+    
+    /* Simulate a tracking glowing border effect via ::after */
+    .v5-card::after {
+      content: '';
+      position: absolute; inset: -1px; border-radius: 21px; padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 50%, rgba(255,255,255,0.05));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    .v5-img-box {
+      flex: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
+    }
+    .v5-img-box img { max-height: 220px; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.6)); }
+    
+    .v5-title { font-size: 22px; font-weight: 500; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .v5-stats { display: flex; flex-direction: column; gap: 12px; }
+    .v5-stat { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; border: 1px solid transparent; transition: border-color 0.2s;}
+    .v5-card:hover .v5-stat { border-color: rgba(255,255,255,0.05); }
+    .v5-stat-lbl { font-size: 12px; color: var(--text-muted); }
+    .v5-stat-val { font-size: 13px; color: var(--text-main); font-family: var(--font-mono); font-weight: 500;}
+    
+  </style>
+</head>
+<body>
+
+  <!-- Controls -->
+  <nav class="controls-nav">
+    <div class="controls-brand">Showcase Design Variations</div>
+    <button class="style-btn active" data-target="v1">Bento Grid</button>
+    <button class="style-btn" data-target="v2">Spotlight</button>
+    <button class="style-btn" data-target="v3">Command Data</button>
+    <button class="style-btn" data-target="v4">Cinematic</button>
+    <button class="style-btn" data-target="v5">Glass Scroll</button>
+  </nav>
+
+  <div class="variation-container">
+    
+    <!-- VARIATION 1: Bento Grid -->
+    <div class="v-wrapper v1-bento active" id="v1">
+      <div class="v1-header">
+        <h1>Wireless System Portfolio</h1>
+        <p>Premium grade components engineered for extreme reliability.</p>
+      </div>
+      <div class="v1-grid" id="v1-grid-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- VARIATION 2: Tabbed Spotlight -->
+    <div class="v-wrapper v2-tabbed" id="v2">
+      <div class="v2-sidebar">
+        <div class="v2-sidebar-title">Components</div>
+        <ul class="v2-nav" id="v2-nav-container">
+           <!-- Rendered via JS -->
+        </ul>
+      </div>
+      <div class="v2-content">
+        <div class="v2-product" id="v2-product-view">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VARIATION 3: Command Data Table -->
+    <div class="v-wrapper v3-table-view" id="v3">
+      <div class="v3-header">Technical Specifications Map</div>
+      <div id="v3-table-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- VARIATION 4: Cinematic -->
+    <div class="v-wrapper v4-cinematic" id="v4">
+      <div class="v4-bg"></div>
+      <div class="v4-counter" id="v4-counter">01 / 06</div>
+      <div class="v4-carousel" id="v4-carousel">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="v4-nav">
+        <button class="v4-btn" id="v4-prev">←</button>
+        <button class="v4-btn" id="v4-next">→</button>
+      </div>
+    </div>
+
+    <!-- VARIATION 5: Glass Scroll -->
+    <div class="v-wrapper v5-glow" id="v5">
+       <!-- Rendered via JS -->
+    </div>
+
+  </div>
+
+  <script>
+    const products = [
+      {
+        id: "expansion-card",
+        name: "Expansion Card",
+        title: "Wireless Loop Expansion Card",
+        image: "../assets/images/products/wireless loop expansion card.png",
+        color: "rgb(94, 230, 255)",
+        stats: [
+          { label: "Installation", value: "Mounted in the CIE" },
+          { label: "Loop Support", value: "Up to 4 wireless loops" },
+          { label: "Capacity", value: "125 devices / loop" },
+          { label: "Structure", value: "1 leader + 31 nodes" }
+        ]
+      },
+      {
+        id: "leader-node",
+        name: "Leader / Node",
+        title: "Wireless Leader / Node",
+        image: "../assets/images/products/node.png",
+        color: "rgb(106, 234, 198)",
+        stats: [
+          { label: "Power Input", value: "DC 24V" },
+          { label: "Monitoring", value: "Quiescent, alarm, fault" },
+          { label: "Antenna", value: "Internal antenna" },
+          { label: "Comms", value: "Mesh topology" }
+        ]
+      },
+      {
+        id: "detectors",
+        name: "Detectors",
+        title: "Wireless Detectors",
+        image: "../assets/images/products/smoke.png",
+        color: "rgb(151, 237, 255)",
+        stats: [
+          { label: "Detection", value: "Smoke, heat, combined" },
+          { label: "Power", value: "10-year Lithium" },
+          { label: "Comms", value: "Mesh topology" },
+          { label: "Range", value: "Up to 500m" }
+        ]
+      },
+      {
+        id: "call-point",
+        name: "Call Point",
+        title: "Wireless Manual Call Point",
+        image: "../assets/images/products/mcp.png",
+        color: "rgb(255, 89, 89)",
+        stats: [
+          { label: "Power", value: "10-year Lithium" },
+          { label: "Antenna", value: "Internal antenna" },
+          { label: "Comms", value: "Mesh topology" },
+          { label: "Range", value: "Up to 500m" }
+        ]
+      },
+      {
+        id: "av-alarm",
+        name: "A/V Alarm",
+        title: "Wireless Audio/Visual Alarm",
+        image: "../assets/images/products/wireless-av-alarm.png",
+        color: "rgb(255, 108, 80)",
+        stats: [
+          { label: "Models", value: "Audible, visual, combo" },
+          { label: "Enclosure", value: "IP-65 option" },
+          { label: "Comms", value: "Mesh topology" },
+          { label: "Power", value: "Lithium battery" }
+        ]
+      },
+      {
+        id: "io-module",
+        name: "I/O Module",
+        title: "Wireless I/O Module",
+        image: "../assets/images/products/io module.png",
+        color: "rgb(142, 196, 255)",
+        stats: [
+          { label: "Power", value: "10-year Lithium" },
+          { label: "Antenna", value: "Internal antenna" },
+          { label: "Comms", value: "Mesh topology" },
+          { label: "Range", value: "Up to 500m" }
+        ]
+      }
+    ];
+
+    // --- Switcher Logic ---
+    const buttons = document.querySelectorAll('.style-btn');
+    const wrappers = document.querySelectorAll('.v-wrapper');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        wrappers.forEach(w => w.classList.remove('active'));
+        
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    // --- Render V1 (Bento) ---
+    const v1Grid = document.getElementById('v1-grid-container');
+    v1Grid.innerHTML = products.map((p, i) => `
+      <div class="v1-card" style="--product-color: ${p.color}">
+        <div class="v1-card-bg"></div>
+        <div class="v1-card-content">
+          <div class="v1-card-title">${p.title} <span>0${i+1}</span></div>
+          <div class="v1-stats">
+            ${p.stats.slice(0,3).map(s => `
+              <div class="v1-stat">
+                <span class="v1-stat-lbl">${s.label}</span>
+                <span class="v1-stat-val">${s.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="v1-img-wrap"><img src="${p.image}" alt="${p.title}"></div>
+      </div>
+    `).join('');
+
+
+    // --- Render V2 (Spotlight) ---
+    const v2Nav = document.getElementById('v2-nav-container');
+    const v2View = document.getElementById('v2-product-view');
+
+    v2Nav.innerHTML = products.map((p, i) => `
+      <li><button class="v2-btn ${i===0?'active':''}" data-idx="${i}">${p.name}</button></li>
+    `).join('');
+
+    const renderV2Product = (idx) => {
+      const p = products[idx];
+      v2View.innerHTML = `
+        <div class="v2-info-col">
+          <div class="v2-cat" style="--product-color: ${p.color}">// 0${idx+1} SERIES</div>
+          <h2 class="v2-title">${p.title}</h2>
+          <div class="v2-stats">
+            ${p.stats.map(s => `
+              <div class="v2-stat">
+                <span class="v2-stat-lbl">${s.label}</span>
+                <span class="v2-stat-val">${s.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="v2-img-col" style="--product-color: ${p.color}">
+          <img src="${p.image}" alt="${p.title}">
+        </div>
+      `;
+    };
+    renderV2Product(0);
+
+    document.querySelectorAll('.v2-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.v2-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        // Re-trigger animation
+        v2View.style.animation = 'none';
+        v2View.offsetHeight; /* trigger reflow */
+        v2View.style.animation = null;
+        
+        renderV2Product(parseInt(e.target.dataset.idx));
+      });
+    });
+
+    // --- Render V3 (Command Data) ---
+    const v3Table = document.getElementById('v3-table-container');
+    v3Table.innerHTML = products.map((p, i) => `
+      <div class="v3-row ${i===0?'active':''}">
+        <div class="v3-row-header" style="--product-color: ${p.color}">
+          <div class="v3-col-title">${p.title}</div>
+          <div class="v3-col-desc">${p.stats[0].value}</div>
+          <div class="v3-col-mono">NODE_${String(i+1).padStart(2,'0')}</div>
+          <div class="v3-icon">+</div>
+        </div>
+        <div class="v3-row-body">
+          <div class="v3-body-img"><img src="${p.image}" alt="${p.title}"></div>
+          <div class="v3-body-stats">
+            ${p.stats.map(s => `
+              <div class="v3-stat-item">
+                <div class="v3-stat-lbl">${s.label}</div>
+                <div class="v3-stat-val">${s.value}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.v3-row').forEach(row => {
+      row.querySelector('.v3-row-header').addEventListener('click', () => {
+        const isActive = row.classList.contains('active');
+        document.querySelectorAll('.v3-row').forEach(r => r.classList.remove('active'));
+        if(!isActive) row.classList.add('active');
+      });
+    });
+
+    // --- Render V4 (Cinematic) ---
+    const v4Carousel = document.getElementById('v4-carousel');
+    const v4Counter = document.getElementById('v4-counter');
+    let v4Idx = 0;
+
+    v4Carousel.innerHTML = products.map((p, i) => `
+      <div class="v4-slide ${i===0?'active':''}">
+        <div class="v4-img-wrapper"><img src="${p.image}" alt="${p.title}"></div>
+        <div class="v4-ui-overlay">
+          <h2 class="v4-title">${p.title}</h2>
+          <div class="v4-stats">
+            ${p.stats.map(s => `
+              <div class="v4-stat">
+                <span class="v4-stat-lbl">${s.label}</span>
+                <span class="v4-stat-val">${s.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    const updateV4 = () => {
+      v4Carousel.style.transform = `translateX(-${v4Idx * 100}vw)`;
+      v4Counter.innerText = `0${v4Idx+1} / 0${products.length}`;
+      document.querySelectorAll('.v4-slide').forEach((s, i) => s.classList.toggle('active', i === v4Idx));
+    };
+
+    document.getElementById('v4-next').addEventListener('click', () => {
+      v4Idx = (v4Idx + 1) % products.length;
+      updateV4();
+    });
+    document.getElementById('v4-prev').addEventListener('click', () => {
+      v4Idx = (v4Idx - 1 + products.length) % products.length;
+      updateV4();
+    });
+
+
+    // --- Render V5 (Glass Scroll) ---
+    const v5Glow = document.getElementById('v5');
+    v5Glow.innerHTML = products.map(p => `
+      <div class="v5-card">
+        <div class="v5-img-box"><img src="${p.image}" alt="${p.title}"></div>
+        <h3 class="v5-title">${p.title}</h3>
+        <div class="v5-stats">
+          ${p.stats.map(s => `
+            <div class="v5-stat">
+              <span class="v5-stat-lbl">${s.label}</span>
+              <span class="v5-stat-val">${s.value}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+  </script>
+</body>
+</html>

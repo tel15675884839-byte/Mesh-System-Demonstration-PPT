@@ -12,6 +12,12 @@ test("response title uses the shared single-line hero styling", () => {
     /\.response-hero-spotlight h2\s*\{[\s\S]*?font-size:\s*clamp\(3\.8rem,\s*5\.3vw,\s*4\.9rem\);[\s\S]*?line-height:\s*0\.96;[\s\S]*?letter-spacing:\s*-0\.055em;[\s\S]*?white-space:\s*nowrap;/,
     "Expected Rapid Response to use the same single-line hero title metrics as the sibling pages."
   );
+
+  assert.doesNotMatch(
+    responseCss,
+    /\.response-hero-spotlight h2\s*\{[\s\S]*?(background-clip:\s*text|-webkit-text-fill-color:\s*transparent|linear-gradient\(to right, #fff, #94a3b8\))/,
+    "Expected Rapid Response to inherit the shared solid battery-style hero title instead of a local gradient text treatment."
+  );
 });
 
 test("response title keeps the shared responsive hero sizing", () => {

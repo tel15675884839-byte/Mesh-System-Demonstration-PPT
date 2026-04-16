@@ -28,10 +28,6 @@
   line-height: 0.96;
   letter-spacing: -0.055em;
   white-space: nowrap;
-  background: linear-gradient(to right, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Stage & Visual Logic */
