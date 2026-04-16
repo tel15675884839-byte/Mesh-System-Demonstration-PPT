@@ -629,6 +629,10 @@
   transform-origin: center center;
 }
 
+.relay-point:last-of-type {
+  transform: translate(-50%, -50%) scale(calc(var(--relay-visual-scale) * 0.8));
+}
+
 .relay-point img {
   width: 52px;
   height: 52px;
@@ -681,6 +685,10 @@
   place-items: center;
   transform: translate(-50%, -50%);
   transform-origin: center center;
+}
+
+.relay-end-device {
+  transform: translate(-50%, -50%) scale(0.8);
 }
 
 .relay-end-device-smoke img,

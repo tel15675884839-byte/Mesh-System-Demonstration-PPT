@@ -38,10 +38,12 @@ test("battery.html renders three feature columns inside the main stage", async (
   const stage = page.locator(".battery-main-stage");
   const columns = page.locator(".battery-feature-column");
   const titleCards = page.locator(".battery-feature-card");
+  const headings = page.locator(".battery-feature-heading");
   const miniStages = page.locator(".battery-mini-stage");
 
   await expect(stage).toBeVisible();
   await expect(columns).toHaveCount(3);
-  await expect(titleCards).toHaveCount(3);
+  await expect(titleCards).toHaveCount(0);
+  await expect(headings).toHaveCount(3);
   await expect(miniStages).toHaveCount(3);
 });

@@ -30,7 +30,8 @@
   line-height: 0.96;
   letter-spacing: -0.055em;
   white-space: nowrap;
-  color: rgba(244, 249, 255, 0.98);
+  color: #fff;
+  text-shadow: 0 0 30px rgba(15, 235, 198, 0.25);
 }
 
 .battery-main-stage-shell {
@@ -79,7 +80,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  grid-template-rows: minmax(0, 1.08fr) minmax(0, 0.92fr);
   gap: 22px;
   height: 100%;
 }
@@ -88,16 +89,10 @@
   position: relative;
   min-width: 0;
   min-height: 0;
-  padding-top: 60px;
 }
 
 .battery-feature-maintenance {
   grid-column: 1 / -1;
-}
-
-.battery-feature-maintenance .battery-feature-card {
-  right: auto;
-  width: calc(50% - 29px);
 }
 
 .battery-feature-power,
@@ -105,48 +100,46 @@
   min-height: 0;
 }
 
-.battery-feature-card {
-  position: absolute;
-  top: 0;
-  left: 20px;
-  right: 20px;
-  z-index: 3;
+.battery-feature-heading {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 68px;
-  padding: 14px 18px;
-  border-radius: 18px;
-  background: rgba(5, 36, 31, 0.9);
-  border: 1px solid rgba(15, 235, 198, 0.34);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 0 22px rgba(255, 255, 255, 0.12),
-    0 0 38px rgba(15, 235, 198, 0.08);
-  backdrop-filter: blur(10px);
+  gap: 10px;
+  min-width: 0;
+  padding: 0 2px;
 }
 
 .battery-card-icon {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   color: var(--page-accent);
   flex-shrink: 0;
+  filter: drop-shadow(0 0 12px rgba(15, 235, 198, 0.16));
 }
 
-.battery-feature-card strong {
+.battery-feature-heading h3 {
+  margin: 0;
   color: rgba(243, 247, 251, 0.98);
   font-family: var(--font-body);
-  font-size: clamp(1rem, 0.42vw + 0.88rem, 1.22rem);
+  font-size: clamp(1rem, 0.34vw + 0.94rem, 1.16rem);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
 
+.battery-feature-lowpower .battery-card-icon {
+  stroke-width: 2.5;
+}
+
 .battery-mini-stage {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   height: 100%;
   min-height: 0;
-  padding: 38px 18px 24px;
+  padding: 18px 18px 18px;
   border-radius: 24px;
   overflow: hidden;
   background:
@@ -161,7 +154,8 @@
 }
 
 .battery-feature-maintenance .battery-mini-stage {
-  padding: 18px 16px 10px;
+  gap: 12px;
+  padding: 16px 16px 14px;
 }
 
 .battery-mini-stage::before {
@@ -169,9 +163,15 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 36%, rgba(15, 235, 198, 0.12), transparent 44%),
+    radial-gradient(circle at 50% 36%, rgba(15, 235, 198, 0.15), transparent 54%),
     radial-gradient(circle at 50% 88%, rgba(15, 235, 198, 0.05), transparent 30%);
   pointer-events: none;
+  animation: bg-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes bg-glow-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 .battery-feature-power .battery-mini-stage {
@@ -196,11 +196,11 @@
   margin: 0 0 8px;
   color: #fff;
   font-family: var(--font-title);
-  font-size: clamp(1.5rem, 0.96vw + 1.08rem, 2.18rem);
+  font-size: clamp(2rem, 0.92vw + 1.64rem, 2.5rem);
   font-weight: 700;
-  line-height: 1.02;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  text-transform: none;
 }
 
 .demo-text p {
@@ -279,15 +279,18 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 16px 10px 10px;
+  height: auto;
+  padding: 8px 10px 6px;
 }
 
 .power-demo-compact {
   justify-content: center;
-  gap: 14px;
+  gap: 20px;
 }
 
 .glowing-aura {
@@ -295,8 +298,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 180px;
-  height: 180px;
+  width: 216px;
+  height: 216px;
   background: rgba(15, 235, 198, 0.12);
   filter: blur(42px);
   border-radius: 50%;
@@ -305,14 +308,14 @@
 
 .big-battery {
   position: relative;
-  width: 88px;
-  height: 138px;
+  width: 106px;
+  height: 166px;
   margin-top: 0;
-  border: 3px solid rgba(15, 235, 198, 0.84);
-  border-radius: 14px;
+  border: 4px solid rgba(15, 235, 198, 0.84);
+  border-radius: 16px;
   background: rgba(5, 11, 10, 0.82);
   box-shadow:
-    0 0 24px rgba(15, 235, 198, 0.18),
+    0 0 32px rgba(15, 235, 198, 0.22),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
@@ -322,14 +325,14 @@
 
 .battery-terminal {
   position: absolute;
-  top: -15px;
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
-  height: 12px;
-  border: 3px solid rgba(15, 235, 198, 0.84);
+  width: 38px;
+  height: 14px;
+  border: 4px solid rgba(15, 235, 198, 0.84);
   border-bottom: 0;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
   background: #050b0a;
 }
 
@@ -350,8 +353,8 @@
 }
 
 .zap-icon {
-  width: 54px;
-  height: 54px;
+  width: 65px;
+  height: 65px;
   color: #fff;
   z-index: 2;
 }
@@ -362,20 +365,18 @@
 
 .demo-text-single h4 {
   margin: 0;
-  font-size: clamp(2rem, 0.92vw + 1.64rem, 2.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-  text-transform: none;
 }
 
-              .waste-demo {
+.waste-demo {
   position: relative;
   z-index: 1;
+  flex: 1;
   width: 100%;
-  height: 100%;
+  min-height: 0;
+  height: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .waste-grid {
@@ -459,8 +460,8 @@
   display: grid;
   place-items: center;
   align-self: stretch;
-  width: 78px;
-  min-width: 78px;
+  width: 94px;
+  min-width: 94px;
   margin-block: -8px;
   overflow: visible;
 }
@@ -507,12 +508,13 @@
   position: relative;
   z-index: 1;
   font-family: var(--font-title);
-  font-size: clamp(2.6rem, 1vw + 2rem, 3.2rem);
+  font-size: clamp(3.12rem, 1.2vw + 2.4rem, 3.84rem);
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.08em;
+  letter-spacing: -0.05em;
   text-transform: uppercase;
   font-style: italic;
+  padding-inline: 0.15em;
   color: var(--page-accent);
   background: linear-gradient(180deg, #b6fff1 0%, #4ff7da 38%, #0fecc7 68%, #98fff0 100%);
   -webkit-background-clip: text;
@@ -687,10 +689,13 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 12px 0 10px;
+  height: auto;
+  padding: 2px 0 0;
 }
 
 .lowpower-demo-compact {
@@ -700,12 +705,23 @@
 
 .circuit-area {
   position: relative;
-  width: min(100%, 150px);
-  height: 150px;
+  width: clamp(176px, 15vw, 208px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  flex: 0 0 auto;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 0;
+}
+
+.battery-feature-lowpower .lowpower-demo {
+  padding: 0;
+}
+
+.battery-feature-lowpower .demo-text-bottom h4 {
+  font-size: clamp(1.72rem, 0.7vw + 1.5rem, 2rem);
 }
 
 .spin-rings {
@@ -728,12 +744,12 @@
 .central-chip {
   position: relative;
   z-index: 1;
-  width: 72px;
-  height: 72px;
+  width: 104px;
+  height: 104px;
   background: #020605;
   border: 1px solid rgba(15, 235, 198, 0.6);
-  border-radius: 14px;
-  box-shadow: 0 0 26px rgba(15, 235, 198, 0.18);
+  border-radius: 19px;
+  box-shadow: 0 0 46px rgba(15, 235, 198, 0.26);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -742,29 +758,24 @@
 
 .chip-inner {
   position: absolute;
-  inset: 6px;
+  inset: 7px;
   border: 1px solid rgba(15, 235, 198, 0.3);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .cpu-icon {
-  width: 34px;
-  height: 34px;
+  width: 50px;
+  height: 50px;
   color: var(--page-accent);
-  filter: drop-shadow(0 0 10px var(--page-accent));
+  filter: drop-shadow(0 0 20px var(--page-accent));
 }
 
 .demo-text-bottom {
   width: 100%;
-  margin-top: auto;
 }
 
 .demo-text-bottom h4 {
   margin: 0;
-  font-size: clamp(1.7rem, 0.9vw + 1.28rem, 2.16rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-  text-transform: none;
 }
 
 @media (max-width: 1180px) {
@@ -815,24 +826,25 @@
     padding: 16px;
   }
 
-  .battery-feature-card {
-    left: 12px;
-    right: 12px;
-    min-height: 74px;
-    padding: 14px 16px;
+  .battery-feature-heading {
+    gap: 8px;
   }
 
-  .battery-feature-card strong {
+  .battery-card-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .battery-feature-heading h3 {
     font-size: 1rem;
   }
 
   .battery-feature-column {
-    padding-top: 66px;
     min-height: 380px;
   }
 
   .battery-mini-stage {
-    padding: 32px 14px 18px;
+    padding: 16px 14px 16px;
     min-height: 380px;
   }
 
@@ -916,7 +928,6 @@
     font-size: 1.6rem;
   }
   .circuit-area {
-    width: min(100%, 260px);
-    height: 260px;
+    width: clamp(168px, 58vw, 240px);
   }
 }

@@ -66,7 +66,9 @@
   const relayEndSounder = relayScene ? relayScene.querySelector(".relay-end-device-sounder") : null;
   const relayImpact = relayScene ? relayScene.querySelector("#relay-total-impact") : null;
   const relayPoints = relayScene ? Array.from(relayScene.querySelectorAll(".relay-point")) : [];
-  const relayDistances = relayScene ? Array.from(relayScene.querySelectorAll(".relay-hop-distance")) : [];
+  const relayDistances = relayScene ? Array.from(relayScene.querySelectorAll(".relay-hop-distance:not(.dist-end-smoke):not(.dist-end-sounder)")) : [];
+  const relayEndSmokeDist = relayScene ? relayScene.querySelector(".dist-end-smoke") : null;
+  const relayEndSounderDist = relayScene ? relayScene.querySelector(".dist-end-sounder") : null;
   const relayGeometryTargets = [relayArcStage, relayArcSvg, relaySideLinksSvg, relayMainArc, relayArcLeft, relayArcRight].filter(Boolean);
   const presentationMessaging = window.meshPresentationMessaging || null;
   const searchParams = createSearchParams(window.location.search);
@@ -479,9 +481,9 @@
       const smokeHalfWidth = (relayEndSmoke.offsetWidth || 36) / 2;
       const smokeHalfHeight = (relayEndSmoke.offsetHeight || 36) / 2;
       smokePoint = {
-        x: stageRect.width * 1.045,
+        x: stageRect.width * 1.022,
         y: clampValue(
-          stageRect.height * 0.45,
+          stageRect.height * 0.487,
           smokeHalfHeight + 4,
           stageRect.height - smokeHalfHeight - 4
         )
@@ -495,9 +497,9 @@
       const sounderHalfWidth = (relayEndSounder.offsetWidth || 36) / 2;
       const sounderHalfHeight = (relayEndSounder.offsetHeight || 36) / 2;
       sounderPoint = {
-        x: stageRect.width * 1.055,
+        x: stageRect.width * 1.030,
         y: clampValue(
-          stageRect.height * 0.85,
+          stageRect.height * 0.807,
           sounderHalfHeight + 4,
           stageRect.height - sounderHalfHeight - 4
         )
@@ -546,8 +548,26 @@
       const noteHalfSpan = pointStep * 0.72;
       const noteStartLength = Math.max(0, noteCenter - noteHalfSpan);
       const noteEndLength = Math.min(totalLength, noteCenter + noteHalfSpan);
-      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 26, 24);
+      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 58, 24);
       relayNoteArc.setAttribute("d", notePath);
+    }
+
+    if (relayEndSmokeDist && rightStagePoint && smokeLinkPoint) {
+      const midPoint = {
+        x: (rightStagePoint.x + smokeLinkPoint.x) / 2,
+        y: (rightStagePoint.y + smokeLinkPoint.y) / 2
+      };
+      relayEndSmokeDist.style.left = midPoint.x.toFixed(2) + "px";
+      relayEndSmokeDist.style.top = midPoint.y.toFixed(2) + "px";
+    }
+
+    if (relayEndSounderDist && rightStagePoint && sounderLinkPoint) {
+      const midPoint = {
+        x: (rightStagePoint.x + sounderLinkPoint.x) / 2,
+        y: (rightStagePoint.y + sounderLinkPoint.y) / 2
+      };
+      relayEndSounderDist.style.left = midPoint.x.toFixed(2) + "px";
+      relayEndSounderDist.style.top = midPoint.y.toFixed(2) + "px";
     }
   }
 

@@ -323,11 +323,11 @@
 
       const nodeUnit = document.createElement("span");
       nodeUnit.className = "capacity-node-unit";
-      nodeUnit.textContent = `${nodesPerExpansionLoop} NODES`;
+      nodeUnit.textContent = `${nodesPerExpansionLoop} Nodes`;
 
       const deviceUnit = document.createElement("span");
       deviceUnit.className = "capacity-device-unit";
-      deviceUnit.textContent = `${devicesPerNode} DEVICES PER NODE`;
+      deviceUnit.textContent = `${devicesPerNode} Devices Per Node`;
 
       nodeCluster.appendChild(nodeUnit);
       deviceCluster.appendChild(deviceUnit);
