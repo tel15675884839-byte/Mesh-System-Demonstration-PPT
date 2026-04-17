@@ -31,7 +31,13 @@
     frameHandle: 0,
     lastTimestamp: 0,
     trailPoints: [],
-    isDrawingTrail: false
+    isDrawingTrail: false,
+    canvasBounds: {
+      left: 0,
+      top: 0
+    },
+    frameNodePoints: new Map(),
+    frameEdgePoints: new Map()
   };
 
   const nodes = [
@@ -62,6 +68,30 @@
     { source: 8, target: 1, type: "sub", active: true, broken: false },
     { source: 8, target: 2, type: "sub", active: false, broken: false }
   ];
+  const nodeById = new Map();
+  const subEdgesByNode = new Map();
+  const edgeByKey = new Map();
+
+  nodes.forEach(function (node) {
+    nodeById.set(node.id, node);
+  });
+
+  edges.forEach(function (edge) {
+    edge.key = edge.source + ":" + edge.target;
+    edgeByKey.set(edge.key, edge);
+
+    if (edge.type !== "sub") {
+      return;
+    }
+
+    const group = subEdgesByNode.get(edge.source);
+    if (group) {
+      group.push(edge);
+      return;
+    }
+
+    subEdgesByNode.set(edge.source, [edge]);
+  });
 
   const stars = Array.from({ length: 72 }, function (_value, index) {
     return {
@@ -120,6 +150,10 @@
     stageState.centerY = height / 2 + Math.min(height * 0.02, 10);
     stageState.scale = Math.min(width / 860, height / 620);
     stageState.dpr = dpr;
+    stageState.canvasBounds.left = rect.left;
+    stageState.canvasBounds.top = rect.top;
+    stageState.frameNodePoints.clear();
+    stageState.frameEdgePoints.clear();
 
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
@@ -130,9 +164,7 @@
   }
 
   function getNodeById(id) {
-    return nodes.find(function (node) {
-      return node.id === id;
-    });
+    return nodeById.get(id);
   }
 
   function getNodeFloat(nodeId) {
@@ -140,26 +172,44 @@
   }
 
   function getNodePoint(node) {
-    return {
+    const cachedPoint = stageState.frameNodePoints.get(node.id);
+    if (cachedPoint) {
+      return cachedPoint;
+    }
+
+    const point = {
       x: stageState.centerX + node.x * stageState.scale,
       y: stageState.centerY + node.y * stageState.scale + getNodeFloat(node.id)
     };
+
+    stageState.frameNodePoints.set(node.id, point);
+    return point;
   }
 
   function getEdgePoints(edge) {
+    const cachedPoints = stageState.frameEdgePoints.get(edge.key);
+    if (cachedPoints) {
+      return cachedPoints;
+    }
+
     const sourceNode = getNodeById(edge.source);
     const targetNode = getNodeById(edge.target);
-
-    return {
+    const points = {
       start: getNodePoint(sourceNode),
       end: getNodePoint(targetNode)
     };
+
+    stageState.frameEdgePoints.set(edge.key, points);
+    return points;
+  }
+
+  function prepareFrameGeometry() {
+    stageState.frameNodePoints.clear();
+    stageState.frameEdgePoints.clear();
   }
 
   function getSubEdgesForNode(nodeId) {
-    return edges.filter(function (edge) {
-      return edge.type === "sub" && edge.source === nodeId;
-    });
+    return subEdgesByNode.get(nodeId) || [];
   }
 
   function isNodeDisconnected(nodeId) {
@@ -214,10 +264,9 @@
   }
 
   function getCanvasPoint(event) {
-    const rect = canvas.getBoundingClientRect();
     return {
-      x: (event.clientX !== undefined ? event.clientX : event.x) - rect.left,
-      y: (event.clientY !== undefined ? event.clientY : event.y) - rect.top
+      x: (event.clientX !== undefined ? event.clientX : event.x) - stageState.canvasBounds.left,
+      y: (event.clientY !== undefined ? event.clientY : event.y) - stageState.canvasBounds.top
     };
   }
 
@@ -374,21 +423,23 @@
         const xSize = 7.5 * stageState.scale;
         const breath = 0.5 + Math.abs(Math.sin(stageState.time * 0.0018)) * 0.5;
         
-        context.save();
-        context.translate(midX, midY);
-        context.beginPath();
-        context.lineWidth = 1.8 * stageState.scale;
-        context.strokeStyle = `rgba(255, 110, 90, ${breath.toFixed(3)})`;
-        context.shadowBlur = 10 * breath * stageState.scale;
-        context.shadowColor = "rgba(255, 60, 40, 0.6)";
-        
-        // Draw the X
-        context.moveTo(-xSize, -xSize);
-        context.lineTo(xSize, xSize);
-        context.moveTo(xSize, -xSize);
-        context.lineTo(-xSize, xSize);
-        context.stroke();
-        context.restore();
+        if (typeof context.translate === "function") {
+          context.save();
+          context.translate(midX, midY);
+          context.beginPath();
+          context.lineWidth = 1.8 * stageState.scale;
+          context.strokeStyle = `rgba(255, 110, 90, ${breath.toFixed(3)})`;
+          context.shadowBlur = 10 * breath * stageState.scale;
+          context.shadowColor = "rgba(255, 60, 40, 0.6)";
+          
+          // Draw the X
+          context.moveTo(-xSize, -xSize);
+          context.lineTo(xSize, xSize);
+          context.moveTo(xSize, -xSize);
+          context.lineTo(-xSize, xSize);
+          context.stroke();
+          context.restore();
+        }
       } else {
         context.beginPath();
         context.moveTo(points.start.x, points.start.y);
@@ -549,6 +600,7 @@
   }
 
   function render(deltaFactor) {
+    prepareFrameGeometry();
     drawBackground();
     drawEdges();
     drawParticles(deltaFactor);
@@ -763,9 +815,7 @@
   }
 
   function getEdgeMidpoint(source, target) {
-    const edge = edges.find(function (candidate) {
-      return candidate.source === source && candidate.target === target;
-    });
+    const edge = edgeByKey.get(source + ":" + target);
 
     if (!edge) {
       return null;

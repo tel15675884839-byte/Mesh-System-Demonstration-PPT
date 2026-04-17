@@ -29,14 +29,17 @@ test("Artidrop export builder creates a root welcome entry and top-level slide p
 
   const entryPath = path.join(outputDir, "index.html");
   const slideOpeningPath = path.join(outputDir, "pages", "slide-opening.html");
+  const slideInstallationPath = path.join(outputDir, "pages", "slide-installation.html");
   const slideMeshPath = path.join(outputDir, "pages", "slide-mesh.html");
 
   assert.equal(fs.existsSync(entryPath), true, "Expected a root index.html welcome entry.");
   assert.equal(fs.existsSync(slideOpeningPath), true, "Expected pages/slide-opening.html to exist.");
+  assert.equal(fs.existsSync(slideInstallationPath), true, "Expected pages/slide-installation.html to exist.");
   assert.equal(fs.existsSync(slideMeshPath), true, "Expected pages/slide-mesh.html to exist.");
 
   const entryHtml = readFile(entryPath);
   const openingSlideHtml = readFile(slideOpeningPath);
+  const installationSlideHtml = readFile(slideInstallationPath);
   const meshSlideHtml = readFile(slideMeshPath);
 
   assert.doesNotMatch(entryHtml, /<iframe/i, "Welcome entry should not rely on an iframe.");
@@ -47,6 +50,11 @@ test("Artidrop export builder creates a root welcome entry and top-level slide p
   assert.match(openingSlideHtml, /href="\.\.\/css\/artidrop-shell\.css/, "Opening slide page should load the Artidrop shell overlay styles.");
   assert.match(openingSlideHtml, /src="\.\.\/js\/opening-page\.js/, "Opening slide page should keep the original opening script path context.");
   assert.match(openingSlideHtml, /src="\.\.\/js\/artidrop-shell\.js/, "Opening slide page should load the Artidrop navigation shell.");
+
+  assert.doesNotMatch(installationSlideHtml, /assets\/images\/wireless\.png/, "Artidrop export should avoid the oversized wireless PNG.");
+  assert.doesNotMatch(installationSlideHtml, /assets\/images\/wiring\.png/, "Artidrop export should avoid the oversized wiring PNG.");
+  assert.match(installationSlideHtml, /assets\/images\/No%20Wiring%20Headahce\.jpg/, "Installation slide should use the smaller wireless JPG in export mode.");
+  assert.match(installationSlideHtml, /assets\/images\/Wiring%20Headache\.jpg/, "Installation slide should use the smaller wiring JPG in export mode.");
 
   assert.match(meshSlideHtml, /Mesh Communication/, "Mesh slide page should include mesh content.");
   assert.match(meshSlideHtml, /src="\.\.\/js\/mesh-page\.js/, "Mesh slide page should keep the original mesh script path context.");
