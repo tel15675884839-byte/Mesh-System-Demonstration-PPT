@@ -2,7 +2,10 @@
   const ROOT_SELECTOR = "[data-cyber-bg]";
   const THEME_RGB = "0, 255, 204";
   const MOUSE_RADIUS = 180;
+  const MOUSE_RADIUS_SQUARED = MOUSE_RADIUS * MOUSE_RADIUS;
   const CONNECTION_DISTANCE = 122;
+  const CONNECTION_DISTANCE_SQUARED = CONNECTION_DISTANCE * CONNECTION_DISTANCE;
+  const CONNECTION_GRID_SIZE = CONNECTION_DISTANCE;
   const MIN_NODES = 28;
   const MAX_NODES = 105;
   const MIN_CLUSTERS = 6;
@@ -69,6 +72,13 @@
     this.mouseY = null;
     this.nodes = [];
     this.dataClusters = [];
+    this.rootBounds = {
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0
+    };
+    this.connectionGrid = new Map();
 
     const forceActive = Boolean(
       this.root
@@ -183,8 +193,29 @@
     this.canvas.height = Math.round(this.height * this.deviceScale);
     this.ctx.setTransform(this.deviceScale, 0, 0, this.deviceScale, 0, 0);
 
+    this.updateRootBounds();
     this.rebuildScene();
     this.paintBaseLayer();
+  };
+
+  CyberPageBackground.prototype.updateRootBounds = function () {
+    if (!this.root || typeof this.root.getBoundingClientRect !== "function") {
+      this.rootBounds = {
+        left: 0,
+        top: 0,
+        width: this.width,
+        height: this.height
+      };
+      return;
+    }
+
+    const rect = this.root.getBoundingClientRect();
+    this.rootBounds = {
+      left: toNumber(rect.left, 0),
+      top: toNumber(rect.top, 0),
+      width: toNumber(rect.width, this.width),
+      height: toNumber(rect.height, this.height)
+    };
   };
 
   CyberPageBackground.prototype.rebuildScene = function () {
@@ -218,6 +249,7 @@
   };
 
   CyberPageBackground.prototype.handleResize = function () {
+    this.updateRootBounds();
     this.resize(false);
   };
 
@@ -240,9 +272,12 @@
       return;
     }
 
-    const rect = this.root.getBoundingClientRect();
-    this.mouseX = event.clientX - rect.left;
-    this.mouseY = event.clientY - rect.top;
+    if (!this.rootBounds.width && !this.rootBounds.height) {
+      this.updateRootBounds();
+    }
+
+    this.mouseX = event.clientX - this.rootBounds.left;
+    this.mouseY = event.clientY - this.rootBounds.top;
   };
 
   CyberPageBackground.prototype.handlePointerLeave = function () {
@@ -339,12 +374,13 @@
 
       const dx = this.mouseX - node.x;
       const dy = this.mouseY - node.y;
-      const distance = Math.hypot(dx, dy);
+      const distanceSquared = (dx * dx) + (dy * dy);
 
-      if (distance <= 0 || distance >= MOUSE_RADIUS) {
+      if (distanceSquared <= 0 || distanceSquared >= MOUSE_RADIUS_SQUARED) {
         continue;
       }
 
+      const distance = Math.sqrt(distanceSquared);
       const forceDirectionX = dx / distance;
       const forceDirectionY = dy / distance;
       const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
@@ -354,52 +390,97 @@
     }
   };
 
+  CyberPageBackground.prototype.rebuildConnectionGrid = function () {
+    const cellSize = CONNECTION_GRID_SIZE;
+
+    this.connectionGrid.clear();
+
+    for (let index = 0; index < this.nodes.length; index += 1) {
+      const node = this.nodes[index];
+      const cellX = Math.floor(node.x / cellSize);
+      const cellY = Math.floor(node.y / cellSize);
+      const key = cellX + "," + cellY;
+      const bucket = this.connectionGrid.get(key);
+
+      if (bucket) {
+        bucket.push(index);
+        continue;
+      }
+
+      this.connectionGrid.set(key, [index]);
+    }
+  };
+
   CyberPageBackground.prototype.drawNodeConnections = function () {
+    const cellSize = CONNECTION_GRID_SIZE;
+
+    this.rebuildConnectionGrid();
+
     for (let a = 0; a < this.nodes.length; a += 1) {
       const nodeA = this.nodes[a];
+      const cellX = Math.floor(nodeA.x / cellSize);
+      const cellY = Math.floor(nodeA.y / cellSize);
 
-      for (let b = a; b < this.nodes.length; b += 1) {
-        const nodeB = this.nodes[b];
-        const dx = nodeA.x - nodeB.x;
-        const dy = nodeA.y - nodeB.y;
-        const distance = Math.hypot(dx, dy);
+      for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+          const bucket = this.connectionGrid.get((cellX + offsetX) + "," + (cellY + offsetY));
 
-        if (distance >= CONNECTION_DISTANCE) {
-          continue;
-        }
-
-        let opacity = 1 - (distance / CONNECTION_DISTANCE);
-
-        if (this.mouseX !== null) {
-          const distToMouseA = Math.hypot(this.mouseX - nodeA.x, this.mouseY - nodeA.y);
-          const distToMouseB = Math.hypot(this.mouseX - nodeB.x, this.mouseY - nodeB.y);
-
-          if (distToMouseA < MOUSE_RADIUS && distToMouseB < MOUSE_RADIUS) {
-            opacity += 0.5;
-            this.ctx.lineWidth = 1.4;
-          } else {
-            this.ctx.lineWidth = 0.55;
+          if (!bucket) {
+            continue;
           }
-        } else {
-          this.ctx.lineWidth = 0.55;
-        }
 
-        this.ctx.strokeStyle = `rgba(${THEME_RGB}, ${opacity * 0.78})`;
-        this.ctx.beginPath();
-        this.ctx.moveTo(nodeA.x, nodeA.y);
-        this.ctx.lineTo(nodeB.x, nodeB.y);
-        this.ctx.shadowBlur = 5;
-        this.ctx.shadowColor = `rgba(${THEME_RGB}, ${opacity * 0.88})`;
-        this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
+          for (let index = 0; index < bucket.length; index += 1) {
+            const b = bucket[index];
+
+            if (b < a) {
+              continue;
+            }
+
+            const nodeB = this.nodes[b];
+            const dx = nodeA.x - nodeB.x;
+            const dy = nodeA.y - nodeB.y;
+            const distanceSquared = (dx * dx) + (dy * dy);
+
+            if (distanceSquared >= CONNECTION_DISTANCE_SQUARED) {
+              continue;
+            }
+
+            const distance = Math.sqrt(distanceSquared);
+            let opacity = 1 - (distance / CONNECTION_DISTANCE);
+
+            if (this.mouseX !== null) {
+              const distToMouseASquared = ((this.mouseX - nodeA.x) * (this.mouseX - nodeA.x)) + ((this.mouseY - nodeA.y) * (this.mouseY - nodeA.y));
+              const distToMouseBSquared = ((this.mouseX - nodeB.x) * (this.mouseX - nodeB.x)) + ((this.mouseY - nodeB.y) * (this.mouseY - nodeB.y));
+
+              if (distToMouseASquared < MOUSE_RADIUS_SQUARED && distToMouseBSquared < MOUSE_RADIUS_SQUARED) {
+                opacity += 0.5;
+                this.ctx.lineWidth = 1.4;
+              } else {
+                this.ctx.lineWidth = 0.55;
+              }
+            } else {
+              this.ctx.lineWidth = 0.55;
+            }
+
+            this.ctx.strokeStyle = `rgba(${THEME_RGB}, ${opacity * 0.78})`;
+            this.ctx.beginPath();
+            this.ctx.moveTo(nodeA.x, nodeA.y);
+            this.ctx.lineTo(nodeB.x, nodeB.y);
+            this.ctx.shadowBlur = 5;
+            this.ctx.shadowColor = `rgba(${THEME_RGB}, ${opacity * 0.88})`;
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+          }
+        }
       }
 
       if (this.mouseX !== null && this.mouseY !== null) {
         const mouseDx = nodeA.x - this.mouseX;
         const mouseDy = nodeA.y - this.mouseY;
-        const mouseDistance = Math.hypot(mouseDx, mouseDy);
+        const mouseDistanceSquared = (mouseDx * mouseDx) + (mouseDy * mouseDy);
 
-        if (mouseDistance < MOUSE_RADIUS) {
+        if (mouseDistanceSquared < MOUSE_RADIUS_SQUARED) {
+          const mouseDistance = Math.sqrt(mouseDistanceSquared);
           const mouseOpacity = 1 - (mouseDistance / MOUSE_RADIUS);
           this.ctx.strokeStyle = `rgba(255, 255, 255, ${mouseOpacity * 0.45})`;
           this.ctx.setLineDash([5, 5]);

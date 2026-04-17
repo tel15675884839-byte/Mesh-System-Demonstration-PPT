@@ -75,7 +75,9 @@
         stageState[stageKey] = {
           brokenLinks: new Set(),
           activeParticles: new Set(),
-          deviceIndex: new Map()
+          deviceIndex: new Map(),
+          linkGeometryIndex: new Map(),
+          mapElement: null
         };
       }
     });
@@ -144,6 +146,7 @@
     layer.innerHTML = "";
 
     const deviceIndex = new Map();
+    const linkGeometryIndex = new Map();
 
     stageConfig.devices.forEach((device) => {
       const element = createDeviceElement(device);
@@ -159,11 +162,14 @@
         layer,
         from: deviceIndex.get(link.from),
         to: deviceIndex.get(link.to),
-        link
+        link,
+        linkGeometryIndex
       });
     });
 
     stageState[stageKey].deviceIndex = deviceIndex;
+    stageState[stageKey].linkGeometryIndex = linkGeometryIndex;
+    stageState[stageKey].mapElement = map;
     updateStageAlarm(stageKey, stageConfig, deviceIndex);
   }
 
@@ -189,7 +195,7 @@
     return element;
   }
 
-  function drawConfiguredLink({ stageKey, stageConfig, map, layer, from, to, link }) {
+  function drawConfiguredLink({ stageKey, stageConfig, map, layer, from, to, link, linkGeometryIndex }) {
     if (!from || !to) {
       return;
     }
@@ -203,6 +209,14 @@
 
       drawGeometry(layer, primaryGeometry, getLinkClasses(link, "primary"), isBroken);
       drawGeometry(layer, secondaryGeometry, getLinkClasses(link, "secondary"), isBroken);
+      if (linkGeometryIndex) {
+        linkGeometryIndex.set(linkId, {
+          kind: link.kind,
+          primaryGeometry,
+          secondaryGeometry,
+          reverseSecondaryGeometry: reverseGeometry(secondaryGeometry)
+        });
+      }
 
       if (link.kind !== "wired") {
         drawHitbox(layer, createDoubleLaneGeometry(map, from.element, to.element, link, 0), () => {
@@ -218,6 +232,12 @@
 
     const geometry = getConfiguredGeometry(map, from.element, to.element, link);
     drawGeometry(layer, geometry, getLinkClasses(link), isBroken);
+    if (linkGeometryIndex) {
+      linkGeometryIndex.set(linkId, {
+        kind: link.kind,
+        primaryGeometry: geometry
+      });
+    }
 
     if (link.kind !== "wired") {
       drawHitbox(layer, geometry, () => {
@@ -331,9 +351,9 @@
 
   function spawnParticlesForStage(stageKey, stageConfig) {
     const state = stageState[stageKey];
-    const map = document.getElementById(stageConfig.mapId);
+    const map = state && state.mapElement;
 
-    if (!state || !map || !state.deviceIndex) {
+    if (!state || !map || !state.deviceIndex || !state.linkGeometryIndex) {
       return;
     }
 
@@ -350,6 +370,11 @@
         return;
       }
 
+      const cachedGeometry = state.linkGeometryIndex.get(linkId);
+      if (!cachedGeometry) {
+        return;
+      }
+
       if (link.kind === "wireless-double") {
         const cycleKey = `${linkId}:cycle`;
         if (state.activeParticles.has(cycleKey)) {
@@ -358,20 +383,15 @@
 
         state.activeParticles.add(cycleKey);
 
-        const outboundGeometry = createDoubleLaneGeometry(map, from.element, to.element, link, DOUBLE_LANE_OFFSET);
-        const inboundGeometry = reverseGeometry(
-          createDoubleLaneGeometry(map, from.element, to.element, link, -DOUBLE_LANE_OFFSET)
-        );
-
         spawnParticlePair(stageKey, map, [
           {
-            geometry: outboundGeometry,
+            geometry: cachedGeometry.primaryGeometry,
             particleKey: `${linkId}:outbound`,
             secondary: false,
             targetElement: to.element
           },
           {
-            geometry: inboundGeometry,
+            geometry: cachedGeometry.reverseSecondaryGeometry,
             particleKey: `${linkId}:inbound`,
             secondary: true,
             targetElement: from.element
@@ -382,8 +402,7 @@
         return;
       }
 
-      const geometry = getConfiguredGeometry(map, from.element, to.element, link);
-      spawnParticleOnGeometry(stageKey, map, geometry, `${linkId}:single`, false);
+      spawnParticleOnGeometry(stageKey, map, cachedGeometry.primaryGeometry, `${linkId}:single`, false);
     });
   }
 

@@ -232,8 +232,8 @@
       "<section class=\"product-visual-panel\" aria-live=\"polite\">" +
         "<div class=\"product-aura\" aria-hidden=\"true\"></div>" +
         "<div class=\"product-image-shell\">" +
-          "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\" decoding=\"async\">" +
-          "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\" decoding=\"async\">" +
+          "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\">" +
+          "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\">" +
         "</div>" +
       "</section>" +
       "<section class=\"product-details-panel\" role=\"tabpanel\">" +
@@ -259,9 +259,14 @@
       stage.style.setProperty("--product-accent-soft-rgb", product.accentSoftRgb);
     }
 
+    // Force reflow to ensure the browser registers the initial state
+    void newSlide.offsetWidth;
+
     // Trigger animation
     if (isInitializing) {
-      newSlide.classList.add("active");
+      setTimeout(() => {
+        newSlide.classList.add("active");
+      }, 50);
       isInitializing = false;
     } else {
       setTimeout(() => {

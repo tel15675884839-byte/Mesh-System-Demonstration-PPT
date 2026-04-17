@@ -355,6 +355,7 @@
       this._activeState = null;
       this._elapsed = 0;
       this._frameHandle = 0;
+      this._frameViewport = null;
       this._destroyed = false;
       this._preloadPromise = null;
       this._resizeObserver = null;
@@ -1050,7 +1051,7 @@
       link.breakMarkerEl.style.display = "none";
     }
 
-    _placeLinkBreakMarker(link) {
+    _placeLinkBreakMarker(link, frameViewport) {
       if (!link || !link.actor || !link.actor.visible || link.status !== "disconnected" || link.visibility === "hidden") {
         this._hideLinkBreakMarker(link);
         return;
@@ -1083,8 +1084,9 @@
         return;
       }
 
-      const width = Math.max(1, this.container.clientWidth || 1);
-      const height = Math.max(1, this.container.clientHeight || 1);
+      const viewport = frameViewport || this._frameViewport || this._getFrameViewport(false);
+      const width = viewport.width;
+      const height = viewport.height;
       marker.style.display = "flex";
       marker.style.left = ((projected.x * 0.5 + 0.5) * width) + "px";
       marker.style.top = ((-projected.y * 0.5 + 0.5) * height) + "px";
@@ -1191,6 +1193,7 @@
       if (!this.renderer || !this.camera || this._destroyed) return;
       const width = Math.max(1, this.container.clientWidth || 1);
       const height = Math.max(1, this.container.clientHeight || 1);
+      this._frameViewport = { width: width, height: height };
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       this.renderer.setSize(width, height, false);
       this.camera.aspect = width / height;
@@ -1206,6 +1209,17 @@
       if (!this.renderer || !this.scene || !this.camera) return;
       this.renderer.render(this.scene, this.camera);
     }
+    _getFrameViewport(forceRefresh) {
+      if (!forceRefresh && this._frameViewport) {
+        return this._frameViewport;
+      }
+
+      this._frameViewport = {
+        width: Math.max(1, this.container.clientWidth || 1),
+        height: Math.max(1, this.container.clientHeight || 1)
+      };
+      return this._frameViewport;
+    }
     _animate(time) {
       if (this._destroyed) return;
       if (!this._isActive) {
@@ -1217,29 +1231,30 @@
       const delta = Math.max(0, now - (this._lastFrameTime || now));
       this._lastFrameTime = now;
       this._elapsed += delta;
+      const frameViewport = this._getFrameViewport(true);
       if (this.controls) {
         this.controls.update();
       }
       if (this._activeState && this._activeState.group.visible) {
-        this._updateStateFrame(this._activeState, this._elapsed / 1000);
+        this._updateStateFrame(this._activeState, this._elapsed / 1000, frameViewport);
       }
       this._updateDebugOverlay();
       this.renderer.render(this.scene, this.camera);
     }
 
-    _updateStateFrame(state, elapsed) {
+    _updateStateFrame(state, elapsed, frameViewport) {
       const config = state.config;
       for (let i = 0; i < state.nodes.length; i += 1) {
         const node = state.nodes[i];
         node.mesh.position.copy(node.position);
         node.glow.position.copy(node.position);
-        this._placeIcon(node.iconEl, node.position, config, node.localScale);
+        this._placeIcon(node.iconEl, node.position, config, node.localScale, frameViewport);
       }
       for (let i = 0; i < state.devices.length; i += 1) {
         const device = state.devices[i];
         device.position.copy(device.node.position).add(device.offset);
         device.mesh.position.copy(device.position);
-        this._placeIcon(device.iconEl, device.position, config, device.localScale);
+        this._placeIcon(device.iconEl, device.position, config, device.localScale, frameViewport);
       }
       for (let i = 0; i < state.nodeLinks.length; i += 1) {
         const link = state.nodeLinks[i];
@@ -1261,7 +1276,7 @@
             nodeSize: config.nodeSize,
             deviceSize: config.deviceSize
           });
-          this._placeLinkBreakMarker(link);
+          this._placeLinkBreakMarker(link, frameViewport);
         } catch (error) {
           link.failed = true;
           if (link.actor) {
@@ -1291,7 +1306,7 @@
             nodeSize: config.nodeSize,
             deviceSize: config.deviceSize
           });
-          this._placeLinkBreakMarker(link);
+          this._placeLinkBreakMarker(link, frameViewport);
         } catch (error) {
           link.failed = true;
           if (link.actor) {
@@ -1303,7 +1318,7 @@
       }
     }
 
-    _placeIcon(element, worldPosition, config, localScale) {
+    _placeIcon(element, worldPosition, config, localScale, frameViewport) {
       if (!element) return;
       const projected = worldPosition.clone().project(this.camera);
       if (projected.z <= -1 || projected.z >= 1) {
@@ -1311,8 +1326,9 @@
         return;
       }
       element.style.display = "block";
-      const width = Math.max(1, this.container.clientWidth || 1);
-      const height = Math.max(1, this.container.clientHeight || 1);
+      const viewport = frameViewport || this._frameViewport || this._getFrameViewport(false);
+      const width = viewport.width;
+      const height = viewport.height;
       element.style.left = ((projected.x * 0.5 + 0.5) * width) + "px";
       element.style.top = ((-projected.y * 0.5 + 0.5) * height) + "px";
       const distanceToCamera = this.camera.position.distanceTo(worldPosition);

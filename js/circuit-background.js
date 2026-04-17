@@ -25,7 +25,9 @@
 
     window.addEventListener("resize", this.resize);
     window.addEventListener("mousemove", this.handleMouseMove);
-    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    if (document && typeof document.addEventListener === "function") {
+      document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    }
     window.addEventListener("pagehide", () => {
       if (this.frameId) {
         window.cancelAnimationFrame(this.frameId);
@@ -158,7 +160,7 @@
 
   StageStarBackground.prototype.tick = function () {
     this.frameId = 0;
-    if (!this.isVisible) {
+    if (!this.isVisible || typeof this.ctx.clearRect !== "function") {
       return;
     }
 
