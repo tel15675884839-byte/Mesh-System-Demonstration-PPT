@@ -1,0 +1,193 @@
+:root {
+  --artidrop-shell-bg: rgba(3, 10, 13, 0.72);
+  --artidrop-shell-border: rgba(255, 255, 255, 0.1);
+  --artidrop-shell-text: #eef4ff;
+  --artidrop-shell-muted: rgba(238, 244, 255, 0.7);
+  --artidrop-shell-accent: rgb(15, 235, 198);
+  --artidrop-shell-accent-warm: rgb(112, 240, 255);
+}
+
+html[data-slide-index],
+html[data-slide-index] body {
+  min-height: 100%;
+}
+
+.artidrop-shell {
+  pointer-events: none;
+}
+
+.artidrop-shell-bar,
+.artidrop-shell-nav {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.artidrop-shell-bar {
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 26px 0;
+}
+
+.artidrop-shell-brand,
+.artidrop-shell-progress {
+  pointer-events: auto;
+}
+
+.artidrop-shell-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--artidrop-shell-border);
+  border-radius: 999px;
+  background: var(--artidrop-shell-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+}
+
+.artidrop-shell-brand-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
+.artidrop-shell-brand-text {
+  color: var(--artidrop-shell-text);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.artidrop-shell-progress {
+  width: min(320px, 34vw);
+  padding: 12px 14px;
+  border: 1px solid var(--artidrop-shell-border);
+  border-radius: 999px;
+  background: var(--artidrop-shell-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+}
+
+.artidrop-shell-progress-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.artidrop-shell-progress-indicator {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--artidrop-shell-accent), var(--artidrop-shell-accent-warm));
+  box-shadow: 0 0 18px rgba(112, 240, 255, 0.45);
+}
+
+.artidrop-shell-nav {
+  top: 50%;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transform: translateY(-50%);
+}
+
+.artidrop-shell-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.artidrop-shell-nav-label {
+  max-width: 0;
+  overflow: hidden;
+  color: var(--artidrop-shell-muted);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 160ms ease, transform 160ms ease, max-width 160ms ease;
+}
+
+.artidrop-shell-nav-dot {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.artidrop-shell-nav-item:hover .artidrop-shell-nav-label,
+.artidrop-shell-nav-item:focus-within .artidrop-shell-nav-label {
+  max-width: 220px;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.artidrop-shell-nav-item:hover .artidrop-shell-nav-dot,
+.artidrop-shell-nav-item:focus-within .artidrop-shell-nav-dot {
+  transform: scale(1.15);
+}
+
+.artidrop-shell-nav-dot.is-active {
+  background: var(--artidrop-shell-accent);
+  box-shadow: 0 0 16px rgba(112, 240, 255, 0.6);
+  transform: scale(1.22);
+}
+
+.artidrop-shell-nav-dot:focus-visible {
+  outline: 2px solid rgba(112, 240, 255, 0.9);
+  outline-offset: 4px;
+}
+
+@media (max-width: 960px) {
+  .artidrop-shell-bar {
+    padding: 16px 18px 0;
+  }
+
+  .artidrop-shell-progress {
+    width: min(200px, 40vw);
+  }
+
+  .artidrop-shell-nav {
+    right: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .artidrop-shell-progress {
+    display: none;
+  }
+
+  .artidrop-shell-nav {
+    top: auto;
+    right: 14px;
+    bottom: 18px;
+    transform: none;
+    gap: 10px;
+  }
+
+  .artidrop-shell-nav-label {
+    display: none;
+  }
+}

@@ -57,6 +57,7 @@
   const openingStage = document.querySelector(".opening-stage");
   const openingPlayerHost = document.getElementById("opening-player-host");
   const openingPlayerMessage = document.getElementById("opening-player-message");
+  const embeddedOpeningScene = document.getElementById("opening-scene-data");
 
   let player = null;
   let bootstrapPromise = null;
@@ -246,6 +247,82 @@
     throw new Error("Failed to parse opening.json scene payload.");
   }
 
+  function loadEmbeddedOpeningScene() {
+    if (!embeddedOpeningScene) {
+      return null;
+    }
+
+    const rawText = String(embeddedOpeningScene.textContent || "").trim();
+    if (!rawText) {
+      return null;
+    }
+
+    return parseOpeningScene(rawText);
+  }
+
+  function loadLocalJsonTextViaIframe(url) {
+    return new Promise(function (resolve, reject) {
+      const iframe = document.createElement("iframe");
+      let settled = false;
+      const timeout = window.setTimeout(function () {
+        cleanup();
+        reject(new Error("Timed out while reading local opening.json file."));
+      }, 5000);
+
+      function cleanup() {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        window.clearTimeout(timeout);
+        if (iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+      }
+
+      iframe.style.position = "fixed";
+      iframe.style.left = "-9999px";
+      iframe.style.top = "0";
+      iframe.style.width = "1px";
+      iframe.style.height = "1px";
+      iframe.style.opacity = "0";
+      iframe.setAttribute("aria-hidden", "true");
+
+      iframe.onload = function () {
+        if (settled) {
+          return;
+        }
+
+        try {
+          const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+          const text = doc && doc.documentElement ? String(doc.documentElement.textContent || "").trim() : "";
+          cleanup();
+          if (!text) {
+            reject(new Error("Local opening.json file loaded but returned empty content."));
+            return;
+          }
+
+          resolve(text);
+        } catch (_error) {
+          cleanup();
+          reject(new Error("Browser blocked local file access for opening.json."));
+        }
+      };
+
+      iframe.onerror = function () {
+        if (settled) {
+          return;
+        }
+        cleanup();
+        reject(new Error("Failed to read local opening.json file."));
+      };
+
+      iframe.src = url;
+      document.body.appendChild(iframe);
+    });
+  }
+
   function hideOpeningNodeOrbs(playerInstance) {
     if (!playerInstance || !playerInstance._states || typeof playerInstance._states.get !== "function") {
       return;
@@ -268,16 +345,30 @@
   }
 
   async function loadOpeningScene() {
-    const response = await fetch(openingStatePath, {
-      credentials: "same-origin",
-      cache: "no-store"
-    });
-    if (!response.ok) {
-      throw new Error("HTTP " + response.status + " loading opening.json");
-    }
+    try {
+      const response = await fetch(openingStatePath, {
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status + " loading opening.json");
+      }
 
-    const rawText = await response.text();
-    return parseOpeningScene(rawText);
+      const rawText = await response.text();
+      return parseOpeningScene(rawText);
+    } catch (fetchError) {
+      const embeddedScene = loadEmbeddedOpeningScene();
+      if (embeddedScene) {
+        return embeddedScene;
+      }
+
+      if (window.location.protocol !== "file:") {
+        throw fetchError;
+      }
+
+      const rawText = await loadLocalJsonTextViaIframe(openingStatePath);
+      return parseOpeningScene(rawText);
+    }
   }
 
   async function ensurePlayer() {

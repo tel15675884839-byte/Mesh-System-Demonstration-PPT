@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" data-slide-index="1" data-slide-slug="overview" data-slide-count="10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/overview.css">
+  <link rel="stylesheet" href="../css/artidrop-shell.css">
+</head>
+<body>
+  <main class="page page-overview">
+    <section class="page-grid overview-layout page-stage-layout">
+      <header class="overview-header page-stage-header">
+        <div class="page-copy overview-hero overview-hero-spotlight page-hero-spotlight">
+          <h2>Six Core Features</h2>
+        </div>
+      </header>
+
+      <div class="visual-card overview-stage-shell">
+        <div class="overview-stage" id="overview-main-stage" aria-label="Feature overview stage">
+          <div class="feature-grid overview-feature-grid" role="list">
+            <button class="feature-card feature-mesh" data-action="goto" data-target="2" role="listitem">
+              <strong>Mesh Communication</strong>
+              <div class="feature-content-placeholder">
+                <div class="topology-container">
+                  <svg viewBox="0 0 200 220" class="topology-svg">
+                    <!-- 1. Connection Paths (Background lines) -->
+                    <g class="link-base">
+                      <!-- Layer 0 to 1 -->
+                      <line x1="160" y1="20" x2="110" y2="60" />
+                      <!-- Layer 1 to 2 -->
+                      <line x1="110" y1="60" x2="70" y2="105" />
+                      <line x1="110" y1="60" x2="150" y2="105" />
+                      <!-- Layer 2 horizontal/cross -->
+                      <line x1="70" y1="105" x2="110" y2="145" />
+                      <line x1="150" y1="105" x2="110" y2="145" />
+                      <!-- Layer 3 (Bottom Routers) -->
+                      <line x1="30" y1="150" x2="70" y2="105" />
+                      <line x1="30" y1="150" x2="110" y2="145" />
+                      <line x1="110" y1="145" x2="150" y2="105" />
+                      <line x1="150" y1="105" x2="180" y2="150" />
+                      <line x1="30" y1="150" x2="110" y2="145" />
+                      <line x1="110" y1="145" x2="180" y2="150" />
+                      <!-- End Devices -->
+                      <line x1="30" y1="150" x2="10" y2="190" />
+                      <line x1="30" y1="150" x2="60" y2="195" />
+                      <line x1="180" y1="150" x2="150" y2="200" />
+                      <line x1="180" y1="150" x2="190" y2="185" />
+                      <!-- Added links -->
+                      <line x1="160" y1="20" x2="150" y2="105" />
+                      <line x1="60" y1="195" x2="110" y2="145" />
+                      <line x1="150" y1="200" x2="110" y2="145" />
+                    </g>
+                    
+                    <!-- 2. Signal Flow (Animated overlays) -->
+                    <g class="signal-flow">
+                      <path d="M160 20 L110 60" class="flow-path" />
+                      <path d="M110 60 L70 105 L30 150" class="flow-path" />
+                      <path d="M110 60 L150 105 L180 150" class="flow-path" />
+                      <path d="M70 105 L110 145 L150 105" class="flow-path" />
+                      <path d="M30 150 L110 145 L180 150" class="flow-path" />
+                      <path d="M30 150 L10 190" class="flow-path" />
+                      <path d="M30 150 L60 195" class="flow-path" />
+                      <path d="M180 150 L150 200" class="flow-path" />
+                      <path d="M180 150 L190 185" class="flow-path" />
+                      <path d="M160 20 L150 105" class="flow-path" />
+                      <path d="M60 195 L110 145" class="flow-path" />
+                      <path d="M150 200 L110 145" class="flow-path" />
+                    </g>
+                    
+                    <!-- 3. Nodes -->
+                    <!-- Top Green (Gateway) -->
+                    <circle cx="160" cy="20" r="7" class="node-green" />
+                    <!-- Red (Leader) -->
+                    <circle cx="110" cy="60" r="9" class="node-red" />
+                    <!-- Blue (Routers/FTDs) -->
+                    <circle cx="70" cy="105" r="7" class="node-blue" />
+                    <circle cx="150" cy="105" r="7" class="node-blue" />
+                    <circle cx="110" cy="145" r="7" class="node-blue" />
+                    <circle cx="30" cy="150" r="7" class="node-blue" />
+                    <circle cx="180" cy="150" r="7" class="node-blue" />
+                    <!-- End Devices -->
+                    <circle cx="10" cy="190" r="6" class="node-green" />
+                    <circle cx="60" cy="195" r="6" class="node-green" />
+                    <circle cx="150" cy="200" r="6" class="node-green" />
+                    <circle cx="190" cy="185" r="6" class="node-green" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-reliability" data-action="goto" data-target="3" role="listitem">
+              <strong>High Reliability</strong>
+              <div class="feature-content-placeholder">
+                <div class="reliability-flow-container">
+                  <div class="reliability-loop-shell" aria-hidden="true">
+                    <svg class="reliability-loop-svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <path id="reliability-loop-path-blue" d="M40 90A120 44 0 0 1 280 90A120 44 0 0 1 40 90" pathLength="100" />
+                        <path id="reliability-loop-path-green" d="M280 90A120 44 0 0 1 40 90A120 44 0 0 1 280 90" pathLength="100" />
+                      </defs>
+                      <use href="#reliability-loop-path-blue" class="loop-track"></use>
+
+                      <circle class="loop-signal-dot loop-signal-dot-blue" r="5">
+                        <animateMotion dur="1.45s" repeatCount="indefinite" rotate="auto" calcMode="linear">
+                          <mpath href="#reliability-loop-path-blue"></mpath>
+                        </animateMotion>
+                      </circle>
+
+                      <circle class="loop-signal-dot loop-signal-dot-green" r="5">
+                        <animateMotion dur="1.45s" repeatCount="indefinite" rotate="auto" calcMode="linear">
+                          <mpath href="#reliability-loop-path-green"></mpath>
+                        </animateMotion>
+                      </circle>
+
+                      <g class="loop-arrow loop-arrow-green loop-arrow-right" transform="translate(280 90) rotate(90)">
+                        <path d="M-16 -10L16 0L-16 10L-8 0Z"></path>
+                      </g>
+
+                      <g class="loop-arrow loop-arrow-blue loop-arrow-left" transform="translate(40 90) rotate(-90)">
+                        <path d="M-16 -10L16 0L-16 10L-8 0Z"></path>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-response" data-action="goto" data-target="4" role="listitem">
+              <strong>Rapid Response</strong>
+              <div class="feature-content-placeholder">
+                <div class="speed-tunnel-container">
+                  <div class="speed-line" style="top: 30%; animation-delay: 0s"></div>
+                  <div class="speed-line" style="top: 50%; animation-delay: 0.2s; width: 80%;"></div>
+                  <div class="speed-line" style="top: 75%; animation-delay: 0.4s"></div>
+                  <img class="boost-letter-image" src="../assets/images/fast-f-transparent.png" alt="" aria-hidden="true">
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-distance" data-action="goto" data-target="5" role="listitem">
+              <strong>Extended Distance</strong>
+              <div class="feature-content-placeholder">
+                <div class="urban-arc-container">
+                  <svg viewBox="0 0 240 160" class="urban-svg">
+                    <!-- Skyline Silhouettes -->
+                    <g class="skyline" fill="rgba(255,255,255,0.05)">
+                      <rect x="20" y="110" width="15" height="40" />
+                      <rect x="40" y="90" width="12" height="60" />
+                      <rect x="75" y="100" width="18" height="50" />
+                      <rect x="130" y="115" width="10" height="35" />
+                      <rect x="180" y="80" width="14" height="70" />
+                      <rect x="205" y="105" width="12" height="45" />
+                    </g>
+                    <!-- Arc Paths -->
+                    <g class="arc-paths">
+                      <path d="M40 120 Q 100 20, 160 120" class="arc-path" />
+                      <path d="M40 120 Q 100 20, 160 120" class="arc-signal" />
+                      
+                      <path d="M80 140 Q 160 40, 200 120" class="arc-path" />
+                      <path d="M80 140 Q 160 40, 200 120" class="arc-signal" style="animation-delay: 1s" />
+                      
+                      <path d="M20 100 Q 120 -10, 220 100" class="arc-path" style="opacity: 0.1" />
+                    </g>
+                    <!-- Nodes at roots -->
+                    <circle cx="40" cy="120" r="3" fill="#3b82f6" />
+                    <circle cx="160" cy="120" r="3" fill="#3b82f6" />
+                    <circle cx="80" cy="140" r="3" fill="#3b82f6" />
+                    <circle cx="200" cy="120" r="3" fill="#3b82f6" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-battery" data-action="goto" data-target="6" role="listitem">
+              <strong>10-Year Battery</strong>
+              <div class="feature-content-placeholder">
+                <div class="battery-energy-container">
+                  <div class="battery-shell">
+                    <div class="battery-cap"></div>
+                    <div class="battery-fill surge-glow">
+                      <svg class="energy-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  <!-- Refined Premium Arcs (Expanded Set) -->
+                  <div class="spark-arc arc-top">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-bottom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-right">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="spark-arc arc-tr">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+              </div>
+            </button>
+            <button class="feature-card feature-installation" data-action="goto" data-target="7" role="listitem">
+              <strong>Easy Installation</strong>
+              <div class="feature-content-placeholder">
+                <div class="install-tools-container">
+                  <svg class="tools-premium-svg" viewBox="0 0 120 120" fill="currentColor">
+                    <g class="gear-rotor">
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(45 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(90 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(135 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(180 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(225 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(270 62 60)" />
+                      <rect class="gear-tooth" x="58" y="24" width="8" height="14" rx="2" transform="rotate(315 62 60)" />
+                      <circle class="gear-shape" cx="62" cy="60" r="28" />
+                      <circle class="gear-core" cx="62" cy="60" r="12.5" />
+                    </g>
+                    <g class="gear-check-badge">
+                      <circle class="badge-disc" cx="90" cy="88" r="13.5" />
+                      <path class="badge-check" d="M84 88l4 4 8-8" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/page-messaging.js"></script>
+  <div class="artidrop-shell" aria-hidden="false">
+    <div class="artidrop-shell-bar">
+      <div class="artidrop-shell-brand" aria-label="Wireless Mesh Fire Alarm System">
+        <img class="artidrop-shell-brand-icon" src="../assets/branding/icon.png" alt="">
+        <span class="artidrop-shell-brand-text">Wireless Mesh Fire Alarm System</span>
+      </div>
+      <div class="artidrop-shell-progress" aria-hidden="true">
+        <div class="artidrop-shell-progress-bar">
+          <span class="artidrop-shell-progress-indicator" style="width: 20.000%"></span>
+        </div>
+      </div>
+    </div>
+    <nav class="artidrop-shell-nav" aria-label="Slide navigation">
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Opening</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="0"
+          aria-label="Opening"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Feature Overview</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot is-active"
+          data-slide-index="1"
+          aria-label="Feature Overview"
+          aria-current="true"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Mesh Communication</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="2"
+          aria-label="Mesh Communication"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">High Reliability</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="3"
+          aria-label="High Reliability"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Rapid Response</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="4"
+          aria-label="Rapid Response"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Extended Distance</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="5"
+          aria-label="Extended Distance"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">10-Year Battery</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="6"
+          aria-label="10-Year Battery"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Easy Installation</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="7"
+          aria-label="Easy Installation"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">System Capacity</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="8"
+          aria-label="System Capacity"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Product Showcase</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="9"
+          aria-label="Product Showcase"
+          aria-current="false"
+        ></button>
+      </div>
+    </nav>
+  </div>
+  <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/artidrop-shell.js"></script>
+</body>
+</html>

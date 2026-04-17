@@ -1,0 +1,206 @@
+/* Feature Page: Easy Installation */
+.page-installation {
+  justify-content: flex-start;
+  padding-block: 18px;
+}
+
+.page-installation .installation-layout {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  height: calc(100vh - 36px);
+  min-height: 0;
+  align-items: stretch;
+}
+
+.installation-header {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.installation-hero {
+  max-width: none;
+}
+
+.installation-hero-spotlight h2 {
+  max-width: none;
+  font-size: clamp(3.8rem, 5.3vw, 4.9rem);
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+}
+
+.installation-stage-shell {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: hidden;
+}
+
+.installation-stage-shell::before {
+  content: none;
+}
+
+.preview-shell {
+  width: min(1500px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.installation-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20px; /* Buffer for caption text often cut off at bottom */
+}
+
+.stacked-comparison {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
+  position: relative;
+}
+
+.comparison-band {
+  position: relative;
+  min-height: 0;
+  width: 100%;
+  height: auto; /* Shrink to fit image */
+  border: 1px solid rgba(160, 226, 255, 0.16);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  isolation: isolate;
+  background: transparent;
+}
+
+.comparison-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(2, 8, 14, 0.6) 0%, rgba(2, 8, 14, 0.35) 34%, rgba(2, 8, 14, 0.1) 62%, rgba(2, 8, 14, 0.2) 100%);
+  pointer-events: none;
+}
+
+.comparison-band-before::before {
+  background: linear-gradient(90deg, rgba(8, 16, 22, 0.45) 0%, rgba(8, 16, 22, 0.25) 30%, rgba(8, 16, 22, 0.08) 58%, rgba(8, 16, 22, 0.15) 100%);
+}
+
+.band-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: static; /* Let image define band height */
+  filter: saturate(0.98) brightness(0.9);
+  max-width: 100%;
+  max-height: 42vh; /* Ensure both fit in stage */
+  object-fit: cover; /* Fill the shrunk box edge to edge */
+}
+
+.comparison-band-after .band-image {
+  filter: saturate(1) brightness(0.94);
+}
+
+.band-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: clamp(22px, 3vw, 38px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+.band-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 3.3vw, 3.35rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  color: #f4fbff;
+  text-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.comparison-versus {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 54px;
+  margin-block: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.comparison-versus::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 235, 204, 0.16) 12%, rgba(15, 235, 204, 0.72) 50%, rgba(15, 235, 204, 0.16) 88%, transparent 100%);
+  box-shadow: 0 0 12px rgba(15, 235, 204, 0.3), 0 0 28px rgba(15, 235, 204, 0.16);
+}
+
+.comparison-versus::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(15, 235, 204, 0.18) 0%, rgba(15, 235, 204, 0.08) 30%, transparent 72%);
+  filter: blur(8px);
+}
+
+.comparison-versus-inner {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-title);
+  font-size: clamp(3.12rem, 1.2vw + 2.4rem, 3.84rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  font-style: italic;
+  padding-inline: 0.15em;
+  background: linear-gradient(180deg, #b6fff1 0%, #4ff7da 38%, #0fecc7 68%, #98fff0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: rotate(-8deg) skewX(-9deg);
+  text-shadow: 0 0 14px rgba(15, 235, 204, 0.34), 0 0 26px rgba(15, 235, 204, 0.18);
+}
+
+@media (max-width: 960px) {
+  .page-installation .installation-layout {
+    height: auto;
+    min-height: calc(100vh - 36px);
+  }
+
+  .installation-hero-spotlight h2 {
+    font-size: clamp(3rem, 8.2vw, 4.2rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .installation-hero-spotlight h2 {
+    font-size: clamp(2.4rem, 10.2vw, 3rem);
+    white-space: normal;
+  }
+}

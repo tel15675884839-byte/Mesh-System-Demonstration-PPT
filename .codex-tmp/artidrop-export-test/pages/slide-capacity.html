@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" data-slide-index="8" data-slide-slug="capacity" data-slide-count="10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Capacity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/capacity.css">
+  <link rel="stylesheet" href="../css/artidrop-shell.css">
+</head>
+<body>
+  <main class="page page-capacity" data-capacity-scene="network-level">
+    <section class="page-grid capacity-layout">
+      <header class="capacity-header">
+        <div class="page-copy capacity-hero capacity-hero-spotlight page-hero-spotlight">
+          <h2>System Capacity</h2>
+        </div>
+      </header>
+
+      <div class="visual-card capacity-stage-shell" id="capacity-stage-shell">
+        <div class="capacity-stage" id="capacity-stage" aria-label="System Capacity stage">
+          <div class="capacity-stage-head">
+            <p class="capacity-stage-title">Network</p>
+            <p class="capacity-stage-status" id="capacity-stage-status"></p>
+          </div>
+
+          <div class="capacity-stage-surface" id="capacity-stage-surface">
+            <div class="capacity-network" id="capacity-network"></div>
+            <div class="capacity-panels" id="capacity-panels"></div>
+            <div class="capacity-total-loops-badge" id="capacity-total-loops-badge" aria-hidden="true">
+              up to 16 wireless loops
+            </div>
+            <div class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"></div>
+
+            <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
+              <div class="capacity-aggregation-core"></div>
+              <div class="capacity-value-wrapper">
+                <div class="capacity-total-value" id="capacity-total-value">0</div>
+                <span class="capacity-devices-label" id="capacity-devices-label">Devices</span>
+              </div>
+            </div>
+
+            <div class="capacity-expansion" id="capacity-expansion" aria-hidden="true">
+              <svg class="capacity-expansion-svg" id="capacity-expansion-svg" aria-hidden="true" preserveAspectRatio="none">
+                <defs>
+                   <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                     <polygon points="0 0, 10 3.5, 0 7" fill="rgba(94, 230, 255, 0.92)" />
+                   </marker>
+                </defs>
+              </svg>
+
+              <div class="capacity-expansion-panel" id="capacity-expansion-panel">
+                <img class="capacity-expansion-panel-icon" src="../assets/icons/panel.svg" alt="" aria-hidden="true">
+              </div>
+
+              <div class="capacity-expansion-left-cluster" id="capacity-expansion-left-cluster" aria-hidden="true">
+                <svg class="capacity-expansion-left-cluster-svg" id="capacity-expansion-left-cluster-svg" aria-hidden="true" preserveAspectRatio="none"></svg>
+                <div class="capacity-expansion-left-cluster-panels" id="capacity-expansion-left-cluster-panels"></div>
+              </div>
+
+              <div class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"></div>
+
+              <div class="capacity-expansion-card" id="capacity-expansion-card">
+                <img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">
+                <p class="capacity-expansion-card-title">Wireless Loop Card</p>
+              </div>
+
+              <div class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"></div>
+
+              <div class="relay-capacity-highlight" id="relay-capacity-info">
+                <div class="cap-node-side">
+                  <div class="node-master-wrapper">
+                    <img src="../assets/icons/node.svg" alt="" aria-hidden="true" class="cap-icon-node">
+                    <span class="node-glow-ring"></span>
+                  </div>
+                </div>
+                <div class="cap-link-side">
+                  <svg class="cap-link-svg" viewBox="0 0 200 40" preserveAspectRatio="none">
+                    <path d="M0,20 Q100,20 200,20" class="cap-link-path" />
+                    <!-- Multiple faint radiating lines -->
+                    <path d="M0,20 Q100,5 200,-10" class="cap-link-sub-path" />
+                    <path d="M0,20 Q100,35 200,50" class="cap-link-sub-path" />
+                  </svg>
+                </div>
+                <div class="cap-smoke-side">
+                  <div class="device-cloud">
+                    <!-- Main prominent icons -->
+                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-1">
+                    <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true" class="cloud-icon snd-1">
+                    <img src="../assets/icons/mcp.svg" alt="" aria-hidden="true" class="cloud-icon mcp-1">
+                    <!-- Smaller / ghost icons -->
+                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-2 ghost">
+                    <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true" class="cloud-icon snd-2 ghost">
+                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-3 ghost">
+                    <img src="../assets/icons/mcp.svg" alt="" aria-hidden="true" class="cloud-icon mcp-2 ghost">
+                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-4 ghost">
+                  </div>
+                  <div class="cap-info-text">
+                    <span class="cap-number">32</span>
+                    <span class="cap-label">Devices</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="capacity-stage-hint" id="capacity-stage-hint">Click to start</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../js/page-messaging.js"></script>
+  <script src="../js/capacity-page.js"></script>
+  <div class="artidrop-shell" aria-hidden="false">
+    <div class="artidrop-shell-bar">
+      <div class="artidrop-shell-brand" aria-label="Wireless Mesh Fire Alarm System">
+        <img class="artidrop-shell-brand-icon" src="../assets/branding/icon.png" alt="">
+        <span class="artidrop-shell-brand-text">Wireless Mesh Fire Alarm System</span>
+      </div>
+      <div class="artidrop-shell-progress" aria-hidden="true">
+        <div class="artidrop-shell-progress-bar">
+          <span class="artidrop-shell-progress-indicator" style="width: 90.000%"></span>
+        </div>
+      </div>
+    </div>
+    <nav class="artidrop-shell-nav" aria-label="Slide navigation">
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Opening</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="0"
+          aria-label="Opening"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Feature Overview</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="1"
+          aria-label="Feature Overview"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Mesh Communication</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="2"
+          aria-label="Mesh Communication"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">High Reliability</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="3"
+          aria-label="High Reliability"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Rapid Response</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="4"
+          aria-label="Rapid Response"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Extended Distance</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="5"
+          aria-label="Extended Distance"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">10-Year Battery</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="6"
+          aria-label="10-Year Battery"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Easy Installation</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="7"
+          aria-label="Easy Installation"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">System Capacity</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot is-active"
+          data-slide-index="8"
+          aria-label="System Capacity"
+          aria-current="true"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Product Showcase</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="9"
+          aria-label="Product Showcase"
+          aria-current="false"
+        ></button>
+      </div>
+    </nav>
+  </div>
+  <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/artidrop-shell.js"></script>
+</body>
+</html>

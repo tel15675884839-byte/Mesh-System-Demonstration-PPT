@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-slide-index="5" data-slide-slug="distance" data-slide-count="10">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extended Distance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css?v=20260414c">
+  <link rel="stylesheet" href="../css/pages/distance.css?v=20260414c">
+  <link rel="stylesheet" href="../css/artidrop-shell.css">
+</head>
+<body>
+  <main class="page page-distance is-revealed">
+<button type="button" class="distance-intro-overlay" id="distance-intro-trigger" aria-controls="distance-main-stage" aria-expanded="false">
+      <span class="distance-intro-title">Extended Distance</span>
+    </button>
+
+    <section class="page-grid distance-layout page-stage-layout">
+      <header class="distance-header page-stage-header">
+        <div class="page-copy distance-hero distance-hero-spotlight page-hero-spotlight">
+          <h2>Extended Distance</h2>
+        </div>
+      </header>
+
+      <div class="visual-card distance-main-stage-shell">
+        <div class="distance-stage" id="distance-main-stage" data-scene="open" aria-label="Extended distance cinematic stage">
+          <div class="distance-stage-controls" role="tablist" aria-label="Distance scene switch">
+            <button type="button" class="scene-toggle stage-control-button is-active" id="distance-scene-tab-open" role="tab" data-scene-target="open" aria-controls="distance-scene-open" aria-selected="true" tabindex="0" aria-label="Show open area 500m scene">
+              <span class="scene-toggle-arrow scene-toggle-arrow-left" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="scene-toggle stage-control-button" id="distance-scene-tab-relay" role="tab" data-scene-target="relay" aria-controls="distance-scene-relay" aria-selected="false" tabindex="-1" aria-label="Show mesh relay 16km scene">
+              <span class="scene-toggle-arrow scene-toggle-arrow-right" aria-hidden="true"></span>
+            </button>
+          </div>
+          <span class="distance-stage-mode" id="distance-stage-mode">OPEN AREA</span>
+          <div class="distance-cinematic-bg" aria-hidden="true"></div>
+          <section id="distance-scene-open" class="distance-scene distance-scene-open scene-open is-visible" data-scene="open" role="tabpanel" aria-labelledby="distance-scene-tab-open" aria-label="Open area scene" aria-hidden="false">
+            <div class="scene-link open-link" aria-hidden="true">
+              <svg class="open-arc-svg" viewBox="0 0 100 100" preserveAspectRatio="none" role="presentation" aria-hidden="true">
+                <path class="open-arc-path open-arc-path-upper" d="M 18 50 Q 56 32 83 35"></path>
+                <path class="open-arc-path open-arc-path-lower" d="M 18 50 Q 58 66 83 62"></path>
+              </svg>
+            </div>
+            <div class="signal-pulse pulse-open pulse-open-upper" aria-hidden="true"></div>
+            <div class="signal-pulse pulse-open pulse-open-upper pulse-open-upper-delayed" aria-hidden="true"></div>
+            <div class="signal-pulse pulse-open pulse-open-lower" aria-hidden="true"></div>
+            <div class="signal-pulse pulse-open pulse-open-lower pulse-open-lower-delayed" aria-hidden="true"></div>
+            <div class="scene-node node-open-left-node" aria-hidden="true">
+              <img class="node-icon" src="../assets/icons/node.svg" alt="" aria-hidden="true">
+              <span>Node</span>
+            </div>
+            <div class="scene-node node-open-right-top is-device" aria-hidden="true">
+              <img class="node-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
+              <span>Device</span>
+            </div>
+            <div class="scene-node node-open-right-bottom is-device" aria-hidden="true">
+              <img class="node-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
+              <span>Device</span>
+            </div>
+            <div class="metric-open-impact style1" id="metric-open-impact" aria-hidden="true">
+              <span class="shockwave" aria-hidden="true"></span>
+              <p class="metric-open-highlight impact-text">Up to 500m</p>
+            </div>
+          </section>
+          <section id="distance-scene-relay" class="distance-scene distance-scene-relay scene-relay" data-scene="relay" role="tabpanel" aria-labelledby="distance-scene-tab-relay" aria-label="Mesh relay scene" aria-hidden="true">
+            <div class="relay-arc-stage" aria-hidden="true">
+              <svg class="relay-arc-svg" viewBox="0 0 1000 440" preserveAspectRatio="none" role="presentation">
+                <path id="relay-main-arc" class="relay-main-arc-geometry" d="M 70 280 Q 500 -50 930 280"></path>
+                <path id="relay-arc-left" class="relay-visible-arc relay-visible-arc-left" d=""></path>
+                <path id="relay-arc-right" class="relay-visible-arc relay-visible-arc-right" d=""></path>
+                <path id="relay-note-arc" class="relay-note-arc" d="M 470 120 Q 600 95 730 140"></path>
+                <text class="relay-mid-note-svg">
+                  <textPath href="#relay-note-arc" startOffset="50%" text-anchor="middle">up to 31 nodes</textPath>
+                </text>
+              </svg>
+              <svg class="relay-side-links-svg" viewBox="0 0 1000 440" preserveAspectRatio="none" role="presentation" aria-hidden="true">
+                <path id="relay-entry-link" class="relay-entry-link" d=""></path>
+                <path id="relay-end-wireless-upper" class="relay-end-wireless relay-end-wireless-upper" d=""></path>
+                <path id="relay-end-wireless-lower" class="relay-end-wireless relay-end-wireless-lower" d=""></path>
+              </svg>
+
+              <span class="relay-hop-distance dist-1">500m</span>
+              <span class="relay-hop-distance dist-2">500m</span>
+              <span class="relay-hop-distance dist-3">500m</span>
+              <span class="relay-hop-distance dist-4">500m</span>
+              <span class="relay-hop-distance dist-5">500m</span>
+              <span class="relay-hop-distance dist-6">500m</span>
+              <span class="relay-hop-distance dist-end-smoke">500m</span>
+              <span class="relay-hop-distance dist-end-sounder">500m</span>
+
+              <div class="relay-entry-panel">
+                <img src="../assets/icons/panel.svg" alt="" aria-hidden="true">
+              </div>
+              <div class="relay-point is-leader"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-end-device relay-end-device-smoke">
+                <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
+              </div>
+              <div class="relay-end-device relay-end-device-sounder">
+                <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
+              </div>
+              <div class="relay-total-impact style1" id="relay-total-impact" aria-hidden="true">
+                <span class="shockwave" aria-hidden="true"></span>
+                <p class="relay-total-distance impact-text">up to 16km</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+<script src="../js/page-messaging.js?v=20260414c"></script>
+  <script src="../js/distance-page.js?v=20260414c"></script>
+  <div class="artidrop-shell" aria-hidden="false">
+    <div class="artidrop-shell-bar">
+      <div class="artidrop-shell-brand" aria-label="Wireless Mesh Fire Alarm System">
+        <img class="artidrop-shell-brand-icon" src="../assets/branding/icon.png" alt="">
+        <span class="artidrop-shell-brand-text">Wireless Mesh Fire Alarm System</span>
+      </div>
+      <div class="artidrop-shell-progress" aria-hidden="true">
+        <div class="artidrop-shell-progress-bar">
+          <span class="artidrop-shell-progress-indicator" style="width: 60.000%"></span>
+        </div>
+      </div>
+    </div>
+    <nav class="artidrop-shell-nav" aria-label="Slide navigation">
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Opening</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="0"
+          aria-label="Opening"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Feature Overview</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="1"
+          aria-label="Feature Overview"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Mesh Communication</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="2"
+          aria-label="Mesh Communication"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">High Reliability</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="3"
+          aria-label="High Reliability"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Rapid Response</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="4"
+          aria-label="Rapid Response"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Extended Distance</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot is-active"
+          data-slide-index="5"
+          aria-label="Extended Distance"
+          aria-current="true"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">10-Year Battery</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="6"
+          aria-label="10-Year Battery"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Easy Installation</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="7"
+          aria-label="Easy Installation"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">System Capacity</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="8"
+          aria-label="System Capacity"
+          aria-current="false"
+        ></button>
+      </div>
+      <div class="artidrop-shell-nav-item">
+        <span class="artidrop-shell-nav-label">Product Showcase</span>
+        <button
+          type="button"
+          class="artidrop-shell-nav-dot"
+          data-slide-index="9"
+          aria-label="Product Showcase"
+          aria-current="false"
+        ></button>
+      </div>
+    </nav>
+  </div>
+  <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/artidrop-shell.js"></script>
+</body>
+</html>
+
+

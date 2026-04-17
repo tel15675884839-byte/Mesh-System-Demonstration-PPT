@@ -50,6 +50,12 @@ body {
   overflow: hidden;
 }
 
+html[data-slide-active="false"] *,
+html[data-slide-active="false"] *::before,
+html[data-slide-active="false"] *::after {
+  animation-play-state: paused !important;
+}
+
 button,
 input,
 textarea,

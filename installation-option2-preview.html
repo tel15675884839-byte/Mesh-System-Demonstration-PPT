@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traditional Wiring Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #041018;
+      --bg-top: #081a25;
+      --surface-border: rgba(160, 226, 255, 0.16);
+      --text-strong: #f4fbff;
+      --danger: #ff8a6a;
+      --shadow: 0 26px 64px rgba(0, 0, 0, 0.36);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(47, 239, 196, 0.12), transparent 34%),
+        radial-gradient(circle at top right, rgba(104, 170, 255, 0.12), transparent 30%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-base) 62%);
+      color: var(--text-strong);
+      font-family: "Manrope", system-ui, sans-serif;
+    }
+
+    body {
+      padding: 28px;
+    }
+
+    .preview-shell {
+      width: min(1500px, 100%);
+      margin: 0 auto;
+      display: block;
+    }
+
+    .stacked-comparison {
+      display: grid;
+      gap: 10px;
+    }
+
+    .comparison-band {
+      position: relative;
+      min-height: 0;
+      aspect-ratio: 3648 / 1175;
+      border: 1px solid var(--surface-border);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      isolation: isolate;
+      background: #08131b;
+    }
+
+    .comparison-band::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(2, 8, 14, 0.68) 0%, rgba(2, 8, 14, 0.42) 34%, rgba(2, 8, 14, 0.1) 62%, rgba(2, 8, 14, 0.26) 100%);
+    }
+
+    .comparison-band-before::before {
+      background:
+        linear-gradient(90deg, rgba(8, 16, 22, 0.5) 0%, rgba(8, 16, 22, 0.28) 30%, rgba(8, 16, 22, 0.08) 58%, rgba(8, 16, 22, 0.18) 100%);
+    }
+
+    .band-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      filter: saturate(0.98) brightness(0.9);
+    }
+
+    .comparison-band-after .band-image {
+      filter: saturate(1) brightness(0.94);
+    }
+
+    .band-content {
+      position: relative;
+      z-index: 3;
+      min-height: inherit;
+      padding: clamp(22px, 3.2vw, 38px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .band-title {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: clamp(2rem, 3.3vw, 3.35rem);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      color: var(--text-strong);
+      text-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .comparison-versus {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      min-height: 94px;
+      margin-block: -6px;
+      overflow: visible;
+    }
+
+    .comparison-versus::before,
+    .comparison-versus::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .comparison-versus::before {
+      top: 50%;
+      left: 50%;
+      width: 1px;
+      height: 100px;
+      transform: translate(-50%, -50%);
+      background:
+        linear-gradient(
+          180deg,
+          transparent 0%,
+          rgba(15, 235, 204, 0.16) 12%,
+          rgba(15, 235, 204, 0.72) 50%,
+          rgba(15, 235, 204, 0.16) 88%,
+          transparent 100%
+        );
+      box-shadow:
+        0 0 12px rgba(15, 235, 204, 0.3),
+        0 0 28px rgba(15, 235, 204, 0.16);
+    }
+
+    .comparison-versus::after {
+      inset: 50% auto auto 50%;
+      width: 160px;
+      height: 160px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(15, 235, 204, 0.18) 0%, rgba(15, 235, 204, 0.08) 30%, transparent 72%);
+      filter: blur(8px);
+    }
+
+    .comparison-versus-inner {
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: clamp(3.12rem, 1.2vw + 2.4rem, 3.84rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+      font-style: italic;
+      padding-inline: 0.15em;
+      background: linear-gradient(180deg, #b6fff1 0%, #4ff7da 38%, #0fecc7 68%, #98fff0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transform: rotate(-8deg) skewX(-9deg);
+      text-shadow:
+        0 0 14px rgba(15, 235, 204, 0.34),
+        0 0 26px rgba(15, 235, 204, 0.18);
+    }
+
+    .comparison-versus-inner::before,
+    .comparison-versus-inner::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 22px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(15, 235, 204, 0.88), transparent);
+      opacity: 0.72;
+      filter: drop-shadow(0 0 8px rgba(15, 235, 204, 0.2));
+    }
+
+    .comparison-versus-inner::before {
+      right: calc(100% + 12px);
+      transform: translateY(-50%) rotate(-8deg);
+    }
+
+    .comparison-versus-inner::after {
+      left: calc(100% + 12px);
+      transform: translateY(-50%) rotate(-8deg);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 16px;
+      }
+
+      .comparison-band {
+        border-radius: 22px;
+      }
+
+      .comparison-band::before {
+        background:
+          linear-gradient(180deg, rgba(2, 8, 14, 0.4), rgba(2, 8, 14, 0.16)),
+          linear-gradient(90deg, rgba(2, 8, 14, 0.9) 0%, rgba(2, 8, 14, 0.64) 48%, rgba(2, 8, 14, 0.34) 100%);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stacked-comparison {
+        gap: 14px;
+      }
+
+      .comparison-band {
+        border-radius: 18px;
+      }
+
+      .comparison-versus {
+        min-height: 64px;
+        margin-block: -4px;
+      }
+
+      .comparison-versus::before {
+        height: 70px;
+      }
+
+      .comparison-versus::after {
+        width: 124px;
+        height: 124px;
+      }
+
+      .comparison-versus-inner {
+        font-size: 2.3rem;
+      }
+
+      .comparison-versus-inner::before,
+      .comparison-versus-inner::after {
+        width: 16px;
+      }
+
+      .comparison-versus-inner::before {
+        right: calc(100% + 8px);
+      }
+
+      .comparison-versus-inner::after {
+        left: calc(100% + 8px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-shell">
+    <section class="stacked-comparison" aria-label="Easy Installation comparison preview">
+      <article class="comparison-band comparison-band-before" aria-labelledby="comparison-before-title">
+        <img src="assets/images/Wiring%20Headache.png" class="band-image" alt="Traditional wiring installation with complex cabling">
+        <div class="band-content">
+          <h2 class="band-title" id="comparison-before-title">Traditional Wiring</h2>
+        </div>
+      </article>
+
+      <div class="comparison-versus" aria-hidden="true">
+        <span class="comparison-versus-inner">VS</span>
+      </div>
+
+      <article class="comparison-band comparison-band-after" aria-label="Wireless mesh comparison image">
+        <img src="assets/images/No%20Wiring%20Headahce.png" class="band-image" alt="Wireless mesh installation with a cleaner setup">
+        <div class="band-content">
+          <h2 class="band-title" id="comparison-after-title">Wireless Mesh</h2>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

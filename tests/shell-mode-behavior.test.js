@@ -50,10 +50,12 @@ function runFixedStage(search, windowSize) {
   };
 }
 
-function createAppHarness(mode) {
+function createAppHarness(mode, options) {
+  const config = options || {};
   const windowListeners = new Map();
   const navHandlers = [];
   const slideScrollCalls = [];
+  const frameMessages = [];
 
   function createSlide(index) {
     slideScrollCalls[index] = 0;
@@ -106,21 +108,55 @@ function createAppHarness(mode) {
     };
   }
 
-  const slides = [createSlide(0), createSlide(1), createSlide(2)];
-  const navDots = [createNavDot(0), createNavDot(1), createNavDot(2)];
-  const frameMessages = [];
-  const slideFrames = slides.map(function () {
-    return {
-      contentWindow: {
-        postMessage(message) {
-          frameMessages.push(message);
-        }
+  function createFrame(index) {
+    const listeners = new Map();
+    const frame = {
+      dataset: {
+        src: "pages/slide-" + index + ".html"
       },
-      addEventListener() {}
+      src: "",
+      contentWindow: null,
+      setAttribute(name, value) {
+        if (name === "src") {
+          this.src = String(value);
+          this.contentWindow = {
+            postMessage(message) {
+              frameMessages.push({
+                index,
+                message
+              });
+            }
+          };
+          return;
+        }
+
+        this[name] = String(value);
+      },
+      removeAttribute(name) {
+        if (name === "src") {
+          this.src = "";
+          this.contentWindow = null;
+          return;
+        }
+
+        delete this[name];
+      },
+      addEventListener(type, handler) {
+        listeners.set(type, handler);
+      }
     };
+
+    return frame;
+  }
+
+  const slides = [createSlide(0), createSlide(1), createSlide(2), createSlide(3)];
+  const navDots = [createNavDot(0), createNavDot(1), createNavDot(2), createNavDot(3)];
+  const slideFrames = slides.map(function (_slide, index) {
+    return createFrame(index);
   });
   const slidesContainer = { style: {} };
   const progressIndicator = { style: {} };
+  const bodyClasses = new Set(config.bodyClasses || []);
 
   const context = {
     console,
@@ -133,6 +169,19 @@ function createAppHarness(mode) {
     document: {
       documentElement: {
         dataset: { mode }
+      },
+      body: {
+        classList: {
+          add(className) {
+            bodyClasses.add(className);
+          },
+          remove(className) {
+            bodyClasses.delete(className);
+          },
+          contains(className) {
+            return bodyClasses.has(className);
+          }
+        }
       },
       querySelectorAll(selector) {
         if (selector === ".slide") {
@@ -152,6 +201,9 @@ function createAppHarness(mode) {
         }
         if (id === "slides") {
           return slidesContainer;
+        }
+        if (config.hasIntro && (id === "hero-layer" || id === "content-layer")) {
+          return { id };
         }
         return null;
       }
@@ -179,6 +231,7 @@ function createAppHarness(mode) {
     progressIndicator,
     slideScrollCalls,
     frameMessages,
+    slideFrames,
     listeners: windowListeners,
     clickNav(index) {
       navDots[index].triggerClick();
@@ -216,7 +269,7 @@ test("app shell uses native scrolling in browser mode instead of fixed-stage tra
   harness.sendMessage({ type: "goToSlide", slide: 2 });
 
   assert.equal(harness.slideScrollCalls[2], 1);
-  assert.equal(harness.progressIndicator.style.width, "100%");
+  assert.equal(harness.progressIndicator.style.width, "75%");
 });
 
 test("app shell keeps transform-based paging in presentation mode", () => {
@@ -228,4 +281,39 @@ test("app shell keeps transform-based paging in presentation mode", () => {
   harness.clickNav(1);
 
   assert.equal(harness.slidesContainer.style.transform, "translateY(-1080px)");
+});
+
+test("app shell only keeps the active slide and its neighbors mounted", () => {
+  const harness = createAppHarness("presentation");
+
+  assert.equal(harness.slideFrames[0].src, "pages/slide-0.html");
+  assert.equal(harness.slideFrames[1].src, "pages/slide-1.html");
+  assert.equal(harness.slideFrames[2].src, "");
+  assert.equal(harness.slideFrames[3].src, "");
+
+  harness.sendMessage({ type: "goToSlide", slide: 2 });
+
+  assert.equal(harness.slideFrames[0].src, "");
+  assert.equal(harness.slideFrames[1].src, "pages/slide-1.html");
+  assert.equal(harness.slideFrames[2].src, "pages/slide-2.html");
+  assert.equal(harness.slideFrames[3].src, "pages/slide-3.html");
+});
+
+test("app shell defers iframe loading until the merged welcome intro has been entered", () => {
+  const harness = createAppHarness("presentation", { hasIntro: true });
+
+  assert.equal(harness.slideFrames[0].src, "");
+  assert.equal(harness.slideFrames[1].src, "");
+  assert.equal(harness.slideFrames[2].src, "");
+  assert.equal(harness.slideFrames[3].src, "");
+
+  const introEntered = harness.listeners.get("presentationIntroEntered");
+  assert.equal(typeof introEntered, "function");
+
+  introEntered({ type: "presentationIntroEntered" });
+
+  assert.equal(harness.slideFrames[0].src, "pages/slide-0.html");
+  assert.equal(harness.slideFrames[1].src, "pages/slide-1.html");
+  assert.equal(harness.slideFrames[2].src, "");
+  assert.equal(harness.slideFrames[3].src, "");
 });

@@ -93,9 +93,9 @@
       accentSoftRgb: "255, 171, 102",
       stats: [
         { label: "Models", value: "Audible, visual, A/V combo" },
-        { label: "Enclosure", value: "IP-65 weatherproof option" },
+        { label: "Power Source", value: "10-year Lithium battery" },
         { label: "Communication", value: "Mesh topology" },
-        { label: "Power Source", value: "Lithium battery" }
+        { label: "Enclosure", value: "IP-65 weatherproof option" }
       ]
     },
     {
@@ -117,8 +117,8 @@
     }
   ];
 
-  const stage = document.getElementById("product-stage");
-  const stageMain = document.getElementById("product-stage-main");
+  let stage = document.getElementById("product-stage");
+  let stageMain = document.getElementById("product-stage-main");
   const btnPrev = document.getElementById("nav-prev");
   const btnNext = document.getElementById("nav-next");
   const counterEl = document.getElementById("product-counter");
@@ -126,6 +126,7 @@
   let activeIndex = -1;
   let transitionExitTimer = 0;
   let transitionSettleTimer = 0;
+  let isInitializing = true;
 
   function prefersReducedMotion() {
     return Boolean(
@@ -199,9 +200,16 @@
   }
 
   function renderProduct(index, options) {
+    if (!stageMain) {
+      stageMain = document.getElementById("product-stage-main");
+      if (!stageMain) return;
+    }
+
     if (index === activeIndex) return;
 
     const product = products[index];
+    if (!product) return;
+
     const config = options || {};
     
     // Mark previous slide
@@ -214,7 +222,7 @@
         if (currentSlide.parentNode) {
           currentSlide.parentNode.removeChild(currentSlide);
         }
-      }, 850);
+      }, 1000);
     }
 
     // Create new slide
@@ -234,19 +242,32 @@
       "</section>";
 
     const imageEl = newSlide.querySelector(".product-image");
-    imageEl.style.setProperty("--image-scale", String(product.imageScale || 1.3));
-    imageEl.style.setProperty("--image-offset-y", "-3%");
+    if (imageEl) {
+      imageEl.style.setProperty("--image-scale", String(product.imageScale || 1.3));
+      imageEl.style.setProperty("--image-offset-y", "-3%");
+    }
 
     stageMain.appendChild(newSlide);
     
     // Set accent colors
-    stage.style.setProperty("--product-accent-rgb", product.accentRgb);
-    stage.style.setProperty("--product-accent-soft-rgb", product.accentSoftRgb);
+    if (!stage) {
+      stage = document.getElementById("product-stage");
+    }
+
+    if (stage) {
+      stage.style.setProperty("--product-accent-rgb", product.accentRgb);
+      stage.style.setProperty("--product-accent-soft-rgb", product.accentSoftRgb);
+    }
 
     // Trigger animation
-    setTimeout(() => {
+    if (isInitializing) {
       newSlide.classList.add("active");
-    }, 20);
+      isInitializing = false;
+    } else {
+      setTimeout(() => {
+        newSlide.classList.add("active");
+      }, 40);
+    }
 
     activeIndex = index;
     updateAria(newSlide, index);
@@ -338,5 +359,13 @@
     });
   }
 
-  renderProduct(getInitialProductIndex(), { syncUrl: false });
+  function boot() {
+    renderProduct(getInitialProductIndex(), { syncUrl: false });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 }());

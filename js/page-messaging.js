@@ -1,4 +1,8 @@
 (function () {
+  const rootElement = document.documentElement || null;
+  const bodyElement = document.body || null;
+  const startsActive = window.parent === window;
+
   function createSearchParams(search) {
     const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
     if (SearchParams) {
@@ -65,15 +69,78 @@
     window.parent.postMessage({ type: "goToSlide", slide: Number(target) }, "*");
   }
 
+  function syncSvgAnimations(isActive) {
+    if (typeof document.querySelectorAll !== "function") {
+      return;
+    }
+
+    document.querySelectorAll("svg").forEach(function (svg) {
+      if (isActive) {
+        if (typeof svg.unpauseAnimations === "function") {
+          svg.unpauseAnimations();
+        }
+        return;
+      }
+
+      if (typeof svg.pauseAnimations === "function") {
+        svg.pauseAnimations();
+      }
+    });
+  }
+
+  function notifySlideActivity(isActive) {
+    if (typeof window.dispatchEvent !== "function") {
+      return;
+    }
+
+    const ActivityEvent = typeof CustomEvent === "function"
+      ? CustomEvent
+      : function FallbackEvent(type, init) {
+          this.type = type;
+          this.detail = init ? init.detail : undefined;
+        };
+
+    window.dispatchEvent(new ActivityEvent("slideActivityChange", {
+      detail: {
+        active: !!isActive
+      }
+    }));
+  }
+
+  function setSlideActivity(isActive) {
+    const active = !!isActive;
+
+    if (rootElement && rootElement.dataset) {
+      rootElement.dataset.slideActive = active ? "true" : "false";
+    }
+
+    if (bodyElement && bodyElement.dataset) {
+      bodyElement.dataset.slideActive = active ? "true" : "false";
+    }
+
+    syncSvgAnimations(active);
+    notifySlideActivity(active);
+  }
+
   window.meshPresentationMessaging = {
     getSharedSearchParams: getSharedSearchParams,
     syncPresentationState: syncPresentationState,
     notifyParent: notifyParent
   };
 
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "slideVisibility") {
+      return;
+    }
+
+    setSlideActivity(event.data.active);
+  });
+
   document.querySelectorAll("[data-action='goto']").forEach((button) => {
     button.addEventListener("click", () => {
       notifyParent(button.dataset.target);
     });
   });
+
+  setSlideActivity(startsActive);
 }());

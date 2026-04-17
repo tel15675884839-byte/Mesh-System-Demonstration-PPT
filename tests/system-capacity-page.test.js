@@ -11,7 +11,7 @@ const capacityJs = fs.readFileSync(path.join(rootDir, "js", "capacity-page.js"),
 
 test("presentation shell keeps the System Capacity slide wired into navigation", () => {
   assert.match(indexHtml, /<span class="nav-label">System Capacity<\/span>[\s\S]*?data-target="8"/);
-  assert.match(indexHtml, /<iframe class="slide-frame" src="pages\/capacity\.html" title="System Capacity" loading="lazy"><\/iframe>/);
+  assert.match(indexHtml, /<iframe class="slide-frame" data-src="pages\/capacity\.html" title="System Capacity" loading="lazy"><\/iframe>/);
 });
 
 test("System Capacity expansion scene exposes the updated node and loop headings", () => {

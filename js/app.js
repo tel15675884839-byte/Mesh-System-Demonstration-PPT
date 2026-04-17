@@ -3,6 +3,8 @@
   const DISTANCE_SLIDE_INDEX = 5;
   const PRODUCT_SLIDE_INDEX = 9;
   const PRODUCT_BACKGROUND_TRANSITION_MS = 720;
+  const FRAME_PRELOAD_RADIUS = 1;
+  const ALWAYS_PRELOADED_SLIDE_INDICES = [PRODUCT_SLIDE_INDEX];
   const slideSlugs = [
     "opening",
     "overview",
@@ -23,10 +25,74 @@
   const progressIndicator = document.getElementById("progress-indicator");
   const slidesContainer = document.getElementById("slides");
   const slideFrames = document.querySelectorAll(".slide-frame");
+  const introHeroLayer = document.getElementById("hero-layer");
+  const introContentLayer = document.getElementById("content-layer");
   const appShell = typeof document.querySelector === "function" ? document.querySelector(".app-shell") : null;
+  let isIntroPending = Boolean(
+    introHeroLayer &&
+    introContentLayer &&
+    document.body &&
+    document.body.classList &&
+    typeof document.body.classList.contains === "function" &&
+    !document.body.classList.contains("mode-entered")
+  );
   let currentSlide = 0;
   let wheelLock = false;
   let productBackgroundTransitionTimer = 0;
+
+  function getFrameSource(frame) {
+    if (!frame) {
+      return "";
+    }
+
+    if (frame.dataset && typeof frame.dataset.src === "string") {
+      return frame.dataset.src;
+    }
+
+    if (typeof frame.getAttribute === "function") {
+      return frame.getAttribute("data-src") || "";
+    }
+
+    return "";
+  }
+
+  function getLoadedFrameSource(frame) {
+    if (!frame) {
+      return "";
+    }
+
+    if (typeof frame.getAttribute === "function") {
+      return frame.getAttribute("src") || "";
+    }
+
+    return typeof frame.src === "string" ? frame.src : "";
+  }
+
+  function loadFrame(frame) {
+    const source = getFrameSource(frame);
+    if (!frame || !source || getLoadedFrameSource(frame) === source) {
+      return;
+    }
+
+    if (typeof frame.setAttribute === "function") {
+      frame.setAttribute("src", source);
+    } else {
+      frame.src = source;
+    }
+  }
+
+  function unloadFrame(frame) {
+    if (!frame || !getLoadedFrameSource(frame)) {
+      return;
+    }
+
+    if (typeof frame.removeAttribute === "function") {
+      frame.removeAttribute("src");
+      return;
+    }
+
+    frame.src = "";
+  }
 
   function createSearchParams(search) {
     const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
@@ -154,6 +220,28 @@
     });
   }
 
+  function syncFrameLoading() {
+    if (isIntroPending) {
+      slideFrames.forEach((frame) => {
+        unloadFrame(frame);
+      });
+      return;
+    }
+
+    slideFrames.forEach((frame, frameIndex) => {
+      if (
+        isBrowserMode ||
+        Math.abs(frameIndex - currentSlide) <= FRAME_PRELOAD_RADIUS ||
+        ALWAYS_PRELOADED_SLIDE_INDICES.includes(frameIndex)
+      ) {
+        loadFrame(frame);
+        return;
+      }
+
+      unloadFrame(frame);
+    });
+  }
+
   function clearProductBackgroundTransitionTimer() {
     if (!productBackgroundTransitionTimer) {
       return;
@@ -242,14 +330,17 @@
     const config = options || {};
     const previousSlide = currentSlide;
     currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+    syncFrameLoading();
     updateSlidePosition(Boolean(config.scroll));
 
     navDots.forEach((dot, dotIndex) => {
       const isActive = dotIndex === currentSlide;
       dot.classList.toggle("active", isActive);
       if (isActive) {
-        dot.setAttribute("aria-current", "true");
-      } else {
+        if (typeof dot.setAttribute === "function") {
+          dot.setAttribute("aria-current", "true");
+        }
+      } else if (typeof dot.removeAttribute === "function") {
         dot.removeAttribute("aria-current");
       }
     });
@@ -330,6 +421,16 @@
     if (event.data && event.data.type === "syncPresentationState") {
       syncUrlState(event.data.state || {});
     }
+  });
+
+  window.addEventListener("presentationIntroEntered", function () {
+    if (!isIntroPending) {
+      return;
+    }
+
+    isIntroPending = false;
+    syncFrameLoading();
+    syncFrameVisibility();
   });
 
   updateView(getInitialSlideIndex(), { scroll: false, instantBackground: true });

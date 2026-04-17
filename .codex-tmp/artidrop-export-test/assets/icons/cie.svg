@@ -1,0 +1,40 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+<!-- 定义投影和样式 -->
+<defs>
+<filter id="softShadow" x="-20%" y="-20%" width="150%" height="150%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+<feOffset dx="2" dy="5" result="offsetblur" />
+<feComponentTransfer>
+<feFuncA type="linear" slope="0.1" />
+</feComponentTransfer>
+<feMerge>
+<feMergeNode />
+<feMergeNode in="SourceGraphic" />
+</feMerge>
+</filter>
+</defs>
+
+<!-- 3D 立方体组 - 视角已调整为与图片一致 -->
+
+<!-- 比例参考：H=2.3 (161px), W=2.0 (120px 投影), D=1.0 (60px 投影) -->
+
+<g transform="translate(200, 240)" filter="url(#softShadow)">
+
+<!-- 正面 (左侧大面) - 中灰色 -->
+<!-- 对应尺寸 W=2.0, H=2.3 -->
+<path d="M -100 0 L 20 40 L 20 -121 L -100 -161 Z" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5" />
+
+<!-- 侧面 (右侧窄面) - 稍深灰色 -->
+<!-- 对应尺寸 D=1.0, H=2.3 -->
+<path d="M 20 40 L 80 20 L 80 -141 L 20 -121 Z" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5" />
+
+<!-- 顶面 (俯视图) - 最浅灰白色 -->
+<!-- 对应尺寸 W=2.0, D=1.0 -->
+<path d="M -100 -161 L 20 -121 L 80 -141 L -40 -181 Z" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5" />
+
+<!-- 垂直棱线强化 -->
+<path d="M 20 -121 L 20 40" fill="none" stroke="#d1d5db" stroke-width="1" />
+
+
+</g>
+</svg>

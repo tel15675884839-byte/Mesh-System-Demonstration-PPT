@@ -1,14 +1,18 @@
 (function () {
   const canvas = document.getElementById("spaceCanvas");
-  const contentFrame = document.getElementById("contentFrame");
+  const contentLayer = document.getElementById("content-layer");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const PARALLAX_DURATION_MS = 1200;
 
-  if (!canvas || !contentFrame) {
+  if (!canvas || !contentLayer) {
     return;
   }
 
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+
   let width = 0;
   let height = 0;
   let mouseX = 0;
@@ -16,6 +20,7 @@
   let stars = [];
   let rafId = 0;
   let isEntering = false;
+  let hasSignaledPresentationEntry = false;
 
   function resize() {
     width = canvas.width = window.innerWidth;
@@ -121,6 +126,17 @@
     rafId = window.requestAnimationFrame(animate);
   }
 
+  function signalPresentationEntry() {
+    if (hasSignaledPresentationEntry) {
+      return;
+    }
+
+    hasSignaledPresentationEntry = true;
+    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+      window.dispatchEvent(new CustomEvent("presentationIntroEntered"));
+    }
+  }
+
   function enterPresentation() {
     if (isEntering) {
       return;
@@ -130,14 +146,18 @@
     window.cancelAnimationFrame(rafId);
 
     if (prefersReducedMotion) {
+      contentLayer.removeAttribute("aria-hidden");
       document.body.classList.add("mode-parallax");
       document.body.classList.add("mode-entered");
+      signalPresentationEntry();
       return;
     }
 
+    contentLayer.removeAttribute("aria-hidden");
     document.body.classList.add("mode-parallax");
     window.setTimeout(() => {
       document.body.classList.add("mode-entered");
+      signalPresentationEntry();
     }, PARALLAX_DURATION_MS);
   }
 

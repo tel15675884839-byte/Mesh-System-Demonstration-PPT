@@ -378,6 +378,7 @@ button {
   z-index: 10;
   width: var(--stage-width);
   height: var(--stage-height);
+  will-change: transform;
   transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
