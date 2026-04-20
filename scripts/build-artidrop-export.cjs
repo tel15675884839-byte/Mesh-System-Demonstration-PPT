@@ -60,8 +60,8 @@ const copiedFiles = [
   "assets/images/hero-1.JPG",
   "assets/images/hero-2.JPG",
   "assets/images/hero-3.JPG",
-  "assets/images/No Wiring Headahce.jpg",
-  "assets/images/Wiring Headache.jpg",
+  "assets/images/wireless.jpg",
+  "assets/images/wiring.jpg",
   "assets/images/products/io module.png",
   "assets/images/products/mcp.png",
   "assets/images/products/node.png",
@@ -189,12 +189,6 @@ function buildSlideHtml(index) {
   const slide = slides[index];
   const sourcePath = path.join(rootDir, slide.source);
   let html = fs.readFileSync(sourcePath, "utf8");
-
-  if (slide.slug === "installation") {
-    html = html
-      .replace(/\.\.\/assets\/images\/wiring\.png/g, "../assets/images/Wiring%20Headache.jpg")
-      .replace(/\.\.\/assets\/images\/wireless\.png/g, "../assets/images/No%20Wiring%20Headahce.jpg");
-  }
 
   html = html.replace(
     /<html([^>]*)>/i,

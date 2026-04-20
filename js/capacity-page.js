@@ -1087,4 +1087,20 @@
     handleAdvance();
   });
   window.addEventListener("resize", handleResize);
+
+  // AUTOMATION: Trigger initial animation when the page becomes visible
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "slideVisibility") {
+      return;
+    }
+
+    if (event.data.active) {
+      // Small delay to ensure the DOM is ready and visible
+      window.setTimeout(() => {
+        if (interactionStep === STEP_EXPANSION_STAGED || interactionStep === STEP_EXPANSION_ANIMATE) {
+          runExpansionSequence();
+        }
+      }, 300);
+    }
+  });
 }());

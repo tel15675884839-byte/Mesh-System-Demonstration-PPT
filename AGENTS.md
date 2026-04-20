@@ -1,5 +1,6 @@
 # AGENTS.md
 |IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for project tasks. Verify repository facts before acting.
+|Environment:current agent environment cannot execute `rg`; default to PowerShell-native commands such as `Get-ChildItem`, `Select-String`, and `Get-Content` for file discovery, search, and reads.
 |Project:Mesh html |Type:static HTML/CSS/JS presentation repo for Wireless Mesh Fire Alarm System and related demo/preview pages.
 |Primary Entry:open `index.html` for the merged landing flow and main deck shell|slides are iframe-loaded from `pages/*.html`.
 |Structure:root pages live in `pages/`|shared styles in `css/{style.css,page-base.css,welcome.css}`|runtime scripts in `js/`|branding/media in `assets/`.

@@ -58,12 +58,14 @@
   const openingPlayerHost = document.getElementById("opening-player-host");
   const openingPlayerMessage = document.getElementById("opening-player-message");
   const embeddedOpeningScene = document.getElementById("opening-scene-data");
+  const viewToggleButtons = document.querySelectorAll(".view-toggle-button");
 
   let player = null;
   let bootstrapPromise = null;
   let resolvedIconBasePathPromise = null;
   const startsActive = window.parent === window;
   let isSlideActive = startsActive;
+  let currentView = "2d";
 
   if (!openingStage || !openingPlayerHost) {
     return;
@@ -438,9 +440,38 @@
 
   function syncPlayerVisibility() {
     if (player && typeof player.setActive === "function") {
-      player.setActive(isSlideActive);
+      player.setActive(isSlideActive && currentView === "3d");
     }
   }
+
+  function setView(view) {
+    if (!openingStage || currentView === view) {
+      return;
+    }
+
+    currentView = view;
+    openingStage.dataset.view = view;
+
+    viewToggleButtons.forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.view === view);
+    });
+
+    if (view === "3d") {
+      if (!player) {
+        ensurePlayer().catch(() => null);
+      } else {
+        syncPlayerVisibility();
+      }
+    } else {
+      syncPlayerVisibility();
+    }
+  }
+
+  viewToggleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      setView(btn.dataset.view);
+    });
+  });
 
   window.addEventListener("message", function (event) {
     if (!event.data || event.data.type !== "slideVisibility") {
@@ -448,13 +479,17 @@
     }
     if (event.data.active) {
       isSlideActive = true;
+      
+      // Always reset to 2D view when switching to this slide
+      setView("2d");
+
       if (player) {
         syncPlayerVisibility();
         return;
       }
-      ensurePlayer().catch(function () {
-        return null;
-      });
+      // We don't necessarily need to ensurePlayer immediately if we are in 2D, 
+      // but preloading is good for performance. 
+      // However, the request says "show 2D first", so we don't need 3D visible yet.
       return;
     }
 

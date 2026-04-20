@@ -114,6 +114,12 @@ test("opening page falls back to local JSON loading when file:// fetch is blocke
       }
       return null;
     },
+    querySelectorAll(selector) {
+      if (selector === ".view-toggle-button") {
+        return [];
+      }
+      return [];
+    },
     getElementById(id) {
       if (id === "opening-player-host") {
         return openingPlayerHost;
@@ -248,6 +254,12 @@ test("opening page uses embedded JSON when the browser blocks direct local file 
         return openingStage;
       }
       return null;
+    },
+    querySelectorAll(selector) {
+      if (selector === ".view-toggle-button") {
+        return [];
+      }
+      return [];
     },
     getElementById(id) {
       if (id === "opening-player-host") {

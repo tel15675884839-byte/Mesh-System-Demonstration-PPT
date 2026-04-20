@@ -424,3 +424,72 @@ test("mesh stage removes flash feedback, halves particles, speeds them up, and d
     "Expected recovering a branch to avoid flashing the whole stage green."
   );
 });
+
+test("mesh communication stage adds smaller sounders below nodes 1 and 2 with mesh particle links", async () => {
+  const harness = createMeshHarness();
+
+  vm.runInNewContext(meshScript, harness.context, {
+    filename: "mesh-page.js"
+  });
+
+  await flushTasks();
+
+  const controller = harness.canvas.__meshController;
+  assert.ok(controller, "Expected mesh stage script to attach a testable controller to the canvas.");
+
+  const snapshot = controller.getSnapshot();
+  const node1 = snapshot.nodes.find((node) => node.id === 1);
+  const node2 = snapshot.nodes.find((node) => node.id === 2);
+
+  assert.equal(node1.accessoryIcons.join(","), "sounder", "Expected node 1 to add a sounder accessory.");
+  assert.equal(node2.accessoryIcons.join(","), "sounder", "Expected node 2 to add a sounder accessory.");
+  assert.equal(node1.accessoryLayout, "below", "Expected node 1 sounder to sit below the main device.");
+  assert.equal(node2.accessoryLayout, "below", "Expected node 2 sounder to sit below the main device.");
+  assert.equal(node1.accessoryOffsetY, node2.accessoryOffsetY, "Expected node 1 and 2 sounders to stay aligned.");
+  assert.ok(node1.accessoryOffsetY > 100, "Expected node 1 sounder to sit clearly below the main device.");
+  assert.equal(node1.accessorySizeScale, 0.7, "Expected node 1 sounder icon to be 30% smaller.");
+  assert.equal(node2.accessorySizeScale, 0.7, "Expected node 2 sounder icon to be 30% smaller.");
+
+  assert.equal(
+    JSON.stringify(
+      snapshot.edges
+        .filter((edge) => edge.type === "sounder")
+        .map((edge) => ({ source: edge.source, target: edge.target, targetAccessory: edge.targetAccessory, active: edge.active }))
+    ),
+    JSON.stringify([
+      { source: 1, target: 1, targetAccessory: true, active: true },
+      { source: 2, target: 2, targetAccessory: true, active: true },
+      { source: 1, target: 2, targetAccessory: true, active: false },
+      { source: 2, target: 1, targetAccessory: true, active: false }
+    ]),
+    "Expected each sounder to start with one active primary mesh link and one inactive backup link."
+  );
+
+  const primaryPoint = controller.getEdgeMidpoint(1, 1, true);
+  assert.ok(primaryPoint, "Expected sounder primary mesh link to expose a midpoint for interaction.");
+
+  harness.canvas.dispatchEvent({
+    type: "pointerdown",
+    button: 0,
+    clientX: primaryPoint.x,
+    clientY: primaryPoint.y,
+    preventDefault() {},
+    stopPropagation() {}
+  });
+
+  const afterBreak = controller.getSnapshot();
+  assert.equal(
+    afterBreak.edges.find((edge) => edge.type === "sounder" && edge.source === 1 && edge.target === 1).broken,
+    true,
+    "Expected disabling the primary sounder link to mark it broken."
+  );
+  assert.equal(
+    afterBreak.edges.find((edge) => edge.type === "sounder" && edge.source === 1 && edge.target === 2).active,
+    true,
+    "Expected the sounder to switch particle communication to the backup link."
+  );
+
+  const diagnostics = controller.getDiagnostics();
+  assert.equal(diagnostics.sounderParticlesPerEdge, 1, "Expected sounder mesh links to use moving particle flow.");
+  assert.equal(diagnostics.alarmLinksVisible, false, "Expected the previous red alarm overlay to be removed.");
+});

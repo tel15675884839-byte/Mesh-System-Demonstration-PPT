@@ -24,8 +24,17 @@
       </header>
 
       <div class="visual-card opening-stage-shell">
-        <div class="opening-stage" aria-label="Opening stage">
+        <div class="opening-stage" aria-label="Opening stage" data-view="2d">
+          <div class="opening-view-controls">
+            <button class="view-toggle-button active" data-view="2d">2D</button>
+            <button class="view-toggle-button" data-view="3d">3D</button>
+          </div>
           <div class="opening-player-host" id="opening-player-host" aria-label="Opening 3D mesh player"></div>
+          <div class="opening-2d-container">
+            <div class="opening-2d-wrapper">
+              <img class="opening-2d-view" src="../assets/images/mesh2D.png" alt="2D Mesh View">
+            </div>
+          </div>
           <div
             class="opening-player-message"
             id="opening-player-message"

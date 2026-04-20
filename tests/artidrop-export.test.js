@@ -53,8 +53,8 @@ test("Artidrop export builder creates a root welcome entry and top-level slide p
 
   assert.doesNotMatch(installationSlideHtml, /assets\/images\/wireless\.png/, "Artidrop export should avoid the oversized wireless PNG.");
   assert.doesNotMatch(installationSlideHtml, /assets\/images\/wiring\.png/, "Artidrop export should avoid the oversized wiring PNG.");
-  assert.match(installationSlideHtml, /assets\/images\/No%20Wiring%20Headahce\.jpg/, "Installation slide should use the smaller wireless JPG in export mode.");
-  assert.match(installationSlideHtml, /assets\/images\/Wiring%20Headache\.jpg/, "Installation slide should use the smaller wiring JPG in export mode.");
+  assert.match(installationSlideHtml, /assets\/images\/wireless\.jpg/, "Installation slide should use the smaller wireless JPG in export mode.");
+  assert.match(installationSlideHtml, /assets\/images\/wiring\.jpg/, "Installation slide should use the smaller wiring JPG in export mode.");
 
   assert.match(meshSlideHtml, /Mesh Communication/, "Mesh slide page should include mesh content.");
   assert.match(meshSlideHtml, /src="\.\.\/js\/mesh-page\.js/, "Mesh slide page should keep the original mesh script path context.");
