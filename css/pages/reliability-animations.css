@@ -1,0 +1,268 @@
+/* Visual Demo for Reliability */
+.reli-animation-map,
+.reli-connection-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.reli-animation-map {
+  overflow: hidden;
+}
+
+.reli-connection-svg {
+  pointer-events: none;
+  z-index: 2;
+}
+
+.reliability-device {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  user-select: none;
+}
+
+.reli-icon {
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(1) contrast(1.1) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  transition: transform 0.2s ease, filter 0.3s ease;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+.reliability-device.panel {
+  width: 240px;
+  height: 240px;
+}
+
+.reliability-device.panel .reli-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.reliability-device.cie {
+  width: 247px;
+  height: 247px;
+}
+
+.reliability-device.cie .reli-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.reliability-device.cie .reli-device-label {
+  bottom: 26px;
+}
+
+.reliability-device.node .reli-icon { background-image: url('../../assets/icons/node.svg'); }
+.reliability-device.det .reli-icon { background-image: url('../../assets/icons/smoke.svg'); }
+.reliability-device.sounder .reli-icon { background-image: url('../../assets/icons/sounder.svg'); }
+.reliability-device.panel .reli-icon { background-image: url('../../assets/icons/panel.svg'); }
+.reliability-device.cie .reli-icon { background-image: url('../../assets/icons/cie.svg'); }
+.reliability-device.leader-node .reli-icon {
+  background-image: url('../../assets/icons/node.svg');
+  filter: brightness(1.2) drop-shadow(0 0 15px var(--page-accent));
+}
+
+.reli-device-label {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(226, 236, 246, 0.86);
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.2);
+}
+
+.reli-link {
+  fill: none;
+  stroke-width: 2;
+  pointer-events: none;
+  transition: stroke 0.25s ease, stroke-opacity 0.25s ease;
+}
+
+.reli-link-wired {
+  stroke: rgba(214, 227, 244, 0.82);
+  stroke-width: 2;
+  stroke-dasharray: none;
+  filter: none;
+}
+
+.reli-link-wireless-glow {
+  stroke: rgba(0, 229, 255, 0.5);
+  stroke-width: 4;
+  stroke-dasharray: 6 6;
+  filter: blur(3px);
+}
+
+.reli-link-wireless-core {
+  stroke: #ffffff;
+  stroke-width: 1.2;
+  stroke-dasharray: 6 6;
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.8));
+}
+
+.reli-link-wireless-secondary-glow {
+  stroke: rgba(77, 198, 255, 0.4);
+  stroke-width: 4;
+  stroke-dasharray: 6 6;
+  filter: blur(3px);
+}
+
+.reli-link-wireless-secondary-core {
+  stroke: #ffffff;
+  stroke-width: 1.2;
+  stroke-dasharray: 6 6;
+  filter: drop-shadow(0 0 3px rgba(77, 198, 255, 0.7));
+  opacity: 0.9;
+}
+
+.reli-link-broken {
+  stroke: #ff3333 !important;
+  stroke-dasharray: 2 6 !important;
+  stroke-opacity: 0.92 !important;
+  animation: reli-line-crack 0.3s infinite alternate;
+}
+
+.reli-connection-hitbox {
+  stroke: transparent;
+  stroke-width: 18;
+  fill: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+@keyframes reli-line-crack {
+  0% { stroke-opacity: 0.4; stroke-dashoffset: 0; }
+  100% { stroke-opacity: 1; stroke-dashoffset: 10; }
+}
+
+.reli-break-x {
+  pointer-events: none;
+  animation: reli-x-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.reli-break-x-line {
+  stroke: #ff4a4a;
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(255, 74, 74, 0.65));
+}
+
+@keyframes reli-x-pop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  70% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.reli-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px 2px rgba(0, 229, 255, 0.8), 0 0 4px 1px #ffffff;
+  pointer-events: none;
+  z-index: 5;
+  filter: brightness(1.5);
+}
+
+.reli-particle-secondary {
+  background: #8ee6ff;
+  box-shadow: 0 0 9px 2px rgba(77, 198, 255, 0.58), 0 0 4px 1px rgba(255, 255, 255, 0.88);
+}
+
+.reliability-device.signal-flash .reli-icon {
+  animation: reli-device-signal 0.22s ease-out;
+}
+
+@keyframes reli-device-signal {
+  0% {
+    filter: brightness(1.1) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  }
+  35% {
+    filter: brightness(1.55) drop-shadow(0 0 18px rgba(120, 242, 255, 0.88));
+  }
+  100% {
+    filter: brightness(1.1) drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
+  }
+}
+
+.reliability-device.panel.is-alarming {
+  animation: reli-panel-warning-wobble 0.9s infinite ease-in-out;
+}
+
+.reliability-device.panel.is-alarming::before {
+  content: "";
+  position: absolute;
+  inset: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 92, 0.26) 0%, rgba(255, 214, 92, 0.1) 38%, transparent 74%);
+  filter: blur(10px);
+  animation: reli-panel-warning-halo 1.2s infinite ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.reliability-device.panel.is-alarming .reli-icon {
+  filter: brightness(1.02) contrast(1.12) drop-shadow(0 0 18px rgba(255, 214, 92, 0.72));
+  animation: reli-panel-warning-glow 0.95s infinite alternate;
+}
+
+@keyframes reli-panel-warning-glow {
+  0% {
+    filter: brightness(1.02) contrast(1.12) drop-shadow(0 0 12px rgba(255, 214, 92, 0.36));
+  }
+  100% {
+    filter: brightness(1.12) contrast(1.2) drop-shadow(0 0 24px rgba(255, 214, 92, 0.78));
+  }
+}
+
+.reliability-device.panel.is-alarming::after {
+  content: "⚠️";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+  line-height: 1;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+  filter: drop-shadow(0 0 10px rgba(255, 214, 92, 0.78));
+  animation: reli-warning-badge 0.95s infinite ease-in-out;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes reli-panel-warning-wobble {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  20% { transform: translate(-50.6%, -50.1%) rotate(-1.3deg); }
+  50% { transform: translate(-49.5%, -49.9%) rotate(1.2deg); }
+  80% { transform: translate(-50.4%, -50.2%) rotate(-0.9deg); }
+}
+
+@keyframes reli-panel-warning-halo {
+  0% { transform: scale(0.92); opacity: 0.42; }
+  100% { transform: scale(1.08); opacity: 0.08; }
+}
+
+@keyframes reli-warning-badge {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.08); opacity: 1; }
+}

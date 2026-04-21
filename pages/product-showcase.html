@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/product-showcase.css">
+</head>
+<body>
+  <main class="page page-product-showcase">
+    <section class="page-grid product-layout page-stage-layout">
+      <header class="product-header page-stage-header">
+        <div class="page-copy product-hero product-hero-spotlight page-hero-spotlight">
+          <h2>Product Showcase</h2>
+        </div>
+      </header>
+
+      <div class="visual-card product-stage-shell">
+        <section class="product-stage mode-cinematic" id="product-stage" aria-label="Wireless product showcase stage" data-anim="zoom">
+          <div class="product-counter" id="product-counter">01 / 07</div>
+          <div class="product-stage-main" id="product-stage-main">
+            <!-- Slides will be injected here by JS -->
+          </div>
+
+          <div class="product-nav" id="product-nav">
+            <button type="button" class="nav-btn nav-btn-prev" id="nav-prev" aria-label="Previous product">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button type="button" class="nav-btn nav-btn-next" id="nav-next" aria-label="Next product">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/page-messaging.js"></script>
+  <script src="../js/product-showcase.js?v=20260415m"></script>
+</body>
+</html>

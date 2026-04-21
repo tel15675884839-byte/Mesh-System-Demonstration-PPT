@@ -1,0 +1,4 @@
+﻿.codex-tmp/
+.worktrees/
+*.zip
+test-results/
