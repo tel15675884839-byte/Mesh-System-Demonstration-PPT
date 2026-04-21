@@ -42,8 +42,8 @@
 
   const nodes = [
     { id: 0, type: "main", x: 0, y: -164 },
-    { id: 1, type: "main", x: -188, y: 86 },
-    { id: 2, type: "main", x: 188, y: 86 },
+    { id: 1, type: "main", x: -188, y: 86, accessoryIcons: ["sounder"], accessoryLayout: "below", accessoryOffsetY: 154, accessorySizeScale: 0.7 },
+    { id: 2, type: "main", x: 188, y: 86, accessoryIcons: ["sounder"], accessoryLayout: "below", accessoryOffsetY: 154, accessorySizeScale: 0.7 },
     { id: 3, type: "sub", x: -226, y: -124, sizeScale: 0.825 },
     { id: 4, type: "sub", x: 226, y: -124, sizeScale: 0.825 },
     { id: 5, type: "sub", x: 0, y: -26 },
@@ -66,7 +66,11 @@
     { source: 6, target: 1, type: "sub", active: true, broken: false },
     { source: 7, target: 2, type: "sub", active: true, broken: false },
     { source: 8, target: 1, type: "sub", active: true, broken: false },
-    { source: 8, target: 2, type: "sub", active: false, broken: false }
+    { source: 8, target: 2, type: "sub", active: false, broken: false },
+    { source: 1, target: 1, targetAccessory: true, type: "sounder", active: true, broken: false },
+    { source: 2, target: 2, targetAccessory: true, type: "sounder", active: true, broken: false },
+    { source: 1, target: 2, targetAccessory: true, type: "sounder", active: false, broken: false },
+    { source: 2, target: 1, targetAccessory: true, type: "sounder", active: false, broken: false }
   ];
   const nodeById = new Map();
   const subEdgesByNode = new Map();
@@ -77,10 +81,10 @@
   });
 
   edges.forEach(function (edge) {
-    edge.key = edge.source + ":" + edge.target;
+    edge.key = edge.source + ":" + edge.target + (edge.targetAccessory ? ":accessory" : "");
     edgeByKey.set(edge.key, edge);
 
-    if (edge.type !== "sub") {
+    if (edge.type !== "sub" && edge.type !== "sounder") {
       return;
     }
 
@@ -108,7 +112,8 @@
 
   const iconAssets = {
     main: loadIcon("../assets/icons/node.svg"),
-    sub: loadIcon("../assets/icons/smoke.svg")
+    sub: loadIcon("../assets/icons/smoke.svg"),
+    sounder: loadIcon("../assets/icons/sounder.svg")
   };
 
   function loadIcon(relativePath) {
@@ -196,7 +201,7 @@
     const targetNode = getNodeById(edge.target);
     const points = {
       start: getNodePoint(sourceNode),
-      end: getNodePoint(targetNode)
+      end: edge.targetAccessory ? getAccessoryPoint(targetNode, edge.targetAccessoryIndex || 0) : getNodePoint(targetNode)
     };
 
     stageState.frameEdgePoints.set(edge.key, points);
@@ -275,7 +280,7 @@
     let matchedDistance = Infinity;
 
     edges.forEach(function (edge) {
-      if (edge.type !== "sub") {
+      if (edge.type !== "sub" && edge.type !== "sounder") {
         return;
       }
 
@@ -292,7 +297,7 @@
   }
 
   function breakEdgeWithReroute(edge) {
-    if (!edge || edge.type !== "sub" || !edge.active || edge.broken) {
+    if (!edge || (edge.type !== "sub" && edge.type !== "sounder") || !edge.active || edge.broken) {
       return false;
     }
 
@@ -322,7 +327,7 @@
   }
 
   function recoverEdge(edge) {
-    if (!edge || edge.type !== "sub" || !edge.broken) {
+    if (!edge || (edge.type !== "sub" && edge.type !== "sounder") || !edge.broken) {
       return false;
     }
 
@@ -553,12 +558,53 @@
 
   // Function drawNodeShell removed as it is no longer used per user request
 
-  function drawFallbackIcon(node, point) {
+  function getNodeIconSize(node) {
+    let iconSize = (node.type === "main" ? 58 : 38) * stageState.scale;
+
+    if (node.sizeScale) {
+      iconSize *= node.sizeScale;
+    }
+
+    return iconSize;
+  }
+
+  function getAccessoryIconSize(node) {
+    return getNodeIconSize(node) * (node.type === "main" ? 0.82 : 0.96) * (node.accessorySizeScale || 1);
+  }
+
+  function getAccessoryPoint(node, index) {
+    const point = getNodePoint(node);
+    const accessorySize = getAccessoryIconSize(node);
+    const layout = node.accessoryLayout || "right";
+    const offsetX = (node.accessoryOffsetX || 0) * stageState.scale;
+    const offsetY = (node.accessoryOffsetY || 0) * stageState.scale;
+
+    if (layout === "below") {
+      return {
+        x: point.x + offsetX,
+        y: point.y + offsetY
+      };
+    }
+
+    const iconSize = getNodeIconSize(node);
+    const gap = Math.max(7, 10 * stageState.scale);
+    const accessoryCount = Array.isArray(node.accessoryIcons) ? node.accessoryIcons.length : 1;
+    const groupWidth = iconSize + gap + accessorySize * accessoryCount + gap * Math.max(accessoryCount - 1, 0);
+
+    return {
+      x: point.x - groupWidth / 2 + iconSize + gap + accessorySize / 2 + index * (accessorySize + gap) + offsetX,
+      y: point.y + offsetY
+    };
+  }
+
+  function drawFallbackIcon(node, point, size) {
+    const fallbackSize = size || (node.type === "main" ? 38 : 24);
+
     if (node.type === "main") {
       context.beginPath();
       context.strokeStyle = "rgba(244, 249, 255, 0.92)";
       context.lineWidth = 2.4;
-      context.roundRect(point.x - 19, point.y - 13, 38, 26, 8);
+      context.roundRect(point.x - fallbackSize / 2, point.y - fallbackSize * 0.34, fallbackSize, fallbackSize * 0.68, 8);
       context.stroke();
       return;
     }
@@ -566,36 +612,47 @@
     context.beginPath();
     context.strokeStyle = "rgba(244, 249, 255, 0.92)";
     context.lineWidth = 2.2;
-    context.arc(point.x, point.y, 12, 0, Math.PI * 2);
+    context.arc(point.x, point.y, fallbackSize * 0.32, 0, Math.PI * 2);
     context.stroke();
+  }
+
+  function drawIconAsset(asset, node, point, iconSize, alpha) {
+    if (asset && asset.ready) {
+      context.save();
+      context.globalAlpha = alpha;
+      context.drawImage(
+        asset.image,
+        point.x - iconSize / 2,
+        point.y - iconSize / 2,
+        iconSize,
+        iconSize
+      );
+      context.restore();
+      return;
+    }
+
+    context.save();
+    context.globalAlpha = alpha;
+    drawFallbackIcon(node, point, iconSize);
+    context.restore();
   }
 
   function drawNodes() {
     nodes.forEach(function (node) {
       const point = getNodePoint(node);
       const disconnected = node.type === "sub" && isNodeDisconnected(node.id);
-
       const iconAsset = node.type === "main" ? iconAssets.main : iconAssets.sub;
-      let iconSize = (node.type === "main" ? 58 : 38) * stageState.scale;
-      
-      if (node.sizeScale) {
-        iconSize *= node.sizeScale;
-      }
+      const iconSize = getNodeIconSize(node);
+      const accessoryIcons = Array.isArray(node.accessoryIcons) ? node.accessoryIcons : [];
 
-      if (iconAsset.ready) {
-        context.save();
-        context.globalAlpha = disconnected ? 0.45 : 1;
-        context.drawImage(
-          iconAsset.image,
-          point.x - iconSize / 2,
-          point.y - iconSize / 2,
-          iconSize,
-          iconSize
-        );
-        context.restore();
-      } else {
-        drawFallbackIcon(node, point);
-      }
+      drawIconAsset(iconAsset, node, point, iconSize, disconnected ? 0.45 : 1);
+
+      accessoryIcons.forEach(function (iconName, index) {
+        const accessoryAsset = iconAssets[iconName];
+        const accessoryPoint = getAccessoryPoint(node, index);
+
+        drawIconAsset(accessoryAsset, node, accessoryPoint, getAccessoryIconSize(node), disconnected ? 0.45 : 1);
+      });
     });
   }
 
@@ -791,13 +848,18 @@
           target: edge.target,
           type: edge.type,
           active: edge.active,
-          broken: edge.broken
+          broken: edge.broken,
+          targetAccessory: !!edge.targetAccessory
         };
       }),
       nodes: nodes.map(function (node) {
         return {
           id: node.id,
-          type: node.type
+          type: node.type,
+          accessoryIcons: Array.isArray(node.accessoryIcons) ? node.accessoryIcons.slice() : [],
+          accessoryLayout: node.accessoryLayout || "",
+          accessoryOffsetY: node.accessoryOffsetY || 0,
+          accessorySizeScale: node.accessorySizeScale || 1
         };
       })
     };
@@ -808,14 +870,16 @@
       flashIntensity: 0,
       mainParticlesPerEdge: MAIN_PARTICLES_PER_EDGE,
       subParticlesPerEdge: SUB_PARTICLES_PER_EDGE,
+      sounderParticlesPerEdge: SUB_PARTICLES_PER_EDGE,
+      alarmLinksVisible: false,
       subNodeShellVisible: false,
       subParticleSpeed: ACTIVE_PARTICLE_SPEED * 1.1,
       mainParticleSpeed: ACTIVE_PARTICLE_SPEED * 0.9
     };
   }
 
-  function getEdgeMidpoint(source, target) {
-    const edge = edgeByKey.get(source + ":" + target);
+  function getEdgeMidpoint(source, target, targetAccessory) {
+    const edge = edgeByKey.get(source + ":" + target + (targetAccessory ? ":accessory" : ""));
 
     if (!edge) {
       return null;

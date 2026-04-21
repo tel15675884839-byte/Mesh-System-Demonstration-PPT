@@ -17,6 +17,23 @@
 
   const products = [
     {
+      slug: "system-overview",
+      name: "System Overview",
+      imageScale: 1.1,
+      category: "Wireless Mesh System",
+      title: "Wireless Mesh Fire Alarm System",
+      image: "../assets/images/products/all.png",
+      fallbackImage: "../assets/icons/loop expansion card.svg",
+      accentRgb: "255, 255, 255",
+      accentSoftRgb: "200, 200, 200",
+      stats: [
+        { label: "Architecture", value: "Wireless Mesh Topology" },
+        { label: "Reliability", value: "Redundant Communication" },
+        { label: "Devices", value: "Full Range of Wireless Units" },
+        { label: "Certification", value: "EN54 Part 25 Certified" }
+      ]
+    },
+    {
       slug: "expansion-card",
       name: "Expansion Card",
       imageScale: 0.78,
@@ -29,9 +46,9 @@
       accentSoftRgb: "15, 235, 198",
       stats: [
         { label: "Installation", value: "Mounted in the CIE" },
-        { label: "Loop Support", value: "Up to 4 wireless loops" },
-        { label: "Per-loop Capacity", value: "125 devices" },
-        { label: "Node Structure", value: "1 leader + 31 nodes" }
+        { label: "Loop Capacity", value: "4 Wireless Loops" },
+        { label: "Device Capacity", value: "500 Devices" },
+        { label: "Node Capacity", value: "64 Nodes" }
       ]
     },
     {
@@ -44,7 +61,7 @@
       accentRgb: "106, 234, 198",
       accentSoftRgb: "112, 240, 255",
       stats: [
-        { label: "Power Input", value: "DC 24V" },
+        { label: "Power Input", value: "Loop Power/DC 24V" },
         { label: "Monitoring", value: "Quiescent, alarm, fault" },
         { label: "Antenna", value: "Internal antenna" },
         { label: "Communication", value: "Mesh topology" }
@@ -59,6 +76,7 @@
       fallbackImage: "../assets/icons/smoke.svg",
       accentRgb: "151, 237, 255",
       accentSoftRgb: "15, 235, 198",
+      battery: { image: "../assets/images/products/17450.png", count: 1 },
       stats: [
         { label: "Detection", value: "Smoke, heat, or combined" },
         { label: "Power Source", value: "10-year Lithium battery" },
@@ -75,6 +93,7 @@
       fallbackImage: "../assets/icons/mcp.svg",
       accentRgb: "255, 89, 89",
       accentSoftRgb: "255, 140, 102",
+      battery: { image: "../assets/images/products/17450mcp.png", count: 1 },
       stats: [
         { label: "Power Source", value: "10-year Lithium battery" },
         { label: "Antenna", value: "Internal antenna" },
@@ -91,6 +110,7 @@
       fallbackImage: "../assets/icons/sounder.svg",
       accentRgb: "255, 108, 80",
       accentSoftRgb: "255, 171, 102",
+      battery: { image: "../assets/images/products/17450.png", count: 4 },
       stats: [
         { label: "Models", value: "Audible, visual, A/V combo" },
         { label: "Power Source", value: "10-year Lithium battery" },
@@ -108,6 +128,7 @@
       fallbackImage: "../assets/icons/io-module.svg",
       accentRgb: "142, 196, 255",
       accentSoftRgb: "112, 240, 255",
+      battery: { image: "../assets/images/products/17450.png", count: 4 },
       stats: [
         { label: "Power Source", value: "10-year Lithium battery" },
         { label: "Antenna", value: "Internal antenna" },
@@ -185,11 +206,22 @@
     return stats
       .map((item) => (
         "<article class=\"product-stat-card\">" +
-          "<p class=\"product-stat-label\">" + item.label + "</p>" +
-          "<p class=\"product-stat-value\">" + item.value + "</p>" +
+        "<p class=\"product-stat-label\">" + item.label + "</p>" +
+        "<p class=\"product-stat-value\">" + item.value + "</p>" +
         "</article>"
       ))
       .join("");
+  }
+
+  function renderBatteryHTML(battery) {
+    if (!battery || !battery.image) return "";
+
+    let html = "<div class=\"product-battery-group\" data-count=\"" + battery.count + "\">";
+    for (let i = 0; i < battery.count; i++) {
+      html += "<img src=\"" + battery.image + "\" class=\"battery-icon\" alt=\"Battery " + (i + 1) + "\">";
+    }
+    html += "</div>";
+    return html;
   }
 
   function updateAria(slide, index) {
@@ -211,7 +243,7 @@
     if (!product) return;
 
     const config = options || {};
-    
+
     // Mark previous slide
     const currentSlide = stageMain.querySelector(".product-slide.active");
     if (currentSlide) {
@@ -228,18 +260,26 @@
     // Create new slide
     const newSlide = document.createElement("div");
     newSlide.className = "product-slide";
-    newSlide.innerHTML = 
-      "<section class=\"product-visual-panel\" aria-live=\"polite\">" +
-        "<div class=\"product-aura\" aria-hidden=\"true\"></div>" +
-        "<div class=\"product-image-shell\">" +
-          "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\">" +
-          "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\">" +
-        "</div>" +
-      "</section>" +
-      "<section class=\"product-details-panel\" role=\"tabpanel\">" +
+    
+    let detailsHTML = "";
+    if (index > 0) {
+      detailsHTML = 
+        "<section class=\"product-details-panel\" role=\"tabpanel\">" +
         "<h3 class=\"product-title\">" + product.title + "</h3>" +
         "<div class=\"product-stats-grid\">" + renderStatsHTML(product.stats) + "</div>" +
-      "</section>";
+        "</section>";
+    }
+
+    newSlide.innerHTML =
+      "<section class=\"product-visual-panel\" aria-live=\"polite\">" +
+      "<div class=\"product-aura\" aria-hidden=\"true\"></div>" +
+      "<div class=\"product-image-shell\">" +
+      "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\">" +
+      "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\">" +
+      "</div>" +
+      renderBatteryHTML(product.battery) +
+      "</section>" +
+      detailsHTML;
 
     const imageEl = newSlide.querySelector(".product-image");
     if (imageEl) {
@@ -248,7 +288,7 @@
     }
 
     stageMain.appendChild(newSlide);
-    
+
     // Set accent colors
     if (!stage) {
       stage = document.getElementById("product-stage");

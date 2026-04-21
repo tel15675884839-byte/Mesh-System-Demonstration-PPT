@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Capacity Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/capacity-editor.css">
+</head>
+<body>
+  <main class="editor-shell">
+    <aside class="editor-panel editor-tools" aria-label="Capacity drawing tools">
+      <div class="editor-brand">
+        <p class="editor-eyebrow">Local tool</p>
+        <h1>System Capacity Editor</h1>
+      </div>
+
+      <div class="tool-group" aria-label="Add elements">
+        <button type="button" class="tool-button" data-add-tool="panel">Panel</button>
+        <button type="button" class="tool-button" data-add-tool="loop-card">Loop Card</button>
+        <button type="button" class="tool-button" data-add-tool="node">Node</button>
+        <button type="button" class="tool-button" data-add-tool="nodes-group">Nodes Group</button>
+        <button type="button" class="tool-button" data-add-tool="devices-group">Devices Group</button>
+        <button type="button" class="tool-button" data-add-tool="text">Text</button>
+        <button type="button" class="tool-button" data-add-tool="line">Dashed Line</button>
+        <button type="button" class="tool-button" data-add-tool="brace">Brace {</button>
+      </div>
+
+      <div class="tool-group" aria-label="Edit commands">
+        <button type="button" class="tool-button tool-button-secondary" id="duplicate-item">Duplicate</button>
+        <button type="button" class="tool-button tool-button-secondary" id="delete-item">Delete</button>
+        <button type="button" class="tool-button tool-button-secondary" id="bring-forward">Bring Forward</button>
+        <button type="button" class="tool-button tool-button-secondary" id="send-backward">Send Backward</button>
+        <button type="button" class="tool-button tool-button-secondary" id="import-from-project">Import from project</button>
+        <button type="button" class="tool-button tool-button-secondary" id="export-png">Export PNG</button>
+      </div>
+
+      <div class="tool-group" aria-label="Global settings">
+        <label class="tool-label-small">
+          Global Dash Gap
+          <input type="number" id="global-dash-gap" value="5" min="1" max="25" step="1">
+        </label>
+      </div>
+
+      <div class="tool-note">
+        Drag objects on the stage. Hold Shift while dragging to temporarily disable snapping.
+      </div>
+    </aside>
+
+    <section class="editor-workspace" aria-label="Capacity editor stage">
+      <div class="editor-stage-frame">
+        <div class="editor-stage" id="editor-stage" data-editor-stage tabindex="0" aria-label="Editable System Capacity stage">
+          <span class="editor-stage-center-line editor-stage-center-line-x" aria-hidden="true"></span>
+          <span class="editor-stage-center-line editor-stage-center-line-y" aria-hidden="true"></span>
+          <div class="editor-stage-content" id="editor-stage-content"></div>
+          <div class="editor-snap-layer" id="editor-snap-layer" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="editor-panel editor-inspector" aria-label="Selected element properties">
+      <div class="inspector-section">
+        <p class="editor-eyebrow">Selection</p>
+        <h2 id="selection-name">No item selected</h2>
+      </div>
+
+      <form class="inspector-grid" id="inspector-form">
+        <label>
+          X
+          <input id="prop-x" name="x" type="number" step="0.1" min="0" max="100">
+        </label>
+        <label>
+          Y
+          <input id="prop-y" name="y" type="number" step="0.1" min="0" max="100">
+        </label>
+        <label>
+          Width
+          <input id="prop-w" name="w" type="number" step="0.1" min="1" max="100">
+        </label>
+        <label>
+          Z
+          <input id="prop-z" name="z" type="number" step="1" min="0" max="30">
+        </label>
+        <label>
+          Font Size
+          <input id="prop-font-size" name="fontSize" type="number" step="1" min="10" max="150">
+        </label>
+        <label>
+          Text Color
+          <input id="prop-text-color" name="textColor" type="color" value="#eff8ff">
+        </label>
+        <label>
+          Rotation
+          <input id="prop-rotation" name="rotation" type="number" step="1" min="-180" max="180">
+        </label>
+        <label>
+          Scale (%)
+          <input id="prop-scale" name="scale" type="number" step="1" min="10" max="400">
+        </label>
+        <label>
+          Pile Style (1-10)
+          <input id="prop-pile-variant" name="pileVariant" type="number" step="1" min="1" max="10">
+        </label>
+        <label>
+          Height (Brace)
+          <input id="prop-h" name="h" type="number" step="1" min="10" max="600">
+        </label>
+        <label>
+          Line Style
+          <select id="prop-line-style" name="lineStyle">
+            <option value="dashed">Dashed (---)</option>
+            <option value="solid">Solid (—)</option>
+          </select>
+        </label>
+        <label class="inspector-wide">
+          Text
+          <textarea id="prop-text" name="text" rows="3"></textarea>
+        </label>
+      </form>
+
+      <div class="inspector-section">
+        <p class="editor-eyebrow">Save</p>
+        <button type="button" class="save-button" id="save-to-project">Save to project files</button>
+        <button type="button" class="tool-button tool-button-secondary" id="export-code">Generate code preview</button>
+        <p class="save-status" id="save-status" role="status"></p>
+      </div>
+
+      <details class="code-preview">
+        <summary>Generated output</summary>
+        <label>
+          HTML
+          <textarea id="generated-html" rows="8" readonly></textarea>
+        </label>
+        <label>
+          CSS
+          <textarea id="generated-css" rows="8" readonly></textarea>
+        </label>
+      </details>
+    </aside>
+  </main>
+
+  <script src="js/capacity-editor.js"></script>
+</body>
+</html>

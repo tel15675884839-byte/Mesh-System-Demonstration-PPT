@@ -207,8 +207,14 @@
       const primaryGeometry = createDoubleLaneGeometry(map, from.element, to.element, link, DOUBLE_LANE_OFFSET);
       const secondaryGeometry = createDoubleLaneGeometry(map, from.element, to.element, link, -DOUBLE_LANE_OFFSET);
 
-      drawGeometry(layer, primaryGeometry, getLinkClasses(link, "primary"), isBroken);
-      drawGeometry(layer, secondaryGeometry, getLinkClasses(link, "secondary"), isBroken);
+      // Render Primary (Glow + Core)
+      drawGeometry(layer, primaryGeometry, getLinkClasses(link, "primary-glow"), isBroken);
+      drawGeometry(layer, primaryGeometry, getLinkClasses(link, "primary-core"), isBroken);
+      
+      // Render Secondary (Glow + Core)
+      drawGeometry(layer, secondaryGeometry, getLinkClasses(link, "secondary-glow"), isBroken);
+      drawGeometry(layer, secondaryGeometry, getLinkClasses(link, "secondary-core"), isBroken);
+
       if (linkGeometryIndex) {
         linkGeometryIndex.set(linkId, {
           kind: link.kind,
@@ -231,7 +237,13 @@
     }
 
     const geometry = getConfiguredGeometry(map, from.element, to.element, link);
-    drawGeometry(layer, geometry, getLinkClasses(link), isBroken);
+    
+    if (link.kind === "wireless-single") {
+      drawGeometry(layer, geometry, getLinkClasses(link, "glow"), isBroken);
+      drawGeometry(layer, geometry, getLinkClasses(link, "core"), isBroken);
+    } else {
+      drawGeometry(layer, geometry, getLinkClasses(link), isBroken);
+    }
     if (linkGeometryIndex) {
       linkGeometryIndex.set(linkId, {
         kind: link.kind,
@@ -505,13 +517,20 @@
     return link.kind !== "wired";
   }
 
-  function getLinkClasses(link, lane = "primary") {
+  function getLinkClasses(link, mode = "primary") {
     if (link.kind === "wired") {
       return "reli-link reli-link-wired";
     }
 
-    if (link.kind === "wireless-double" && lane === "secondary") {
-      return "reli-link reli-link-wireless-secondary";
+    if (link.kind === "wireless-double") {
+      if (mode.includes("secondary")) {
+        return `reli-link reli-link-wireless-secondary-${mode.includes("glow") ? "glow" : "core"}`;
+      }
+      return `reli-link reli-link-wireless-${mode.includes("glow") ? "glow" : "core"}`;
+    }
+
+    if (link.kind === "wireless-single") {
+      return `reli-link reli-link-wireless-${mode === "glow" ? "glow" : "core"}`;
     }
 
     return "reli-link reli-link-wireless";

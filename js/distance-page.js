@@ -153,6 +153,13 @@
     updateIntroTitleTarget();
     setRevealState(true);
     schedulePostRevealSync();
+
+    // Auto-trigger the impact animation for the initial scene after a short delay
+    const initial = stage.dataset.scene;
+    setTimeout(function() {
+      if (initial === "open") showOpenImpact();
+      else if (initial === "relay") showRelayImpact();
+    }, 1000);
   }
 
   function resetInteractiveState() {
@@ -420,15 +427,9 @@
     }
 
     const pointStep = totalLength / (relayPoints.length - 1);
-    const gapSegmentIndex = Math.max(1, relayPoints.length - 3);
-    const gapStartLength = pointStep * gapSegmentIndex;
-    const gapEndLength = pointStep * (gapSegmentIndex + 1);
-    const splitPadding = Math.min(22, pointStep * 0.22);
-    const leftArcEnd = Math.max(0, gapStartLength - splitPadding);
-    const rightArcStart = Math.min(totalLength, gapEndLength + splitPadding);
 
-    relayArcLeft.setAttribute("d", buildArcSlicePath(relayMainArc, 0, leftArcEnd, 8));
-    relayArcRight.setAttribute("d", buildArcSlicePath(relayMainArc, rightArcStart, totalLength, 8));
+    relayArcLeft.setAttribute("d", buildArcSlicePath(relayMainArc, 0, totalLength, 8));
+    relayArcRight.setAttribute("d", "");
 
     relayPoints.forEach(function (point, index) {
       const arcPoint = relayMainArc.getPointAtLength(pointStep * index);
@@ -518,10 +519,6 @@
     }
 
     relayDistances.forEach(function (label, index) {
-      if (index === gapSegmentIndex) {
-        label.classList.add("is-hidden");
-        return;
-      }
       label.classList.remove("is-hidden");
       const midpointLength = pointStep * (index + 0.5);
       const centerPoint = relayMainArc.getPointAtLength(midpointLength);
@@ -544,11 +541,11 @@
     });
 
     if (relayNoteArc) {
-      const noteCenter = (gapStartLength + gapEndLength) / 2;
-      const noteHalfSpan = pointStep * 0.72;
+      const noteCenter = pointStep * 5;
+      const noteHalfSpan = pointStep * 1.0;
       const noteStartLength = Math.max(0, noteCenter - noteHalfSpan);
       const noteEndLength = Math.min(totalLength, noteCenter + noteHalfSpan);
-      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 58, 24);
+      const notePath = buildOffsetArcPath(relayMainArc, noteStartLength, noteEndLength, 44, 32);
       relayNoteArc.setAttribute("d", notePath);
     }
 
@@ -628,10 +625,14 @@
     if (next === "open") {
       resetInteractiveState();
       scheduleOpenGeometrySync();
+      // Auto-trigger
+      setTimeout(showOpenImpact, 400);
     }
     if (next === "relay") {
       resetInteractiveState();
       scheduleRelayGeometrySync();
+      // Auto-trigger
+      setTimeout(showRelayImpact, 400);
     }
 
     if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
@@ -751,11 +752,11 @@
   });
 
   if (openScene) {
-    openScene.addEventListener("click", handleOpenSceneClick);
+    // Removed click requirement for automatic display
   }
 
   if (relayScene) {
-    relayScene.addEventListener("click", handleRelaySceneClick);
+    // Removed click requirement for automatic display
   }
 
   window.addEventListener("message", function (event) {

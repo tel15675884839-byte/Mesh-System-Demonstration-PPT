@@ -153,6 +153,13 @@
     updateIntroTitleTarget();
     setRevealState(true);
     schedulePostRevealSync();
+
+    // Auto-trigger the impact animation for the initial scene after a short delay
+    const initial = stage.dataset.scene;
+    setTimeout(function() {
+      if (initial === "open") showOpenImpact();
+      else if (initial === "relay") showRelayImpact();
+    }, 1000);
   }
 
   function resetInteractiveState() {
@@ -628,10 +635,14 @@
     if (next === "open") {
       resetInteractiveState();
       scheduleOpenGeometrySync();
+      // Auto-trigger
+      setTimeout(showOpenImpact, 400);
     }
     if (next === "relay") {
       resetInteractiveState();
       scheduleRelayGeometrySync();
+      // Auto-trigger
+      setTimeout(showRelayImpact, 400);
     }
 
     if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
@@ -751,11 +762,11 @@
   });
 
   if (openScene) {
-    openScene.addEventListener("click", handleOpenSceneClick);
+    // Removed click requirement for automatic display
   }
 
   if (relayScene) {
-    relayScene.addEventListener("click", handleRelaySceneClick);
+    // Removed click requirement for automatic display
   }
 
   window.addEventListener("message", function (event) {

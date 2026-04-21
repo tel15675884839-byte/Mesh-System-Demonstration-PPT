@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../css/artidrop-shell.css">
 </head>
 <body>
-  <main class="page page-capacity" data-capacity-scene="network-level">
+  <main class="page page-capacity" data-capacity-scene="first-page">
     <section class="page-grid capacity-layout">
       <header class="capacity-header">
         <div class="page-copy capacity-hero capacity-hero-spotlight page-hero-spotlight">
@@ -23,91 +23,94 @@
       <div class="visual-card capacity-stage-shell" id="capacity-stage-shell">
         <div class="capacity-stage" id="capacity-stage" aria-label="System Capacity stage">
           <div class="capacity-stage-head">
-            <p class="capacity-stage-title">Network</p>
+            <p class="capacity-stage-title" id="capacity-stage-title">Hybrid System Scalability</p>
             <p class="capacity-stage-status" id="capacity-stage-status"></p>
           </div>
 
           <div class="capacity-stage-surface" id="capacity-stage-surface">
-            <div class="capacity-network" id="capacity-network"></div>
-            <div class="capacity-panels" id="capacity-panels"></div>
-            <div class="capacity-total-loops-badge" id="capacity-total-loops-badge" aria-hidden="true">
-              up to 16 wireless loops
-            </div>
-            <div class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"></div>
+            <section class="capacity-first-scene" id="capacity-first-scene" aria-label="Designed System Capacity page">
+              <div class="capacity-static-stage" data-capacity-static-stage>
+                <span class="capacity-static-axis capacity-static-axis-x" aria-hidden="true"></span>
+                <span class="capacity-static-axis capacity-static-axis-y" aria-hidden="true"></span>
 
-            <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
-              <div class="capacity-aggregation-core"></div>
-              <div class="capacity-value-wrapper">
-                <div class="capacity-total-value" id="capacity-total-value">0</div>
-                <span class="capacity-devices-label" id="capacity-devices-label">Devices</span>
-              </div>
-            </div>
+                <span class="capacity-static-line capacity-line-dashed" style="--x: 25.8; --y: 48.8; --length: 21.5; --angle: -2deg; --z: 1;" aria-hidden="true"></span>
+                <span class="capacity-static-line capacity-line-dashed" style="--x: 48.6; --y: 48.8; --length: 21.2; --angle: -19deg; --z: 1;" aria-hidden="true"></span>
+                <span class="capacity-static-line capacity-line-dashed" style="--x: 48.6; --y: 49.4; --length: 21.8; --angle: 19deg; --z: 1;" aria-hidden="true"></span>
+                <span class="capacity-static-line capacity-line-dashed capacity-line-muted" style="--x: 70.6; --y: 36.5; --length: 12.2; --angle: 0deg; --z: 1;" aria-hidden="true"></span>
+                <span class="capacity-static-line capacity-line-dashed capacity-line-muted" style="--x: 70.9; --y: 62.5; --length: 12.2; --angle: 0deg; --z: 1;" aria-hidden="true"></span>
 
-            <div class="capacity-expansion" id="capacity-expansion" aria-hidden="true">
-              <svg class="capacity-expansion-svg" id="capacity-expansion-svg" aria-hidden="true" preserveAspectRatio="none">
-                <defs>
-                   <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                     <polygon points="0 0, 10 3.5, 0 7" fill="rgba(94, 230, 255, 0.92)" />
-                   </marker>
-                </defs>
-              </svg>
+                <article class="capacity-static-object capacity-object-panel" style="--x: 17.8; --y: 49.5; --w: 16.5; --z: 3;" aria-label="Fire alarm control panel">
+                  <img class="capacity-panel-image" src="../assets/icons/panel.svg" alt="" aria-hidden="true">
+                  <span class="capacity-object-label">Panel</span>
+                </article>
 
-              <div class="capacity-expansion-panel" id="capacity-expansion-panel">
-                <img class="capacity-expansion-panel-icon" src="../assets/icons/panel.svg" alt="" aria-hidden="true">
-              </div>
+                <article class="capacity-static-object capacity-object-loop-card" style="--x: 39.3; --y: 49.5; --w: 11.8; --z: 4;" aria-label="Wireless loop card">
+                  <img class="capacity-loop-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">
+                  <span class="capacity-object-label">Loop Card</span>
+                </article>
 
-              <div class="capacity-expansion-left-cluster" id="capacity-expansion-left-cluster" aria-hidden="true">
-                <svg class="capacity-expansion-left-cluster-svg" id="capacity-expansion-left-cluster-svg" aria-hidden="true" preserveAspectRatio="none"></svg>
-                <div class="capacity-expansion-left-cluster-panels" id="capacity-expansion-left-cluster-panels"></div>
-              </div>
+                <article class="capacity-static-object capacity-object-node" style="--x: 61.7; --y: 31.6; --w: 8.2; --z: 4;" aria-label="Wireless node">
+                  <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
+                  <span class="capacity-object-label">Node</span>
+                </article>
 
-              <div class="capacity-expansion-link" id="capacity-expansion-link" aria-hidden="true"></div>
+                <article class="capacity-static-object capacity-object-node" style="--x: 62.1; --y: 67.2; --w: 8.2; --z: 4;" aria-label="Wireless node">
+                  <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
+                  <span class="capacity-object-label">Node</span>
+                </article>
 
-              <div class="capacity-expansion-card" id="capacity-expansion-card">
-                <img class="capacity-expansion-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">
-                <p class="capacity-expansion-card-title">Wireless Loop Card</p>
-              </div>
-
-              <div class="capacity-expansion-loops" id="capacity-expansion-loops" aria-label="Capacity loop groups"></div>
-
-              <div class="relay-capacity-highlight" id="relay-capacity-info">
-                <div class="cap-node-side">
-                  <div class="node-master-wrapper">
-                    <img src="../assets/icons/node.svg" alt="" aria-hidden="true" class="cap-icon-node">
-                    <span class="node-glow-ring"></span>
+                <article class="capacity-static-object capacity-object-cluster" style="--x: 82.2; --y: 31.6; --w: 18.5; --z: 5;" aria-label="Node and devices cluster">
+                  <div class="capacity-cluster-node">
+                    <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
+                    <span>Node</span>
                   </div>
-                </div>
-                <div class="cap-link-side">
-                  <svg class="cap-link-svg" viewBox="0 0 200 40" preserveAspectRatio="none">
-                    <path d="M0,20 Q100,20 200,20" class="cap-link-path" />
-                    <!-- Multiple faint radiating lines -->
-                    <path d="M0,20 Q100,5 200,-10" class="cap-link-sub-path" />
-                    <path d="M0,20 Q100,35 200,50" class="cap-link-sub-path" />
-                  </svg>
-                </div>
-                <div class="cap-smoke-side">
-                  <div class="device-cloud">
-                    <!-- Main prominent icons -->
-                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-1">
-                    <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true" class="cloud-icon snd-1">
-                    <img src="../assets/icons/mcp.svg" alt="" aria-hidden="true" class="cloud-icon mcp-1">
-                    <!-- Smaller / ghost icons -->
-                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-2 ghost">
-                    <img src="../assets/icons/sounder.svg" alt="" aria-hidden="true" class="cloud-icon snd-2 ghost">
-                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-3 ghost">
-                    <img src="../assets/icons/mcp.svg" alt="" aria-hidden="true" class="cloud-icon mcp-2 ghost">
-                    <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true" class="cloud-icon det-4 ghost">
+                  <div class="capacity-cluster-devices">
+                    <img class="capacity-device-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
+                    <img class="capacity-device-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
+                    <img class="capacity-device-icon" src="../assets/icons/mcp.svg" alt="" aria-hidden="true">
+                    <span class="capacity-cluster-badge">32 devices</span>
                   </div>
-                  <div class="cap-info-text">
-                    <span class="cap-number">32</span>
-                    <span class="cap-label">Devices</span>
+                </article>
+
+                <article class="capacity-static-object capacity-object-cluster" style="--x: 82.2; --y: 67.2; --w: 18.5; --z: 5;" aria-label="Node and devices cluster">
+                  <div class="capacity-cluster-node">
+                    <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
+                    <span>Node</span>
                   </div>
+                  <div class="capacity-cluster-devices">
+                    <img class="capacity-device-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
+                    <img class="capacity-device-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
+                    <img class="capacity-device-icon" src="../assets/icons/mcp.svg" alt="" aria-hidden="true">
+                    <span class="capacity-cluster-badge">32 devices</span>
+                  </div>
+                </article>
+
+                <p class="capacity-static-text capacity-text-main" style="--x: 39.5; --y: 18.5; --font-size: 30px; --z: 6;">4 wireless loops per panel</p>
+                <p class="capacity-static-text" style="--x: 61.8; --y: 21.4; --font-size: 18px; --z: 6;">32 nodes per loop</p>
+                <p class="capacity-static-text" style="--x: 82.2; --y: 20.5; --font-size: 18px; --z: 6;">32 devices per node</p>
+                <p class="capacity-static-text capacity-text-total" style="--x: 50; --y: 87.5; --font-size: 34px; --z: 6;">Scalable wireless capacity: panel + loop card + node clusters</p>
+              </div>
+            </section>
+
+            <section class="capacity-network-scene" id="capacity-network-scene" aria-label="Network capacity page" aria-hidden="true">
+              <div class="capacity-network" id="capacity-network"></div>
+              <div class="capacity-panels" id="capacity-panels"></div>
+              <div class="capacity-total-loops-badge" id="capacity-total-loops-badge" aria-hidden="true">
+                up to 16 wireless loops
+              </div>
+              <div class="capacity-device-overlay" id="capacity-device-overlay" aria-hidden="true"></div>
+
+              <div class="capacity-aggregation" id="capacity-aggregation" aria-live="polite">
+                <div class="capacity-aggregation-core"></div>
+                <div class="capacity-value-wrapper">
+                  <div class="capacity-total-value" id="capacity-total-value">0</div>
+                  <span class="capacity-devices-label" id="capacity-devices-label">Devices</span>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
-          <button type="button" class="capacity-stage-hint" id="capacity-stage-hint">Click to start</button>
+          <button type="button" class="capacity-stage-hint" id="capacity-stage-hint">Click to continue</button>
         </div>
       </div>
     </section>
