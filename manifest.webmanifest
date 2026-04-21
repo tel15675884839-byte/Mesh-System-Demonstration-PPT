@@ -1,0 +1,19 @@
+{
+  "name": "Wireless Mesh Fire Alarm System",
+  "short_name": "Mesh PPT",
+  "description": "Offline presentation for the Wireless Mesh Fire Alarm System.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#02070d",
+  "theme_color": "#02070d",
+  "icons": [
+    {
+      "src": "assets/branding/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#02070d">
   <title>Wireless Mesh Fire Alarm System</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/branding/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -178,5 +181,12 @@
   <script src="js/cyber-page-background.js?v=20260415k"></script>
   <script src="js/app.js?v=20260417a"></script>
   <script src="js/welcome.js"></script>
+  <script>
+    if ("serviceWorker" in navigator && window.isSecureContext) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("service-worker.js").catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>
