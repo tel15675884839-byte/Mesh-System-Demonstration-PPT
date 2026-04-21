@@ -16,7 +16,7 @@ Then open `http://127.0.0.1:8765/index.html`.
 
 ## Offline Tablet Use
 
-On a Samsung Tab, open the deployed HTTPS site once while online and wait for the presentation to load. In Chrome, use `Add to Home screen` or `Install app`. After it is installed, open it from the home-screen icon for offline viewing.
+On a Samsung Tab, open the deployed HTTPS site once while online and wait until the `Offline ready` message appears. In Chrome, use `Add to Home screen` or `Install app`. After it is installed, open it from the home-screen icon for offline viewing.
 
 If the presentation is updated later, open it once while online again so the tablet can refresh its offline cache.
 

@@ -7,6 +7,50 @@
   <title>Wireless Mesh Fire Alarm System</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/branding/icon.png">
+  <script>
+    (function () {
+      if (!("serviceWorker" in navigator) || !window.isSecureContext) {
+        return;
+      }
+
+      function showOfflineStatus() {
+        var status = document.getElementById("offline-cache-status");
+        if (!status) {
+          window.addEventListener("DOMContentLoaded", showOfflineStatus, { once: true });
+          return;
+        }
+
+        status.hidden = false;
+        status.classList.add("is-visible");
+        window.setTimeout(function () {
+          status.classList.remove("is-visible");
+          status.hidden = true;
+        }, 4200);
+      }
+
+      window.meshOfflineReady = navigator.serviceWorker.register("service-worker.js")
+        .then(function (registration) {
+          if (registration.installing) {
+            return new Promise(function (resolve) {
+              registration.installing.addEventListener("statechange", function (event) {
+                if (event.target.state === "activated") {
+                  resolve(registration);
+                }
+              });
+            });
+          }
+
+          return navigator.serviceWorker.ready;
+        })
+        .then(function (registration) {
+          showOfflineStatus();
+          return registration;
+        })
+        .catch(function (error) {
+          console.warn("Offline cache registration failed.", error);
+        });
+    }());
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,6 +58,7 @@
   <link rel="stylesheet" href="css/welcome.css">
 </head>
 <body>
+  <div class="offline-cache-status" id="offline-cache-status" role="status" aria-live="polite" hidden>Offline ready</div>
   <div class="welcome-shell">
     <div id="content-layer" class="content-layer" aria-hidden="true">
       <!-- intro-content-start -->
@@ -181,12 +226,5 @@
   <script src="js/cyber-page-background.js?v=20260415k"></script>
   <script src="js/app.js?v=20260417a"></script>
   <script src="js/welcome.js"></script>
-  <script>
-    if ("serviceWorker" in navigator && window.isSecureContext) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("service-worker.js").catch(function () {});
-      });
-    }
-  </script>
 </body>
 </html>

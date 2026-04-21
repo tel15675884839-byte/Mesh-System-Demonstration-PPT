@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "mesh-presentation-offline-v20260421-1";
+const CACHE_NAME = "mesh-presentation-offline-v20260421-2";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -129,7 +129,19 @@ self.addEventListener("fetch", function (event) {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(function () {
+      caches.match(request, { ignoreSearch: true }).then(function (cachedResponse) {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return caches.match("./index.html");
+      }).then(function (cachedFallback) {
+        if (cachedFallback) {
+          return cachedFallback;
+        }
+
+        return fetch(request);
+      }).catch(function () {
         return caches.match("./index.html");
       })
     );

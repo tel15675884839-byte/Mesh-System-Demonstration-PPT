@@ -59,6 +59,30 @@ body {
   min-height: 100vh;
 }
 
+.offline-cache-status {
+  position: fixed;
+  right: 24px;
+  bottom: 22px;
+  z-index: 100;
+  padding: 10px 14px;
+  border: 1px solid rgba(126, 231, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(2, 9, 18, 0.78);
+  color: #dff9ff;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.24);
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.offline-cache-status.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 button {
   font: inherit;
   letter-spacing: inherit;
