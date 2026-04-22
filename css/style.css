@@ -285,8 +285,8 @@ button {
 }
 
 .brand-icon {
-  width: 22px;
-  height: 22px;
+  height: 34.3px;
+  width: auto;
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 0 10px rgba(15, 235, 198, 0.35));

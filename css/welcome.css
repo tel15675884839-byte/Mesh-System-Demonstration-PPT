@@ -139,7 +139,7 @@ body {
   box-shadow: none;
   backdrop-filter: none;
   transform-origin: left top;
-  transform: scale(0.56);
+  transform: scale(0.68);
 }
 
 .welcome-brand::after {
