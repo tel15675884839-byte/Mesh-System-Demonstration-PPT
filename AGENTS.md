@@ -9,6 +9,7 @@
 |Project Skills:repo-local skills exist in `skills/{discussion-first,presentation-title-morph}/SKILL.md`.
 |Preview Command:preferred local launcher is `start-local-server.bat`|it opens `http://127.0.0.1:8765/index.html` and serves repo root with Python `http.server`.
 |Preview Fallback:if batch script is unsuitable run `py -m http.server 8765` or `python -m http.server 8765` from repo root then open `/index.html`.
+|Offline Packaging:for zip packages that must open `index.html` directly and preserve original behavior, follow `docs/original-offline-packaging.md` and use `scripts/build-original-offline-export.cjs`; do not use the Artidrop export for this requirement.
 |Test Surface:root `tests/` is split between `*.test.js` files using `node:test` and `*.spec.js` files that require Playwright tooling.
 |Test Command:use `node --test tests/*.test.js` for the Node-based root suite|run targeted files first when scope is narrow.
 |Playwright Note:only run `*.spec.js` when a Playwright environment is available and verified; do not assume `@playwright/test` exists at repo root.

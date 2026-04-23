@@ -347,6 +347,13 @@
   }
 
   async function loadOpeningScene() {
+    if (window.location.protocol === "file:") {
+      const embeddedScene = loadEmbeddedOpeningScene();
+      if (embeddedScene) {
+        return embeddedScene;
+      }
+    }
+
     try {
       const response = await fetch(openingStatePath, {
         credentials: "same-origin",

@@ -21,6 +21,7 @@
   let rafId = 0;
   let isEntering = false;
   let hasSignaledPresentationEntry = false;
+  let hasPushedPresentationHistory = false;
 
   function resize() {
     width = canvas.width = window.innerWidth;
@@ -126,6 +127,12 @@
     rafId = window.requestAnimationFrame(animate);
   }
 
+  function startIntroAnimation() {
+    if (!rafId) {
+      animate();
+    }
+  }
+
   function signalPresentationEntry() {
     if (hasSignaledPresentationEntry) {
       return;
@@ -137,6 +144,39 @@
     }
   }
 
+  function pushPresentationHistory() {
+    if (
+      hasPushedPresentationHistory ||
+      !window.history ||
+      typeof window.history.pushState !== "function"
+    ) {
+      return;
+    }
+
+    try {
+      window.history.pushState({ meshIntroEntered: true }, "", window.location.href);
+      hasPushedPresentationHistory = true;
+    } catch (_error) {
+      // Some file:// contexts restrict history state updates. The intro still works.
+    }
+  }
+
+  function restoreWelcomeIntro() {
+    if (!document.body.classList.contains("mode-entered")) {
+      return;
+    }
+
+    document.body.classList.remove("mode-entered");
+    document.body.classList.remove("mode-parallax");
+    contentLayer.setAttribute("aria-hidden", "true");
+    isEntering = false;
+    hasSignaledPresentationEntry = false;
+    hasPushedPresentationHistory = false;
+    resize();
+    createStars();
+    startIntroAnimation();
+  }
+
   function enterPresentation() {
     if (isEntering) {
       return;
@@ -144,6 +184,8 @@
 
     isEntering = true;
     window.cancelAnimationFrame(rafId);
+    rafId = 0;
+    pushPresentationHistory();
 
     if (prefersReducedMotion) {
       contentLayer.removeAttribute("aria-hidden");
@@ -176,7 +218,7 @@
       mouseY = (event.clientY - height / 2) * 0.04;
     });
 
-    window.addEventListener("pointerdown", enterPresentation, { once: true });
+    window.addEventListener("pointerdown", enterPresentation);
     window.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -186,7 +228,10 @@
 
     window.addEventListener("pagehide", () => {
       window.cancelAnimationFrame(rafId);
+      rafId = 0;
     });
+
+    window.addEventListener("popstate", restoreWelcomeIntro);
   }
 
   init();

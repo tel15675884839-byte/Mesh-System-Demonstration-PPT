@@ -5,7 +5,7 @@
   const DEFAULT_STATE_PATHS = {
     normal: "../assets/mesh-states/normal.json",
     blocked: "../assets/mesh-states/blocked.json",
-    recovery: "../assets/mesh-states/recovery.json"
+    recovery: "../assets/mesh-states/recovery-1.json"
   };
   const DEFAULT_ICON_BASE_PATH = "../Mesh System Demonstration/assets/icons";
   const DEFAULT_FALLBACK_VIEW = {
@@ -183,7 +183,7 @@
       return {
         normal: [resolveUrl("normal.json", basePath)],
         blocked: [resolveUrl("blocked.json", basePath)],
-        recovery: [resolveUrl("recovery.json", basePath)]
+        recovery: [resolveUrl("recovery-1.json", basePath)]
       };
     }
     return {

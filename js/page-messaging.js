@@ -21,20 +21,20 @@
     };
   }
 
-  function getSharedLocation() {
+  function getSharedSearch() {
     try {
       if (window.parent && window.parent !== window && window.parent.location) {
-        return window.parent.location;
+        return window.parent.location.search || "";
       }
-    } catch (error) {
-      console.warn("Presentation messaging fell back to local location access.", error);
+    } catch (_error) {
+      // file:// iframes can have unique opaque origins; fall back quietly.
     }
 
-    return window.location;
+    return (window.location && window.location.search) || "";
   }
 
   function getSharedSearchParams() {
-    return createSearchParams((getSharedLocation() && getSharedLocation().search) || "");
+    return createSearchParams(getSharedSearch());
   }
 
   function replaceCurrentUrl(params) {
