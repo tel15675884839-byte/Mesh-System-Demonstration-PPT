@@ -11,7 +11,7 @@ const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
 function createFrame(index) {
   return {
     dataset: {
-      src: index === 9
+      src: index === 10
         ? "pages/product-showcase.html?v=20260415m"
         : "pages/slide-" + index + ".html"
     },
@@ -43,10 +43,10 @@ function createFrame(index) {
 }
 
 function createHarness() {
-  const slides = Array.from({ length: 10 }, (_, index) => ({
+  const slides = Array.from({ length: 11 }, (_, index) => ({
     dataset: { slide: String(index) }
   }));
-  const navDots = Array.from({ length: 10 }, (_, index) => ({
+  const navDots = Array.from({ length: 11 }, (_, index) => ({
     dataset: { target: String(index) },
     classList: { toggle() {} },
     setAttribute() {},
@@ -125,8 +125,8 @@ function createHarness() {
 test("app shell preloads the product showcase iframe before the first visit", () => {
   const harness = createHarness();
 
-  assert.equal(
-    harness.slideFrames[9].src,
+    assert.equal(
+    harness.slideFrames[10].src,
     "pages/product-showcase.html?v=20260415m",
     "Expected the product showcase iframe to preload so the first navigation does not reveal an empty black shell."
   );

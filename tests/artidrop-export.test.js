@@ -44,9 +44,13 @@ test("Artidrop export builder creates a root welcome entry and top-level slide p
 
   assert.doesNotMatch(entryHtml, /<iframe/i, "Welcome entry should not rely on an iframe.");
   assert.match(entryHtml, /pages\/slide-opening\.html/, "Welcome entry should navigate into the opening slide page.");
+  assert.match(entryHtml, /data-cyber-bg/, "Welcome entry should keep the animated cyber background layer.");
+  assert.match(entryHtml, /src="js\/cyber-page-background\.js/, "Welcome entry should load the cyber background runtime.");
 
   assert.doesNotMatch(openingSlideHtml, /<iframe/i, "Opening slide page should inline page content.");
   assert.match(openingSlideHtml, /Wireless Mesh Fire Alarm System/, "Opening slide page should include opening page content.");
+  assert.match(openingSlideHtml, /data-cyber-bg/, "Slide pages should include the shared animated cyber background layer.");
+  assert.match(openingSlideHtml, /src="\.\.\/js\/cyber-page-background\.js/, "Slide pages should load the cyber background runtime.");
   assert.match(openingSlideHtml, /href="\.\.\/css\/artidrop-shell\.css/, "Opening slide page should load the Artidrop shell overlay styles.");
   assert.match(openingSlideHtml, /src="\.\.\/js\/opening-page\.js/, "Opening slide page should keep the original opening script path context.");
   assert.match(openingSlideHtml, /src="\.\.\/js\/artidrop-shell\.js/, "Opening slide page should load the Artidrop navigation shell.");

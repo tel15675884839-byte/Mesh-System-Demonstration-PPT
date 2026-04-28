@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="../css/artidrop-shell.css">
 </head>
 <body>
+  <div class="artidrop-page-cyber-background" data-cyber-bg data-cyber-bg-force-active aria-hidden="true">
+    <canvas class="cyber-page-background-canvas"></canvas>
+  </div>
   <main class="page page-response" data-stage="accumulation">
 <section class="page-grid response-layout page-stage-layout">
       <header class="response-header page-stage-header">
@@ -23,7 +26,10 @@
       <div class="visual-card response-stage-shell" id="stage-trigger">
         <div class="response-stage" aria-label="Rapid response animation stage">
           <button type="button" class="response-reset-button" aria-label="Reset animation">
-            <span class="response-reset-icon" aria-hidden="true"></span>
+            <svg class="response-reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M23 4v6h-6"></path>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
           </button>
           <div class="stage-overlay"></div>
           <div class="response-stage-frame">
@@ -180,6 +186,7 @@
     </nav>
   </div>
   <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/cyber-page-background.js"></script>
   <script src="../js/artidrop-shell.js"></script>
 </body>
 </html>

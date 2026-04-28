@@ -10,6 +10,31 @@
 html[data-slide-index],
 html[data-slide-index] body {
   min-height: 100%;
+  background: #030a0d;
+}
+
+.artidrop-page-cyber-background,
+.artidrop-welcome-cyber-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #030a0d;
+}
+
+.artidrop-page-cyber-background {
+  opacity: 0.92;
+}
+
+html[data-slide-index] .page {
+  position: relative;
+  z-index: 1;
+}
+
+.content-frame-placeholder {
+  position: relative;
+  overflow: hidden;
 }
 
 .artidrop-shell {

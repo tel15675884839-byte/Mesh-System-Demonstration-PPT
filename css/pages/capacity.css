@@ -128,7 +128,7 @@ body {
   z-index: 2;
   opacity: 1;
   transform: translateY(0);
-  background: rgba(4, 10, 18, 0.42);
+  background: transparent;
   border-radius: 24px;
   overflow: hidden;
 }
@@ -139,6 +139,8 @@ body {
   object-fit: contain;
   display: block;
   transform: scale(1.25) translateX(5%);
+  mix-blend-mode: screen;
+  opacity: 0.92;
 }
 
 .capacity-network-scene {

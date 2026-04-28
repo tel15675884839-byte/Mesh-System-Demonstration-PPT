@@ -21,6 +21,7 @@ const slides = [
 const copiedFiles = [
   "css/welcome.css",
   "css/page-base.css",
+  "css/style.css",
   "css/artidrop-shell.css",
   "css/pages/opening.css",
   "css/pages/overview.css",
@@ -34,6 +35,7 @@ const copiedFiles = [
   "css/pages/capacity.css",
   "css/pages/product-showcase.css",
   "js/page-messaging.js",
+  "js/cyber-page-background.js",
   "js/opening-page.js",
   "js/mesh-page.js",
   "js/mesh-scene-player.js",
@@ -48,6 +50,7 @@ const copiedFiles = [
   "assets/branding/logo-long.png",
   "assets/distance-map-bg.png",
   "assets/icons/cie.svg",
+  "assets/icons/heat-mult.svg",
   "assets/icons/io-module.svg",
   "assets/icons/leader-node.svg",
   "assets/icons/loop expansion card.svg",
@@ -60,15 +63,23 @@ const copiedFiles = [
   "assets/images/hero-1.JPG",
   "assets/images/hero-2.JPG",
   "assets/images/hero-3.JPG",
+  "assets/images/mesh2D.png",
+  "assets/images/System Capacity.png",
   "assets/images/wireless.jpg",
   "assets/images/wiring.jpg",
+  "assets/images/products/17450.png",
+  "assets/images/products/17450mcp.png",
+  "assets/images/products/all.png",
   "assets/images/products/io module.png",
   "assets/images/products/mcp.png",
   "assets/images/products/node.png",
   "assets/images/products/smoke.png",
   "assets/images/products/wireless loop expansion card.png",
   "assets/images/products/wireless-av-alarm.png",
+  "assets/mesh-states/blocked.json",
+  "assets/mesh-states/normal.json",
   "assets/mesh-states/opening.json",
+  "assets/mesh-states/recovery-1.json",
   "Mesh System Demonstration/three.min.js",
   "Mesh System Demonstration/OrbitControls.js",
   "Mesh System Demonstration/link-effects.js",
@@ -122,12 +133,15 @@ function buildWelcomeHtml() {
     /<!-- intro-content-start -->[\s\S]*?<!-- intro-content-end -->/i,
     [
       "<!-- intro-content-start -->",
-      "      <div class=\"content-frame content-frame-placeholder\" aria-hidden=\"true\"></div>",
+      "      <div class=\"content-frame content-frame-placeholder\" aria-hidden=\"true\">",
+      "        <div class=\"stage-cyber-background\" data-cyber-bg data-cyber-bg-force-active aria-hidden=\"true\">",
+      "          <canvas class=\"cyber-page-background-canvas\"></canvas>",
+      "        </div>",
+      "      </div>",
       "      <!-- intro-content-end -->"
     ].join("\n")
   );
   html = html.replace(/\s*<script src=\"js\/fixed-stage\.js\"><\/script>/i, "");
-  html = html.replace(/\s*<script src=\"js\/cyber-page-background\.js[^\"]*\"><\/script>/i, "");
   html = html.replace(/\s*<script src=\"js\/app\.js[^\"]*\"><\/script>/i, "");
   html = html.replace(
     /<script src=\"js\/welcome\.js\"><\/script>/i,
@@ -199,10 +213,20 @@ function buildSlideHtml(index) {
     "  <link rel=\"stylesheet\" href=\"../css/artidrop-shell.css\">\n</head>"
   );
   html = html.replace(
+    /<body([^>]*)>/i,
+    [
+      "<body$1>",
+      "  <div class=\"artidrop-page-cyber-background\" data-cyber-bg data-cyber-bg-force-active aria-hidden=\"true\">",
+      "    <canvas class=\"cyber-page-background-canvas\"></canvas>",
+      "  </div>"
+    ].join("\n")
+  );
+  html = html.replace(
     /<\/body>/i,
     [
       buildOverlay(index),
       "  <script id=\"artidrop-slide-manifest\" type=\"application/json\">" + buildManifest() + "</script>",
+      "  <script src=\"../js/cyber-page-background.js\"></script>",
       "  <script src=\"../js/artidrop-shell.js\"></script>",
       "</body>"
     ].join("\n")

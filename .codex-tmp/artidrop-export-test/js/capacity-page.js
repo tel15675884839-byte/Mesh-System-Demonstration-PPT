@@ -428,7 +428,7 @@
     setSceneMode("first-page");
     interactionStep = STEP_FIRST_PAGE;
     setStageMessage(
-      "The first System Capacity page is a generated static design. Click to continue to the retained Network page.",
+      "The first System Capacity page shows the overall architecture and scalability of the hybrid wireless system.",
       "Click to continue"
     );
   }

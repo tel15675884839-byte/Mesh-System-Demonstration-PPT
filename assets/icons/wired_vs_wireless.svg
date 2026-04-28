@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -25 800 395">
+    <defs>
+        <!-- 红色发光滤镜 (有线侧) -->
+        <filter id="glowRed" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur3" />
+            <feMerge>
+                <feMergeNode in="blur3" />
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+
+        <!-- 蓝色发光滤镜 (无线侧) -->
+        <filter id="glowBlue" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur3" />
+            <feMerge>
+                <feMergeNode in="blur3" />
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+
+        <!-- 青色发光滤镜 (中心 VS) -->
+        <filter id="glowCyan" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+            <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
+
+    <!-- 科技感装饰线 -->
+    <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="2" fill="none">
+        <path d="M 100 200 L 0 200 M 800 200 L 700 200" />
+        <circle cx="400" cy="200" r="150" stroke-dasharray="10 20" />
+    </g>
+
+    <!-- ================= 左侧：有线消防报警系统 (红色) ================= -->
+    <g filter="url(#glowRed)" stroke="#ff2a40" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+        fill="none">
+        <!-- 消防报警控制器主机 (FACP) -->
+        <rect x="50" y="100" width="90" height="140" rx="8" />
+        <rect x="65" y="120" width="60" height="40" rx="4" fill="#050914" />
+        <!-- 主机屏幕波形 -->
+        <polyline points="70,140 80,140 85,130 90,150 95,140 115,140" stroke-width="3" />
+        <!-- 主机按键/指示灯 -->
+        <line x1="65" y1="180" x2="85" y2="180" stroke-width="4" />
+        <line x1="65" y1="200" x2="85" y2="200" stroke-width="4" />
+        <rect x="105" y="180" width="20" height="40" rx="3" />
+
+        <!-- 连接线 (从主机到探测器) -->
+        <path d="M 140 210 L 190 210 L 190 120 L 265 120 L 265 130" />
+
+        <!-- 有线烟感探测器 -->
+        <!-- 探测器底座 -->
+        <rect x="225" y="130" width="80" height="12" rx="4" fill="#050914" />
+        <!-- 探测器外壳 -->
+        <path d="M 230 142 L 300 142 L 295 170 C 285 185, 245 185, 235 170 Z" fill="#050914" />
+        <!-- 指示灯/进烟栅格 -->
+        <circle cx="265" cy="175" r="4" fill="#ff2a40" stroke="none" />
+        <line x1="245" y1="155" x2="285" y2="155" stroke-width="3" />
+    </g>
+
+    <!-- 左侧文本 -->
+    <g filter="url(#glowRed)" fill="#ffe6e6" text-anchor="middle" font-family="sans-serif">
+        <text x="175" y="310" font-size="36" font-weight="900" letter-spacing="4">WIRED</text>
+    </g>
+
+
+    <!-- ================= 中心：VS 对比 (青色) ================= -->
+    <g filter="url(#glowCyan)">
+        <!-- 十字准星装饰 -->
+        <line x1="400" y1="110" x2="400" y2="135" stroke="#00ffff" stroke-width="2" stroke-linecap="round" />
+        <line x1="400" y1="265" x2="400" y2="290" stroke="#00ffff" stroke-width="2" stroke-linecap="round" />
+        <line x1="310" y1="200" x2="335" y2="200" stroke="#00ffff" stroke-width="2" stroke-linecap="round" />
+        <line x1="465" y1="200" x2="490" y2="200" stroke="#00ffff" stroke-width="2" stroke-linecap="round" />
+
+        <!-- 外圆 -->
+        <circle cx="400" cy="200" r="55" stroke="#00ffff" stroke-width="2" stroke-dasharray="6 8" fill="none" />
+        <!-- 内圆 -->
+        <circle cx="400" cy="200" r="45" stroke="#00ffff" stroke-width="4" fill="#050914" />
+
+        <!-- VS 文本 -->
+        <text x="400" y="212" fill="#ffffff" font-size="34" font-weight="900" font-family="sans-serif"
+            text-anchor="middle">VS</text>
+    </g>
+
+
+    <!-- ================= 右侧：无线消防报警系统 (蓝色) ================= -->
+    <g filter="url(#glowBlue)" stroke="#2a9df4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+        fill="none">
+
+        <!-- 仿参考图的感烟感温复合探测器 -->
+        <!-- 1. 最上层底座 (吸顶部分) -->
+        <ellipse cx="620" cy="150" rx="75" ry="22" fill="#050914" />
+        <path d="M 545 150 L 545 165 A 75 22 0 0 0 695 165 L 695 150" fill="#050914" />
+        <ellipse cx="620" cy="165" rx="75" ry="22" fill="#050914" />
+
+        <!-- 左右两个指示灯 (对应参考图中的孔位) -->
+        <circle cx="560" cy="165" r="3" fill="#2a9df4" stroke="none" />
+        <circle cx="680" cy="165" r="3" fill="#2a9df4" stroke="none" />
+
+        <!-- 2. 中间黑色迷宫/网格区域 -->
+        <!-- 内圈弧线表达凹陷感 -->
+        <path d="M 565 165 A 55 16 0 0 0 675 165" stroke-width="3" />
+        <!-- 用虚线模拟防虫网 -->
+        <path d="M 570 172 A 50 14 0 0 0 670 172" stroke-width="4" stroke-dasharray="2 6" />
+
+        <!-- 3. 中央导流罩 (带鳍片) -->
+        <!-- 导流罩基环 -->
+        <ellipse cx="620" cy="175" rx="35" ry="10" fill="#050914" />
+
+        <!-- 导流罩主体向中心收束 -->
+        <path d="M 585 175 L 602 210 A 18 6 0 0 0 638 210 L 655 175" fill="#050914" />
+
+        <!-- 导流罩最前端的感温保护环 -->
+        <ellipse cx="620" cy="210" rx="18" ry="6" fill="#050914" />
+
+        <!-- 支撑鳍片 (Fins) -->
+        <line x1="620" y1="182" x2="620" y2="204" stroke-width="4" /> <!-- 正中 -->
+        <line x1="596" y1="180" x2="607" y2="206" stroke-width="3" /> <!-- 左侧 -->
+        <line x1="644" y1="180" x2="633" y2="206" stroke-width="3" /> <!-- 右侧 -->
+
+        <!-- 热敏电阻/中心点 -->
+        <circle cx="620" cy="210" r="3" fill="#2a9df4" stroke="none" />
+
+        <!-- 无线电波 (Wi-Fi 信号发射) -->
+        <path d="M 600 90 Q 620 75 640 90" stroke-width="4" />
+        <path d="M 580 70 Q 620 45 660 70" stroke-width="4" />
+        <path d="M 555 45 Q 620 5 685 45" stroke-width="4" />
+    </g>
+
+    <!-- 右侧文本 -->
+    <g filter="url(#glowBlue)" fill="#e6f2ff" text-anchor="middle" font-family="sans-serif">
+        <text x="620" y="310" font-size="36" font-weight="900" letter-spacing="4">WIRELESS</text>
+    </g>
+
+</svg>

@@ -59,9 +59,8 @@
   overflow: hidden;
   border-radius: 28px;
   background:
-    radial-gradient(circle at 50% 18%, rgba(79, 170, 255, 0.16), transparent 36%),
-    radial-gradient(circle at 50% 72%, rgba(54, 255, 150, 0.1), transparent 38%),
-    linear-gradient(180deg, rgba(7, 16, 30, 0.68), rgba(4, 9, 18, 0.72));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+    rgba(7, 16, 29, 0.60);
   isolation: isolate;
 }
 

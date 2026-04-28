@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="../css/artidrop-shell.css">
 </head>
 <body>
+  <div class="artidrop-page-cyber-background" data-cyber-bg data-cyber-bg-force-active aria-hidden="true">
+    <canvas class="cyber-page-background-canvas"></canvas>
+  </div>
   <main class="page page-distance is-revealed">
 <button type="button" class="distance-intro-overlay" id="distance-intro-trigger" aria-controls="distance-main-stage" aria-expanded="false">
       <span class="distance-intro-title">Extended Distance</span>
@@ -85,8 +88,6 @@
               <span class="relay-hop-distance dist-2">500m</span>
               <span class="relay-hop-distance dist-3">500m</span>
               <span class="relay-hop-distance dist-4">500m</span>
-              <span class="relay-hop-distance dist-5">500m</span>
-              <span class="relay-hop-distance dist-6">500m</span>
               <span class="relay-hop-distance dist-end-smoke">500m</span>
               <span class="relay-hop-distance dist-end-sounder">500m</span>
 
@@ -98,7 +99,7 @@
               <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
               <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
               <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
-              <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
+              <div class="relay-point is-removed"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
               <div class="relay-point"><img src="../assets/icons/node.svg" alt="" aria-hidden="true"></div>
               <div class="relay-end-device relay-end-device-smoke">
                 <img src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
@@ -234,6 +235,7 @@
     </nav>
   </div>
   <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/cyber-page-background.js"></script>
   <script src="../js/artidrop-shell.js"></script>
 </body>
 </html>

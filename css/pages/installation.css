@@ -11,16 +11,25 @@
   height: calc(100vh - 36px);
   min-height: 0;
   align-items: stretch;
+  max-width: 1600px;
 }
 
 .installation-header {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
   min-width: 0;
+  position: relative;
+  z-index: 12;
 }
 
 .installation-hero {
   max-width: none;
+  transition:
+    opacity 0.38s ease,
+    transform 0.42s ease,
+    filter 0.42s ease;
 }
 
 .installation-hero-spotlight h2 {
@@ -40,6 +49,7 @@
   box-shadow: none;
   backdrop-filter: none;
   overflow: hidden;
+  position: relative;
 }
 
 .installation-stage-shell::before {
@@ -59,6 +69,11 @@
   align-items: center;
   justify-content: center;
   padding-bottom: 20px; /* Buffer for caption text often cut off at bottom */
+  transition:
+    transform 0.82s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.62s ease,
+    filter 0.62s ease;
+  transform-origin: 50% 50%;
 }
 
 .stacked-comparison {
@@ -187,6 +202,983 @@
   text-shadow: 0 0 14px rgba(15, 235, 204, 0.34), 0 0 26px rgba(15, 235, 204, 0.18);
 }
 
+.page-installation-cost {
+  padding-block: 18px;
+}
+
+.page-installation-cost .installation-cost-layout {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  height: calc(100vh - 36px);
+  max-width: 1600px;
+}
+
+.installation-cost-page-header {
+  position: relative;
+  z-index: 12;
+}
+
+.page-installation-cost .installation-hero-spotlight h2 {
+  font-size: clamp(3.8rem, 5.3vw, 4.9rem);
+}
+
+.installation-cost-stage-shell {
+  height: 100%;
+}
+
+.page-installation-cost .installation-cost-screen {
+  position: relative;
+  inset: auto;
+  height: 100%;
+  padding: 0;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  filter: none;
+}
+
+.page-installation-cost .installation-cost-screen::before {
+  inset: 0;
+}
+
+.page-installation-cost .cost-dashboard {
+  width: min(100%, 1560px);
+  height: 100%;
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+  opacity: 1;
+  transform: none;
+}
+
+.page-installation-cost .cost-vs-strip {
+  justify-self: end;
+  min-width: 410px;
+  margin-right: 26px;
+}
+
+.page-installation-cost .cost-grid {
+  grid-template-rows: auto auto;
+  align-items: start;
+}
+
+.installation-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(15, 235, 204, 0.25);
+  border-radius: 999px;
+  background: rgba(2, 9, 13, 0.56);
+  box-shadow:
+    inset 0 0 22px rgba(15, 235, 204, 0.08),
+    0 0 24px rgba(15, 235, 204, 0.1);
+  pointer-events: auto;
+}
+
+.installation-screen-button,
+.installation-cost-cta {
+  border: 1px solid rgba(15, 235, 204, 0.22);
+  color: rgba(238, 252, 255, 0.78);
+  font-family: var(--font-body);
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.installation-screen-button {
+  min-width: 106px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(3, 16, 23, 0.68);
+  font-size: 0.88rem;
+}
+
+.installation-screen-button.is-active,
+.installation-screen-button:hover {
+  color: #021016;
+  border-color: rgba(15, 235, 204, 0.75);
+  background: linear-gradient(135deg, #60fff0, #1dccff);
+  box-shadow: 0 0 22px rgba(15, 235, 204, 0.3);
+}
+
+.installation-screen-button:focus-visible,
+.installation-cost-cta:focus-visible {
+  outline: 2px solid rgba(120, 255, 244, 0.9);
+  outline-offset: 3px;
+}
+
+.installation-cost-cta {
+  position: absolute;
+  right: 34px;
+  bottom: 34px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 250px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(15, 235, 204, 0.18), rgba(32, 134, 255, 0.1)),
+    rgba(3, 12, 18, 0.76);
+  box-shadow:
+    inset 0 0 32px rgba(15, 235, 204, 0.08),
+    0 14px 38px rgba(0, 0, 0, 0.34);
+}
+
+.installation-cost-cta span {
+  color: #54fff2;
+  font-size: 0.86rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.installation-cost-cta strong {
+  color: #effcff;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.installation-cost-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 235, 204, 0.72);
+  box-shadow:
+    inset 0 0 32px rgba(15, 235, 204, 0.14),
+    0 20px 46px rgba(0, 0, 0, 0.38),
+    0 0 26px rgba(15, 235, 204, 0.2);
+}
+
+.installation-cost-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.94);
+  filter: blur(10px);
+  transition:
+    opacity 0.58s ease,
+    transform 0.72s cubic-bezier(0.2, 0.86, 0.2, 1),
+    filter 0.58s ease;
+}
+
+.installation-cost-screen::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(15, 235, 204, 0.15), transparent 38%),
+    linear-gradient(90deg, transparent 0 49%, rgba(15, 235, 204, 0.18) 49.8% 50.2%, transparent 51%),
+    linear-gradient(0deg, rgba(15, 235, 204, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 235, 204, 0.05) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.installation-shell[data-installation-screen="cost"] .installation-container {
+  opacity: 0.23;
+  transform: scale(0.86) translateY(10px);
+  filter: blur(5px) saturate(0.82) brightness(0.48);
+}
+
+.installation-shell[data-installation-screen="cost"] .installation-hero {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.96);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.installation-shell[data-installation-screen="cost"] .installation-cost-cta {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.installation-shell[data-installation-screen="cost"] .installation-cost-screen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+.cost-dashboard {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1560px);
+  height: min(100%, 820px);
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+  padding: 8px 4px 0;
+  color: #eefbff;
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+}
+
+.installation-shell[data-installation-screen="cost"] .cost-dashboard {
+  animation: installationHudReveal 0.78s 0.12s cubic-bezier(0.16, 0.84, 0.22, 1) both;
+}
+
+@keyframes installationHudReveal {
+  0% {
+    opacity: 1;
+    transform: translateY(10px) scale(0.99);
+    clip-path: inset(0 0 0 0 round 28px);
+  }
+
+  56% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 28px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    clip-path: inset(0 0 0 0 round 28px);
+  }
+}
+
+.cost-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
+}
+
+.cost-header h2 {
+  margin: 0;
+  color: #f4feff;
+  font-family: var(--font-title);
+  font-size: clamp(2.25rem, 2.85vw, 3.65rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  text-shadow:
+    0 0 18px rgba(15, 235, 204, 0.34),
+    0 2px 0 rgba(255, 255, 255, 0.18);
+}
+
+.cost-header p {
+  margin-top: 12px;
+  color: rgba(241, 248, 255, 0.76);
+  font-size: clamp(1.05rem, 1.1vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+.cost-vs-strip {
+  display: grid;
+  grid-template-columns: auto 76px auto;
+  align-items: center;
+  gap: 16px;
+  min-width: 410px;
+}
+
+.cost-system {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  font-family: var(--font-title);
+  font-size: 1.28rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.cost-system-wired {
+  color: #ff595f;
+  text-shadow: 0 0 18px rgba(255, 77, 82, 0.5);
+}
+
+.cost-system-wireless {
+  color: #2d8dff;
+  text-shadow: 0 0 18px rgba(45, 141, 255, 0.55);
+}
+
+.system-icon {
+  width: 98px;
+  height: 72px;
+  border: 3px solid currentColor;
+  border-radius: 18px;
+  box-shadow: 0 0 18px currentColor, inset 0 0 18px rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.system-icon-panel::before,
+.system-icon-panel::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+
+.system-icon-panel::before {
+  width: 44px;
+  height: 26px;
+  left: 16px;
+  top: 13px;
+  box-shadow: 0 36px 0 -9px currentColor, 54px 24px 0 -11px currentColor;
+}
+
+.system-icon-panel::after {
+  width: 92px;
+  height: 34px;
+  right: -86px;
+  bottom: -24px;
+  border: 4px solid currentColor;
+  border-top: 0;
+  border-left: 0;
+  border-radius: 0 0 18px 0;
+  background: transparent;
+}
+
+.system-icon-wireless {
+  border-radius: 50%;
+}
+
+.system-icon-wireless::before,
+.system-icon-wireless::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+}
+
+.system-icon-wireless::after {
+  inset: -24px 16px auto;
+  height: 38px;
+  border-color: currentColor transparent transparent;
+}
+
+.cost-vs-badge {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(61, 255, 238, 0.75);
+  border-radius: 50%;
+  color: #eaffff;
+  font-size: 1.6rem;
+  font-weight: 900;
+  box-shadow:
+    inset 0 0 28px rgba(15, 235, 204, 0.16),
+    0 0 30px rgba(15, 235, 204, 0.28);
+}
+
+.cost-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 14px 20px;
+  align-items: start;
+}
+
+.hud-panel,
+.summary-card,
+.saving-card {
+  position: relative;
+  border: 1px solid rgba(15, 235, 204, 0.74);
+  background:
+    linear-gradient(180deg, rgba(3, 13, 18, 0.83), rgba(2, 9, 13, 0.72)),
+    linear-gradient(0deg, rgba(15, 235, 204, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 235, 204, 0.04) 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+  box-shadow:
+    inset 0 0 24px rgba(15, 235, 204, 0.07),
+    0 0 18px rgba(15, 235, 204, 0.22);
+  overflow: hidden;
+}
+
+.hud-panel {
+  border-radius: 20px;
+  padding: 12px 12px 10px;
+}
+
+.hud-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid rgba(120, 255, 245, 0.6);
+  background: linear-gradient(90deg, transparent, rgba(30, 255, 244, 0.22), transparent);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hud-panel h3 {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 10px;
+  color: rgba(238, 246, 255, 0.93);
+  font-family: var(--font-title);
+  font-size: clamp(1.08rem, 1.4vw, 1.72rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.hud-panel h3 span {
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(35, 255, 238, 0.8);
+  border-radius: 50%;
+  color: #efffff;
+  background: rgba(15, 235, 204, 0.18);
+  box-shadow:
+    inset 0 0 20px rgba(15, 235, 204, 0.2),
+    0 0 16px rgba(15, 235, 204, 0.45);
+}
+
+.hud-panel h3 small {
+  color: rgba(238, 246, 255, 0.78);
+  font-size: 0.82em;
+  font-weight: 700;
+}
+
+.cost-table {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(15, 235, 204, 0.46);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cost-row {
+  display: grid;
+  min-height: 40px;
+  border-top: 1px solid rgba(15, 235, 204, 0.32);
+}
+
+.cost-row:first-child {
+  border-top: 0;
+}
+
+.cost-row > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 5px 10px;
+  border-left: 1px solid rgba(15, 235, 204, 0.32);
+  color: rgba(244, 250, 255, 0.91);
+  font-size: clamp(0.72rem, 0.66vw, 1rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.cost-row > div:first-child {
+  border-left: 0;
+}
+
+.cost-row-head {
+  min-height: 38px;
+  background: linear-gradient(90deg, rgba(4, 20, 25, 0.92), rgba(3, 12, 17, 0.76));
+}
+
+.cost-row-head > div {
+  justify-content: center;
+  color: #33fff2;
+  font-size: clamp(0.76rem, 0.72vw, 1.05rem);
+  text-align: center;
+}
+
+.cost-row-head > div:nth-child(2) {
+  color: #fff6f6;
+  background: linear-gradient(180deg, rgba(255, 67, 76, 0.46), rgba(255, 67, 76, 0.08));
+}
+
+.cost-row-head > div:nth-child(3) {
+  color: #dce9ff;
+  background: linear-gradient(180deg, rgba(37, 137, 255, 0.42), rgba(37, 137, 255, 0.08));
+}
+
+.cost-driver-table .cost-row {
+  grid-template-columns: 1.5fr 1fr 0.94fr 0.98fr;
+}
+
+.scenario-table .cost-row {
+  grid-template-columns: 1.16fr 0.98fr 0.9fr 1.04fr;
+}
+
+.wired-value {
+  color: #ff575e !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 14px rgba(255, 64, 72, 0.42);
+}
+
+.wireless-value {
+  color: #2588ff !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 14px rgba(37, 136, 255, 0.42);
+}
+
+.saving-value {
+  color: #17eaff !important;
+  font-size: clamp(1.05rem, 1.7vw, 2.1rem) !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 16px rgba(23, 234, 255, 0.52);
+}
+
+.large-value {
+  justify-content: center;
+  font-size: clamp(1.26rem, 2vw, 2.55rem) !important;
+}
+
+.mini-icon,
+.building-icon,
+.retrofit-icon,
+.trend-icon,
+.growth-icon,
+.clock-icon,
+.battery-cost-icon,
+.shield-icon {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-block;
+  color: #ff575e;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.mini-icon {
+  width: 30px;
+  height: 30px;
+  border: 2px solid currentColor;
+  border-radius: 10px;
+}
+
+.detector-icon {
+  border-radius: 50%;
+}
+
+.detector-icon::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.power-icon::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 4px;
+  width: 9px;
+  height: 21px;
+  background: currentColor;
+  clip-path: polygon(52% 0, 100% 0, 65% 42%, 100% 42%, 32% 100%, 50% 55%, 0 55%);
+}
+
+.cable-icon::before {
+  content: "";
+  position: absolute;
+  inset: 7px 5px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.check-icon::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 6px;
+  width: 12px;
+  height: 17px;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+}
+
+.install-cost-panel {
+  align-self: stretch;
+}
+
+.install-cost-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  padding: 4px 46px 10px;
+}
+
+.install-cost-values div:not(.value-divider) {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.install-cost-values strong {
+  font-size: clamp(0.92rem, 0.95vw, 1.28rem);
+}
+
+.install-cost-values span {
+  font-family: var(--font-title);
+  font-size: clamp(2.1rem, 3.2vw, 4.2rem);
+  line-height: 1;
+}
+
+.value-divider {
+  width: 1px;
+  height: 58px;
+  background: rgba(218, 255, 255, 0.62);
+  box-shadow: 0 0 12px rgba(15, 235, 204, 0.42);
+}
+
+.install-cost-callout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 126px;
+  align-items: center;
+  gap: 20px;
+  min-height: 84px;
+  border: 1px solid rgba(15, 235, 204, 0.58);
+  border-radius: 14px;
+  padding: 10px 12px 10px 20px;
+  background: rgba(4, 18, 24, 0.62);
+}
+
+.install-cost-callout strong {
+  color: #21cfff;
+  font-size: clamp(0.96rem, 1.36vw, 1.72rem);
+  line-height: 1.08;
+}
+
+.install-cost-callout em {
+  justify-self: stretch;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  border-left: 1px solid rgba(15, 235, 204, 0.48);
+  color: #23e7ff;
+  font-size: clamp(1rem, 1.35vw, 1.7rem);
+  font-style: normal;
+  font-weight: 900;
+  line-height: 0.95;
+  text-align: center;
+}
+
+.trend-icon,
+.growth-icon,
+.clock-icon,
+.battery-cost-icon,
+.shield-icon {
+  color: #23e7ff;
+}
+
+.trend-icon {
+  width: 72px;
+  height: 72px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.trend-icon::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  bottom: 16px;
+  width: 28px;
+  height: 28px;
+  border-left: 4px solid currentColor;
+  border-bottom: 4px solid currentColor;
+  transform: skewY(30deg);
+}
+
+.building-icon,
+.retrofit-icon {
+  width: 34px;
+  height: 42px;
+  border: 3px solid #17eaff;
+  border-bottom-width: 5px;
+  border-radius: 4px 4px 0 0;
+}
+
+.building-icon::before,
+.retrofit-icon::before {
+  content: "";
+  position: absolute;
+  inset: 8px 9px;
+  background: currentColor;
+  box-shadow:
+    0 10px 0 currentColor,
+    0 20px 0 currentColor,
+    10px 0 0 currentColor,
+    10px 10px 0 currentColor,
+    10px 20px 0 currentColor;
+}
+
+.retrofit-icon::after {
+  content: "";
+  position: absolute;
+  right: -12px;
+  bottom: -3px;
+  width: 24px;
+  height: 24px;
+  border-left: 4px solid currentColor;
+  border-bottom: 4px solid currentColor;
+  transform: rotate(-45deg);
+}
+
+.project-panel p {
+  margin: -4px 0 10px 78px;
+  color: rgba(239, 248, 255, 0.78);
+  font-size: clamp(0.82rem, 0.86vw, 1.12rem);
+  font-weight: 700;
+}
+
+.project-savings {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 14px;
+}
+
+.growth-icon {
+  align-self: center;
+  justify-self: center;
+  width: 100px;
+  height: 100px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  box-shadow:
+    0 0 28px rgba(35, 231, 255, 0.35),
+    inset 0 0 32px rgba(35, 231, 255, 0.12);
+}
+
+.growth-icon::before {
+  content: "";
+  position: absolute;
+  left: 25px;
+  bottom: 28px;
+  width: 70px;
+  height: 58px;
+  background: currentColor;
+  clip-path: polygon(0 78%, 12% 78%, 12% 58%, 24% 58%, 24% 42%, 36% 42%, 36% 20%, 52% 20%, 52% 64%, 66% 64%, 66% 35%, 78% 35%, 78% 0, 100% 0, 82% 24%, 82% 100%, 0 100%);
+}
+
+.saving-card {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.saving-card strong {
+  color: rgba(245, 250, 255, 0.9);
+  font-size: clamp(0.98rem, 1.1vw, 1.42rem);
+  line-height: 1.08;
+}
+
+.saving-card span {
+  margin-top: 10px;
+  font-size: clamp(1rem, 1.18vw, 1.5rem);
+  font-weight: 900;
+}
+
+.saving-card em {
+  color: inherit;
+  font-family: var(--font-title);
+  font-size: clamp(1.9rem, 2.6vw, 3.35rem);
+  font-style: normal;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.saving-card-blue {
+  color: #2588ff;
+  border-color: rgba(37, 136, 255, 0.8);
+  background: linear-gradient(180deg, rgba(18, 90, 190, 0.42), rgba(4, 24, 50, 0.62));
+}
+
+.saving-card-red {
+  color: #ff575e;
+  border-color: rgba(255, 87, 94, 0.76);
+  background: linear-gradient(180deg, rgba(132, 28, 32, 0.42), rgba(40, 8, 12, 0.64));
+}
+
+.cost-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.1fr;
+  gap: 18px;
+}
+
+.summary-card {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 24px;
+  border-radius: 14px;
+}
+
+.summary-card strong {
+  color: #19e7f2;
+  font-size: clamp(1.55rem, 2.1vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-shadow: 0 0 15px rgba(25, 231, 242, 0.45);
+}
+
+.summary-card span:last-child,
+.summary-card > span:nth-child(2) {
+  color: rgba(244, 250, 255, 0.88);
+  font-size: clamp(1rem, 1.16vw, 1.52rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.summary-card-red {
+  grid-template-columns: auto auto 1fr;
+  border-color: rgba(15, 235, 204, 0.64);
+}
+
+.summary-card-red strong {
+  color: #ff4d34;
+  font-size: clamp(1rem, 1.2vw, 1.6rem);
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 15px rgba(255, 77, 52, 0.42);
+}
+
+.clock-icon {
+  width: 62px;
+  height: 62px;
+  border: 5px solid currentColor;
+  border-radius: 50%;
+}
+
+.clock-icon::before,
+.clock-icon::after {
+  content: "";
+  position: absolute;
+  left: 32px;
+  top: 14px;
+  width: 5px;
+  height: 24px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 50% 100%;
+}
+
+.clock-icon::after {
+  top: 32px;
+  height: 20px;
+  transform: rotate(112deg);
+}
+
+.battery-cost-icon {
+  width: 56px;
+  height: 64px;
+  border: 5px solid currentColor;
+  border-radius: 10px;
+}
+
+.battery-cost-icon::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: -12px;
+  width: 20px;
+  height: 8px;
+  border: 4px solid currentColor;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+}
+
+.battery-cost-icon::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 19px;
+  width: 15px;
+  height: 29px;
+  background: currentColor;
+  clip-path: polygon(50% 0, 100% 0, 64% 44%, 100% 44%, 34% 100%, 48% 58%, 0 58%);
+}
+
+.shield-icon {
+  width: 72px;
+  height: 78px;
+  color: #ff575e;
+  border: 4px solid currentColor;
+  border-radius: 34px 34px 12px 12px;
+  clip-path: polygon(50% 0, 88% 14%, 88% 58%, 50% 100%, 12% 58%, 12% 14%);
+}
+
+.shield-icon::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 23px;
+  width: 20px;
+  height: 28px;
+  border: 3px solid currentColor;
+}
+
+.installation-shell[data-installation-screen="cost"] .hud-panel,
+.installation-shell[data-installation-screen="cost"] .summary-card {
+  animation: installationPanelPop 0.58s cubic-bezier(0.18, 0.82, 0.28, 1) both;
+}
+
+.installation-shell[data-installation-screen="cost"] .cost-drivers-panel {
+  animation-delay: 0.22s;
+}
+
+.installation-shell[data-installation-screen="cost"] .scenario-panel {
+  animation-delay: 0.3s;
+}
+
+.installation-shell[data-installation-screen="cost"] .install-cost-panel {
+  animation-delay: 0.38s;
+}
+
+.installation-shell[data-installation-screen="cost"] .project-panel {
+  animation-delay: 0.46s;
+}
+
+.installation-shell[data-installation-screen="cost"] .summary-card:nth-child(1) {
+  animation-delay: 0.54s;
+}
+
+.installation-shell[data-installation-screen="cost"] .summary-card:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.installation-shell[data-installation-screen="cost"] .summary-card:nth-child(3) {
+  animation-delay: 0.66s;
+}
+
+@keyframes installationPanelPop {
+  from {
+    opacity: 1;
+    transform: translateY(10px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 960px) {
   .page-installation .installation-layout {
     height: auto;
@@ -196,11 +1188,380 @@
   .installation-hero-spotlight h2 {
     font-size: clamp(3rem, 8.2vw, 4.2rem);
   }
+
+  .installation-header,
+  .cost-header {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .cost-grid,
+  .cost-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .cost-dashboard {
+    height: auto;
+    overflow: auto;
+  }
+
+  .cost-vs-strip {
+    min-width: 0;
+    grid-template-columns: 1fr auto 1fr;
+  }
 }
 
 @media (max-width: 720px) {
   .installation-hero-spotlight h2 {
     font-size: clamp(2.4rem, 10.2vw, 3rem);
     white-space: normal;
+  }
+
+  .installation-controls {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+
+  .installation-screen-button {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .installation-cost-cta {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    min-width: 0;
+  }
+
+  .cost-vs-strip {
+    display: none;
+  }
+
+  .cost-driver-table .cost-row,
+  .scenario-table .cost-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cost-row > div {
+    border-left: 0;
+    border-top: 1px solid rgba(15, 235, 204, 0.2);
+  }
+
+  .cost-row > div:first-child {
+    border-top: 0;
+  }
+
+  .install-cost-values,
+  .install-cost-callout,
+  .project-savings,
+  .summary-card,
+  .summary-card-red {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .value-divider {
+    width: 80%;
+    height: 1px;
+  }
+}
+
+/* Cost comparison polish pass */
+.page-installation-cost {
+  font-family: "Manrope", var(--font-body);
+  letter-spacing: 0;
+}
+
+.page-installation-cost .installation-cost-layout {
+  gap: 10px;
+}
+
+.page-installation-cost .installation-cost-screen {
+  align-items: flex-start !important;
+  padding-top: 1.4vh !important;
+}
+
+.page-installation-cost .cost-dashboard {
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 14px;
+  min-height: 0;
+}
+
+.installation-cost-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 20px;
+  position: relative;
+}
+
+.page-installation-cost .installation-hero-spotlight h2 {
+  font-family: "Manrope", var(--font-title);
+  font-size: clamp(3.45rem, 4.6vw, 4.65rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.header-cost-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: clamp(150px, 20vh, 260px);
+  width: auto;
+  filter: drop-shadow(0 0 15px rgba(35, 231, 255, 0.45));
+  pointer-events: none;
+}
+
+.page-installation-cost .cost-grid {
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1.12fr) minmax(0, 0.82fr);
+  align-items: stretch;
+  min-height: 0;
+  gap: 16px 22px;
+}
+
+.page-installation-cost .hud-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page-installation-cost .hud-panel h3 {
+  flex: 0 0 auto;
+  font-family: "Manrope", var(--font-title);
+  font-size: clamp(1.28rem, 1.45vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.page-installation-cost .hud-panel h3 span {
+  width: 44px;
+  height: 44px;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.page-installation-cost .hud-panel h3 small {
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.page-installation-cost .cost-table {
+  flex: 1 1 auto;
+  display: grid;
+}
+
+.page-installation-cost .cost-row > div {
+  font-size: clamp(0.8rem, 0.78vw, 1.12rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.16;
+  padding: 7px 12px;
+}
+
+.page-installation-cost .cost-row-head > div {
+  font-size: clamp(0.84rem, 0.8vw, 1.12rem);
+  font-weight: 800;
+}
+
+.page-installation-cost .large-value,
+.page-installation-cost .saving-value,
+.page-installation-cost .install-cost-values span,
+.page-installation-cost .saving-card em,
+.page-installation-cost .summary-card strong {
+  font-family: "Manrope", var(--font-title);
+  letter-spacing: 0;
+}
+
+.page-installation-cost .cost-drivers-panel .cost-table {
+  grid-template-rows: auto repeat(4, minmax(0, 1fr));
+}
+
+.page-installation-cost .scenario-panel .cost-table {
+  grid-template-rows: auto repeat(2, minmax(0, 1fr));
+}
+
+.page-installation-cost .scenario-panel .cost-row > div {
+  font-size: clamp(0.95rem, 0.9vw, 1.3rem);
+}
+
+.page-installation-cost .scenario-panel .cost-row-head > div {
+  font-size: clamp(0.95rem, 0.92vw, 1.26rem);
+}
+
+.page-installation-cost .cost-drivers-panel .mini-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.page-installation-cost .scenario-panel .building-icon,
+.page-installation-cost .scenario-panel .retrofit-icon {
+  width: 38px;
+  height: 46px;
+}
+
+.page-installation-cost .install-cost-values {
+  padding: 4px 42px 12px;
+}
+
+.page-installation-cost .install-cost-values strong,
+.page-installation-cost .saving-card strong,
+.page-installation-cost .project-panel p {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.page-installation-cost .install-cost-callout strong,
+.page-installation-cost .saving-card span {
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.page-installation-cost .cost-footer {
+  grid-template-columns: 1fr 1fr 1.1fr;
+  gap: 18px;
+}
+
+.page-installation-cost .summary-card {
+  min-height: 104px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+}
+
+.page-installation-cost .summary-copy {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.page-installation-cost .summary-copy strong {
+  color: #19e7f2;
+  font-size: clamp(2rem, 2.25vw, 3.05rem);
+  font-weight: 800;
+  line-height: 0.95;
+  text-shadow: 0 0 15px rgba(25, 231, 242, 0.45);
+}
+
+.page-installation-cost .summary-copy span {
+  color: rgba(244, 250, 255, 0.9);
+  font-size: clamp(1rem, 1.1vw, 1.42rem);
+  font-weight: 500;
+  line-height: 1.14;
+}
+
+.page-installation-cost .summary-card-red .summary-copy {
+  gap: 10px;
+}
+
+.page-installation-cost .summary-card-red .summary-copy span {
+  font-size: clamp(1.05rem, 1.08vw, 1.42rem);
+  font-weight: 500;
+}
+
+.page-installation-cost .summary-card-red .summary-copy strong {
+  color: #ff4d34;
+  font-size: clamp(1.25rem, 1.42vw, 1.82rem);
+  font-weight: 800;
+  line-height: 1.08;
+  text-shadow: 0 0 15px rgba(255, 77, 52, 0.42);
+}
+
+.page-installation-cost .clock-icon {
+  width: 76px;
+  height: 76px;
+}
+
+.page-installation-cost .clock-icon::before {
+  left: 37px;
+  top: 17px;
+  height: 29px;
+}
+
+.page-installation-cost .clock-icon::after {
+  left: 37px;
+  top: 38px;
+}
+
+.page-installation-cost .battery-cost-icon {
+  width: 62px;
+  height: 70px;
+}
+
+.page-installation-cost .shield-icon {
+  width: 78px;
+  height: 84px;
+}
+
+/* Desktop order: left column 1/2, right column 3/4. */
+@media (min-width: 961px) {
+  .page-installation-cost .cost-drivers-panel {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .page-installation-cost .install-cost-panel {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .page-installation-cost .scenario-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .page-installation-cost .project-panel {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 960px) {
+  .page-installation-cost .cost-dashboard {
+    height: auto;
+    overflow: auto;
+  }
+
+  .page-installation-cost .cost-grid,
+  .page-installation-cost .cost-footer {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .page-installation-cost .cost-drivers-panel {
+    grid-row: 1;
+  }
+
+  .page-installation-cost .install-cost-panel {
+    grid-row: 2;
+  }
+
+  .page-installation-cost .scenario-panel {
+    grid-row: 3;
+  }
+
+  .page-installation-cost .project-panel {
+    grid-row: 4;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-installation-cost .summary-card,
+  .page-installation-cost .summary-card-red {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .page-installation-cost .summary-copy {
+    justify-items: center;
   }
 }

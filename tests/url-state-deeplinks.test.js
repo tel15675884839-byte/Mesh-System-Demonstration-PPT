@@ -111,8 +111,8 @@ function createElement(options) {
 function createAppHarness(search) {
   const windowListeners = new Map();
   const historyUrls = [];
-  const slides = Array.from({ length: 10 }, (_, index) => createElement({ dataset: { slide: String(index) } }));
-  const navDots = Array.from({ length: 10 }, (_, index) =>
+  const slides = Array.from({ length: 11 }, (_, index) => createElement({ dataset: { slide: String(index) } }));
+  const navDots = Array.from({ length: 11 }, (_, index) =>
     createElement({
       className: index === 0 ? "nav-dot active" : "nav-dot",
       dataset: { target: String(index) }
@@ -457,7 +457,7 @@ test("app shell resolves slide state from shared URL and keeps the query clean o
   const harness = createAppHarness("?scene=relay");
 
   assert.equal(harness.navDots[5].getAttribute("aria-current"), "true");
-  assert.equal(harness.progressIndicator.style.width, "60%");
+  assert.equal(harness.progressIndicator.style.width, "54.54545454545454%");
   assert.match(harness.historyUrls[0], /slide=distance/);
   assert.match(harness.historyUrls[0], /scene=relay/);
 

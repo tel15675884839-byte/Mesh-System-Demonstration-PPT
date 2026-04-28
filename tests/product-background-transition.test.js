@@ -119,8 +119,8 @@ function createTimerHarness() {
 
 function createAppHarness(search) {
   const timerHarness = createTimerHarness();
-  const slides = Array.from({ length: 10 }, (_, index) => createElement({ dataset: { slide: String(index) } }));
-  const navDots = Array.from({ length: 10 }, (_, index) =>
+  const slides = Array.from({ length: 11 }, (_, index) => createElement({ dataset: { slide: String(index) } }));
+  const navDots = Array.from({ length: 11 }, (_, index) =>
     createElement({
       className: index === 0 ? "nav-dot active" : "nav-dot",
       dataset: { target: String(index) }
@@ -218,7 +218,7 @@ test("product background enters and exits through dedicated transition classes",
   assert.equal(harness.appShell.classList.contains("is-product-background"), false);
   assert.equal(harness.appShell.classList.contains("is-product-background-enter"), false);
 
-  harness.clickNav(9);
+  harness.clickNav(10);
 
   assert.equal(harness.appShell.classList.contains("is-product-background"), true);
   assert.equal(harness.appShell.classList.contains("is-product-background-enter"), true);
@@ -231,7 +231,7 @@ test("product background enters and exits through dedicated transition classes",
   assert.equal(harness.appShell.classList.contains("is-product-background"), true);
   assert.equal(harness.appShell.classList.contains("is-product-background-enter"), false);
 
-  harness.clickNav(8);
+  harness.clickNav(9);
 
   assert.equal(harness.appShell.classList.contains("is-product-background"), true);
   assert.equal(harness.appShell.classList.contains("is-product-background-exit"), true);
@@ -240,4 +240,25 @@ test("product background enters and exits through dedicated transition classes",
 
   assert.equal(harness.appShell.classList.contains("is-product-background"), false);
   assert.equal(harness.appShell.classList.contains("is-product-background-exit"), false);
+});
+
+test("installation cost transition class is scoped to the Easy Installation pair", () => {
+  const harness = createAppHarness("?slide=installation");
+
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-transition"), false);
+
+  harness.clickNav(8);
+
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-transition"), true);
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-enter"), true);
+
+  harness.advanceBy(900);
+
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-transition"), false);
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-enter"), false);
+
+  harness.clickNav(9);
+
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-transition"), false);
+  assert.equal(harness.appShell.classList.contains("is-installation-cost-enter"), false);
 });

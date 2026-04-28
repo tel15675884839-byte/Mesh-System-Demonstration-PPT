@@ -18,6 +18,7 @@
   const INTERACTION_RADIUS = 16;
   const MAIN_PARTICLES_PER_EDGE = 2;
   const SUB_PARTICLES_PER_EDGE = 1;
+  const MESH_CONTENT_VERTICAL_SHIFT_RATIO = -0.05;
 
   const stageState = {
     width: Math.max(stage.clientWidth || BASE_WIDTH, 1),
@@ -152,7 +153,7 @@
     stageState.width = width;
     stageState.height = height;
     stageState.centerX = width / 2;
-    stageState.centerY = height / 2 + Math.min(height * 0.02, 10);
+    stageState.centerY = height / 2 + height * MESH_CONTENT_VERTICAL_SHIFT_RATIO;
     stageState.scale = Math.min(width / 860, height / 620);
     stageState.dpr = dpr;
     stageState.canvasBounds.left = rect.left;
@@ -351,8 +352,8 @@
     context.clearRect(0, 0, stageState.width, stageState.height);
 
     const fill = context.createLinearGradient(0, 0, 0, stageState.height);
-    fill.addColorStop(0, "#081220");
-    fill.addColorStop(1, "#040913");
+    fill.addColorStop(0, "rgba(8, 18, 32, 0.70)");
+    fill.addColorStop(1, "rgba(4, 9, 19, 0.70)");
     context.fillStyle = fill;
     context.fillRect(0, 0, stageState.width, stageState.height);
 

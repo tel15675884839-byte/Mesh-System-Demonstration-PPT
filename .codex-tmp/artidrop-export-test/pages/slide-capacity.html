@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="../css/artidrop-shell.css">
 </head>
 <body>
+  <div class="artidrop-page-cyber-background" data-cyber-bg data-cyber-bg-force-active aria-hidden="true">
+    <canvas class="cyber-page-background-canvas"></canvas>
+  </div>
   <main class="page page-capacity" data-capacity-scene="first-page">
     <section class="page-grid capacity-layout">
       <header class="capacity-header">
@@ -29,67 +32,7 @@
 
           <div class="capacity-stage-surface" id="capacity-stage-surface">
             <section class="capacity-first-scene" id="capacity-first-scene" aria-label="Designed System Capacity page">
-              <div class="capacity-static-stage" data-capacity-static-stage>
-                <span class="capacity-static-axis capacity-static-axis-x" aria-hidden="true"></span>
-                <span class="capacity-static-axis capacity-static-axis-y" aria-hidden="true"></span>
-
-                <span class="capacity-static-line capacity-line-dashed" style="--x: 25.8; --y: 48.8; --length: 21.5; --angle: -2deg; --z: 1;" aria-hidden="true"></span>
-                <span class="capacity-static-line capacity-line-dashed" style="--x: 48.6; --y: 48.8; --length: 21.2; --angle: -19deg; --z: 1;" aria-hidden="true"></span>
-                <span class="capacity-static-line capacity-line-dashed" style="--x: 48.6; --y: 49.4; --length: 21.8; --angle: 19deg; --z: 1;" aria-hidden="true"></span>
-                <span class="capacity-static-line capacity-line-dashed capacity-line-muted" style="--x: 70.6; --y: 36.5; --length: 12.2; --angle: 0deg; --z: 1;" aria-hidden="true"></span>
-                <span class="capacity-static-line capacity-line-dashed capacity-line-muted" style="--x: 70.9; --y: 62.5; --length: 12.2; --angle: 0deg; --z: 1;" aria-hidden="true"></span>
-
-                <article class="capacity-static-object capacity-object-panel" style="--x: 17.8; --y: 49.5; --w: 16.5; --z: 3;" aria-label="Fire alarm control panel">
-                  <img class="capacity-panel-image" src="../assets/icons/panel.svg" alt="" aria-hidden="true">
-                  <span class="capacity-object-label">Panel</span>
-                </article>
-
-                <article class="capacity-static-object capacity-object-loop-card" style="--x: 39.3; --y: 49.5; --w: 11.8; --z: 4;" aria-label="Wireless loop card">
-                  <img class="capacity-loop-card-image" src="../assets/icons/loop expansion card.svg" alt="" aria-hidden="true">
-                  <span class="capacity-object-label">Loop Card</span>
-                </article>
-
-                <article class="capacity-static-object capacity-object-node" style="--x: 61.7; --y: 31.6; --w: 8.2; --z: 4;" aria-label="Wireless node">
-                  <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
-                  <span class="capacity-object-label">Node</span>
-                </article>
-
-                <article class="capacity-static-object capacity-object-node" style="--x: 62.1; --y: 67.2; --w: 8.2; --z: 4;" aria-label="Wireless node">
-                  <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
-                  <span class="capacity-object-label">Node</span>
-                </article>
-
-                <article class="capacity-static-object capacity-object-cluster" style="--x: 82.2; --y: 31.6; --w: 18.5; --z: 5;" aria-label="Node and devices cluster">
-                  <div class="capacity-cluster-node">
-                    <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
-                    <span>Node</span>
-                  </div>
-                  <div class="capacity-cluster-devices">
-                    <img class="capacity-device-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
-                    <img class="capacity-device-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
-                    <img class="capacity-device-icon" src="../assets/icons/mcp.svg" alt="" aria-hidden="true">
-                    <span class="capacity-cluster-badge">32 devices</span>
-                  </div>
-                </article>
-
-                <article class="capacity-static-object capacity-object-cluster" style="--x: 82.2; --y: 67.2; --w: 18.5; --z: 5;" aria-label="Node and devices cluster">
-                  <div class="capacity-cluster-node">
-                    <img class="capacity-node-image" src="../assets/icons/node.svg" alt="" aria-hidden="true">
-                    <span>Node</span>
-                  </div>
-                  <div class="capacity-cluster-devices">
-                    <img class="capacity-device-icon" src="../assets/icons/smoke.svg" alt="" aria-hidden="true">
-                    <img class="capacity-device-icon" src="../assets/icons/sounder.svg" alt="" aria-hidden="true">
-                    <img class="capacity-device-icon" src="../assets/icons/mcp.svg" alt="" aria-hidden="true">
-                    <span class="capacity-cluster-badge">32 devices</span>
-                  </div>
-                </article>
-
-                <p class="capacity-static-text capacity-text-main" style="--x: 39.5; --y: 18.5; --font-size: 30px; --z: 6;">4 wireless loops per panel</p>
-                <p class="capacity-static-text" style="--x: 61.8; --y: 21.4; --font-size: 18px; --z: 6;">32 nodes per loop</p>
-                <p class="capacity-static-text" style="--x: 82.2; --y: 20.5; --font-size: 18px; --z: 6;">32 devices per node</p>
-                <p class="capacity-static-text capacity-text-total" style="--x: 50; --y: 87.5; --font-size: 34px; --z: 6;">Scalable wireless capacity: panel + loop card + node clusters</p>
-              </div>
+              <img class="capacity-first-scene-image" src="../assets/images/System Capacity.png" alt="System Capacity Overview">
             </section>
 
             <section class="capacity-network-scene" id="capacity-network-scene" aria-label="Network capacity page" aria-hidden="true">
@@ -233,6 +176,7 @@
     </nav>
   </div>
   <script id="artidrop-slide-manifest" type="application/json">[{"slug":"opening","label":"Opening","href":"slide-opening.html"},{"slug":"overview","label":"Feature Overview","href":"slide-overview.html"},{"slug":"mesh","label":"Mesh Communication","href":"slide-mesh.html"},{"slug":"reliability","label":"High Reliability","href":"slide-reliability.html"},{"slug":"response","label":"Rapid Response","href":"slide-response.html"},{"slug":"distance","label":"Extended Distance","href":"slide-distance.html"},{"slug":"battery","label":"10-Year Battery","href":"slide-battery.html"},{"slug":"installation","label":"Easy Installation","href":"slide-installation.html"},{"slug":"capacity","label":"System Capacity","href":"slide-capacity.html"},{"slug":"product-showcase","label":"Product Showcase","href":"slide-product-showcase.html"}]</script>
+  <script src="../js/cyber-page-background.js"></script>
   <script src="../js/artidrop-shell.js"></script>
 </body>
 </html>
