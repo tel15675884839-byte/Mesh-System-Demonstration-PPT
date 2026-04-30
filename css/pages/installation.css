@@ -216,7 +216,6 @@
 
 .installation-cost-page-header {
   position: relative;
-  z-index: 12;
 }
 
 .page-installation-cost .installation-hero-spotlight h2 {
@@ -225,6 +224,8 @@
 
 .installation-cost-stage-shell {
   height: 100%;
+  position: relative;
+  z-index: 5;
 }
 
 .page-installation-cost .installation-cost-screen {
@@ -1307,10 +1308,12 @@
 
 .header-cost-icon {
   position: absolute;
+  z-index: 1;
   right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: clamp(150px, 20vh, 260px);
+  top: 42%;
+  transform: translateY(-50%) scale(0.94);
+  transform-origin: 100% 50%;
+  height: clamp(143.52px, 18.72vh, 243.36px);
   width: auto;
   filter: drop-shadow(0 0 15px rgba(35, 231, 255, 0.45));
   pointer-events: none;
@@ -1564,4 +1567,80 @@
   .page-installation-cost .summary-copy {
     justify-items: center;
   }
+}
+
+/* Static reference image version of the cost comparison slide. */
+.page-installation-cost .installation-cost-screen {
+  align-items: center !important;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.cost-reference-frame {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1560px);
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow:
+    0 0 22px rgba(15, 235, 204, 0.28),
+    0 20px 54px rgba(0, 0, 0, 0.34);
+  overflow: hidden;
+}
+
+.cost-reference-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(30, 255, 244, 0.18), transparent);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cost-reference-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 1px solid rgba(15, 235, 204, 0.88);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(126, 255, 246, 0.18),
+    inset 0 0 22px rgba(15, 235, 204, 0.1),
+    0 0 20px rgba(15, 235, 204, 0.24);
+  pointer-events: none;
+}
+
+.cost-reference-image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
+  transform: none;
+  filter:
+    saturate(1.04)
+    contrast(1.02)
+    drop-shadow(0 0 16px rgba(15, 235, 204, 0.18));
+}
+
+.cost-reference-alt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

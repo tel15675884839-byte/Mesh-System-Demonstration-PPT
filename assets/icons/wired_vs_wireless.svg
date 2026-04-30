@@ -72,7 +72,7 @@
 
     <!-- 左侧文本 -->
     <g filter="url(#glowRed)" fill="#ffe6e6" text-anchor="middle" font-family="sans-serif">
-        <text x="175" y="310" font-size="36" font-weight="900" letter-spacing="4">WIRED</text>
+        <text x="175" y="280" font-size="34" font-weight="900" letter-spacing="4">WIRED</text>
     </g>
 
 
@@ -141,7 +141,7 @@
 
     <!-- 右侧文本 -->
     <g filter="url(#glowBlue)" fill="#e6f2ff" text-anchor="middle" font-family="sans-serif">
-        <text x="620" y="310" font-size="36" font-weight="900" letter-spacing="4">WIRELESS</text>
+        <text x="620" y="280" font-size="34" font-weight="900" letter-spacing="4">WIRELESS</text>
     </g>
 
 </svg>

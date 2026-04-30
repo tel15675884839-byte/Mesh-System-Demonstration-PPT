@@ -9,6 +9,38 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/page-base.css">
   <link rel="stylesheet" href="../css/pages/installation.css">
+  <style>
+    .cost-reference-frame {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cost-reference-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 42px; /* Smoothly masks the baked-in black corners */
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(15, 235, 204, 0.2);
+    }
+
+    .cost-reference-alt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
 </head>
 <body>
   <main class="page page-installation page-installation-cost">
@@ -22,133 +54,18 @@
 
       <div class="visual-card installation-stage-shell installation-cost-stage-shell">
         <section class="installation-cost-screen" aria-label="Wired and wireless fire alarm cost comparison">
-          <div class="cost-dashboard">
-            <!-- cost-vs-strip removed and substituted by header icon -->
-
-            <div class="cost-grid">
-              <article class="hud-panel cost-drivers-panel">
-                <h3><span>1</span> Core Cost Drivers <small>(Per Point)</small></h3>
-                <div class="cost-table cost-driver-table" role="table" aria-label="Core cost drivers per point">
-                  <div class="cost-row cost-row-head" role="row">
-                    <div role="columnheader">Category</div>
-                    <div role="columnheader">Wired System</div>
-                    <div role="columnheader">Wireless System</div>
-                    <div role="columnheader">Key Insight</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell">Detector Unit Price</div>
-                    <div class="wired-value" role="cell">$10 / pc</div>
-                    <div class="wireless-value" role="cell">$40 / pc</div>
-                    <div role="cell">Wireless includes built-in 10-year lithium battery</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell">Labor Cost</div>
-                    <div class="wired-value" role="cell">$55–$95</div>
-                    <div class="wireless-value" role="cell">$5–$10</div>
-                    <div role="cell">Wireless greatly reduces labor</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell">Auxiliary Materials</div>
-                    <div class="wired-value" role="cell">$8-$20</div>
-                    <div class="wireless-value" role="cell">$1-$2</div>
-                    <div role="cell">No cable / conduit needed</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell">Commissioning & Acceptance</div>
-                    <div class="wired-value" role="cell">$5-$10</div>
-                    <div class="wireless-value" role="cell">$2-$4</div>
-                    <div role="cell">Faster setup and testing</div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="hud-panel scenario-panel">
-                <h3><span>3</span> Scenario Total Cost per Point</h3>
-                <div class="cost-table scenario-table" role="table" aria-label="Scenario total cost per point">
-                  <div class="cost-row cost-row-head" role="row">
-                    <div role="columnheader">Scenario</div>
-                    <div role="columnheader">Wired System</div>
-                    <div role="columnheader">Wireless System</div>
-                    <div role="columnheader">Savings as a Percentage</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell"><span class="building-icon" aria-hidden="true"></span>Standard New Building</div>
-                    <div class="wired-value large-value" role="cell">$78</div>
-                    <div class="wireless-value large-value" role="cell">$48</div>
-                    <div class="saving-value" role="cell">38% lower</div>
-                  </div>
-                  <div class="cost-row" role="row">
-                    <div role="cell"><span class="retrofit-icon" aria-hidden="true"></span>Renovation / Decoration Building</div>
-                    <div class="wired-value large-value" role="cell">$135</div>
-                    <div class="wireless-value large-value" role="cell">$56</div>
-                    <div class="saving-value" role="cell">59% lower</div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="hud-panel install-cost-panel">
-                <h3><span>2</span> Installation Cost per Point</h3>
-                <div class="install-cost-values">
-                  <div>
-                    <strong>Wired System</strong>
-                    <span class="wired-value">$68-$125</span>
-                  </div>
-                  <div class="value-divider" aria-hidden="true"></div>
-                  <div>
-                    <strong>Wireless System</strong>
-                    <span class="wireless-value">$8-$16</span>
-                  </div>
-                </div>
-                <div class="install-cost-callout">
-                  <span class="trend-icon" aria-hidden="true"></span>
-                  <strong>Wireless installation cost is dramatically lower</strong>
-                  <em>Typically<br>80%+<br>lower</em>
-                </div>
-              </article>
-
-              <article class="hud-panel project-panel">
-                <h3><span>4</span> 500-Point Project Example</h3>
-                <p>Savings based on per-point total cost difference.</p>
-                <div class="project-savings">
-                  <span class="growth-icon" aria-hidden="true"></span>
-                  <div class="saving-card saving-card-blue">
-                    <strong>New building<br>(500 points)</strong>
-                    <span>Wireless saves</span>
-                    <em>$15,000</em>
-                  </div>
-                  <div class="saving-card saving-card-red">
-                    <strong>Renovation / retrofit<br>(500 points)</strong>
-                    <span>Wireless saves</span>
-                    <em>$39,500</em>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-            <footer class="cost-footer">
-              <div class="summary-card">
-                <span class="clock-icon" aria-hidden="true"></span>
-                <div class="summary-copy">
-                  <strong>50%-70%</strong>
-                  <span>shorter installation time</span>
-                </div>
-              </div>
-              <div class="summary-card">
-                <span class="battery-cost-icon" aria-hidden="true"></span>
-                <div class="summary-copy">
-                  <strong>10-year</strong>
-                  <span>maintenance-free battery</span>
-                </div>
-              </div>
-              <div class="summary-card summary-card-red">
-                <span class="shield-icon" aria-hidden="true"></span>
-                <div class="summary-copy">
-                  <span>Best fit for</span>
-                  <strong>renovation and retrofit projects</strong>
-                </div>
-              </div>
-            </footer>
-          </div>
+          <figure class="cost-reference-frame">
+            <img
+              src="../assets/images/installation-cost-comparison-rounded.png"
+              alt="Wired vs wireless fire alarm cost comparison showing core cost drivers, installation cost per point, scenario total cost per point, project savings, and bottom summary benefits."
+              class="cost-reference-image"
+            >
+            <figcaption class="cost-reference-alt">
+              Core Cost Drivers include Detector Unit Price, Labor Cost, Auxiliary Materials, and Commissioning & Acceptance.
+              Scenario Total Cost per Point compares Standard New Building and Renovation / Decoration Building.
+              Installation Cost per Point shows lower wireless installation cost, and the 500-Point Project Example highlights wireless savings.
+            </figcaption>
+          </figure>
         </section>
       </div>
     </section>
