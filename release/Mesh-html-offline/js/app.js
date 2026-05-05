@@ -1,7 +1,10 @@
 (function () {
   const STAGE_HEIGHT = 1080;
   const DISTANCE_SLIDE_INDEX = 5;
-  const PRODUCT_SLIDE_INDEX = 9;
+  const INSTALLATION_SLIDE_INDEX = 7;
+  const INSTALLATION_COST_SLIDE_INDEX = 8;
+  const PRODUCT_SLIDE_INDEX = 10;
+  const INSTALLATION_COST_TRANSITION_MS = 820;
   const PRODUCT_BACKGROUND_TRANSITION_MS = 720;
   const FRAME_PRELOAD_RADIUS = 1;
   const ALWAYS_PRELOADED_SLIDE_INDICES = [PRODUCT_SLIDE_INDEX];
@@ -14,6 +17,7 @@
     "distance",
     "battery",
     "installation",
+    "installation-cost",
     "capacity",
     "products"
   ];
@@ -39,6 +43,7 @@
   let currentSlide = 0;
   let wheelLock = false;
   let productBackgroundTransitionTimer = 0;
+  let installationCostTransitionTimer = 0;
 
   function getFrameSource(frame) {
     if (!frame) {
@@ -189,6 +194,8 @@
       searchParams.delete("product");
     }
 
+    searchParams.delete("install");
+
     replaceHistoryUrl(searchParams);
   }
 
@@ -251,6 +258,28 @@
     productBackgroundTransitionTimer = 0;
   }
 
+  function clearInstallationCostTransitionTimer() {
+    if (!installationCostTransitionTimer) {
+      return;
+    }
+
+    window.clearTimeout(installationCostTransitionTimer);
+    installationCostTransitionTimer = 0;
+  }
+
+  function scheduleInstallationCostTransitionCleanup() {
+    clearInstallationCostTransitionTimer();
+    installationCostTransitionTimer = window.setTimeout(function () {
+      installationCostTransitionTimer = 0;
+      if (!appShell) {
+        return;
+      }
+      appShell.classList.remove("is-installation-cost-transition");
+      appShell.classList.remove("is-installation-cost-enter");
+      appShell.classList.remove("is-installation-cost-exit");
+    }, INSTALLATION_COST_TRANSITION_MS);
+  }
+
   function scheduleProductBackgroundTransition(callback) {
     clearProductBackgroundTransitionTimer();
     productBackgroundTransitionTimer = window.setTimeout(function () {
@@ -306,6 +335,31 @@
     });
   }
 
+  function syncInstallationCostTransition(previousSlide, options) {
+    if (!appShell) {
+      return;
+    }
+
+    const config = options || {};
+    const isInitialSync = Boolean(config.instantBackground);
+    const isCostPairTransition =
+      (previousSlide === INSTALLATION_SLIDE_INDEX && currentSlide === INSTALLATION_COST_SLIDE_INDEX) ||
+      (previousSlide === INSTALLATION_COST_SLIDE_INDEX && currentSlide === INSTALLATION_SLIDE_INDEX);
+
+    clearInstallationCostTransitionTimer();
+    appShell.classList.remove("is-installation-cost-transition");
+    appShell.classList.remove("is-installation-cost-enter");
+    appShell.classList.remove("is-installation-cost-exit");
+
+    if (isInitialSync || !isCostPairTransition) {
+      return;
+    }
+
+    appShell.classList.add("is-installation-cost-transition");
+    appShell.classList.add(currentSlide === INSTALLATION_COST_SLIDE_INDEX ? "is-installation-cost-enter" : "is-installation-cost-exit");
+    scheduleInstallationCostTransitionCleanup();
+  }
+
   function updateSlidePosition(shouldScroll) {
     if (!slidesContainer) {
       return;
@@ -350,6 +404,7 @@
     }
 
     syncShellBackgroundMode(previousSlide, config);
+    syncInstallationCostTransition(previousSlide, config);
     syncFrameVisibility();
     syncBackgroundActivity();
     syncUrlState(config.state || null);
