@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "mesh-presentation-offline-v20260421-2";
+const CACHE_NAME = "mesh-presentation-offline-v20260505";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
