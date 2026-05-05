@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wired vs Wireless Cost</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/page-base.css">
+  <link rel="stylesheet" href="../css/pages/installation.css">
+  <style>
+    .cost-reference-frame {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cost-reference-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 42px; /* Smoothly masks the baked-in black corners */
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(15, 235, 204, 0.2);
+    }
+
+    .cost-reference-alt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="page page-installation page-installation-cost">
+    <section class="page-grid installation-cost-layout">
+      <header class="installation-cost-page-header">
+        <div class="page-copy installation-hero installation-hero-spotlight page-hero-spotlight">
+          <h2>Wired vs Wireless Cost</h2>
+        </div>
+        <img src="../assets/icons/wired_vs_wireless.svg" alt="Cost Icon" class="header-cost-icon">
+      </header>
+
+      <div class="visual-card installation-stage-shell installation-cost-stage-shell">
+        <section class="installation-cost-screen" aria-label="Wired and wireless fire alarm cost comparison">
+          <figure class="cost-reference-frame">
+            <img
+              src="../assets/images/installation-cost-comparison-rounded.png"
+              alt="Wired vs wireless fire alarm cost comparison showing core cost drivers, installation cost per point, scenario total cost per point, project savings, and bottom summary benefits."
+              class="cost-reference-image"
+            >
+            <figcaption class="cost-reference-alt">
+              Core Cost Drivers include Detector Unit Price, Labor Cost, Auxiliary Materials, and Commissioning & Acceptance.
+              Scenario Total Cost per Point compares Standard New Building and Renovation / Decoration Building.
+              Installation Cost per Point shows lower wireless installation cost, and the 500-Point Project Example highlights wireless savings.
+            </figcaption>
+          </figure>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="../js/page-messaging.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "mesh-presentation-offline-v20260505";
+const CACHE_NAME = "mesh-presentation-offline-v20260505-rev2";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const PRECACHE_URLS = [
   "./pages/distance.html",
   "./pages/battery.html",
   "./pages/installation.html",
+  "./pages/installation-cost.html",
   "./pages/capacity.html",
   "./pages/product-showcase.html",
   "./css/style.css",
@@ -52,6 +53,7 @@ const PRECACHE_URLS = [
   "./assets/images/mesh2D.png",
   "./assets/images/fast-f-transparent.png",
   "./assets/images/System Capacity.png",
+  "./assets/images/installation-cost-comparison-rounded.png",
   "./assets/images/wiring.jpg",
   "./assets/images/wireless.jpg",
   "./assets/images/products/all.png",
