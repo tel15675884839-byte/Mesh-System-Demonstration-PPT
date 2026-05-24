@@ -828,6 +828,67 @@
     }
   }
 
+  /* ── Reset All Edges ── */
+  function resetAllEdges() {
+    /* Store initial state values */
+    const initialStates = [
+      { source: 0, target: 1, type: "main", active: true, broken: false },
+      { source: 1, target: 2, type: "main", active: true, broken: false },
+      { source: 2, target: 0, type: "main", active: true, broken: false },
+      { source: 3, target: 0, type: "sub", active: true, broken: false },
+      { source: 3, target: 1, type: "sub", active: false, broken: false },
+      { source: 4, target: 0, type: "sub", active: true, broken: false },
+      { source: 4, target: 2, type: "sub", active: false, broken: false },
+      { source: 5, target: 0, type: "sub", active: true, broken: false },
+      { source: 5, target: 1, type: "sub", active: false, broken: false },
+      { source: 5, target: 2, type: "sub", active: false, broken: false },
+      { source: 6, target: 1, type: "sub", active: true, broken: false },
+      { source: 7, target: 2, type: "sub", active: true, broken: false },
+      { source: 8, target: 1, type: "sub", active: true, broken: false },
+      { source: 8, target: 2, type: "sub", active: false, broken: false },
+      { source: 1, target: 1, targetAccessory: true, type: "sounder", active: true, broken: false },
+      { source: 2, target: 2, targetAccessory: true, type: "sounder", active: true, broken: false },
+      { source: 1, target: 2, targetAccessory: true, type: "sounder", active: false, broken: false },
+      { source: 2, target: 1, targetAccessory: true, type: "sounder", active: false, broken: false }
+    ];
+
+    edges.forEach(function (edge, index) {
+      if (index < initialStates.length) {
+        const initial = initialStates[index];
+        edge.active = initial.active;
+        edge.broken = initial.broken;
+        edge.breakTime = 0;
+        edge.healTime = 0;
+      }
+    });
+
+    /* Clear ripples and trail */
+    ripples.length = 0;
+    stageState.trailPoints = [];
+
+    /* Rebuild particles */
+    buildParticles();
+
+    /* Push a ripple on all main nodes for visual feedback */
+    pushRipple(0, "95, 214, 255");
+    pushRipple(1, "95, 214, 255");
+    pushRipple(2, "95, 214, 255");
+
+    /* Render if not active */
+    if (!stageState.isActive) {
+      renderStaticFrame();
+    }
+  }
+
+  /* Bind reset button */
+  var resetButton = document.querySelector(".mesh-reset-button");
+  if (resetButton) {
+    resetButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      resetAllEdges();
+    });
+  }
+
   function syncVisibility(isActive) {
     stageState.isActive = !!isActive;
 

@@ -103,6 +103,49 @@
   cursor: crosshair;
 }
 
+/* ── Mesh Reset Button ── */
+.mesh-reset-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(95, 214, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(4, 10, 19, 0.82);
+  color: rgba(200, 232, 255, 0.78);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.18s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.mesh-reset-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.mesh-reset-button:hover {
+  background: rgba(95, 214, 255, 0.14);
+  border-color: rgba(95, 214, 255, 0.5);
+  color: #dff9ff;
+}
+
+.mesh-reset-button:active {
+  transform: scale(0.92);
+  background: rgba(95, 214, 255, 0.22);
+}
+
+.mesh-reset-button:focus-visible {
+  outline: 2px solid rgba(112, 240, 255, 0.92);
+  outline-offset: 3px;
+}
+
 @media (max-width: 960px) {
   .page-mesh .mesh-layout {
     height: auto;
@@ -115,6 +158,18 @@
 
   .mesh-self-healing-stage {
     min-height: 420px;
+  }
+
+  .mesh-reset-button {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .mesh-reset-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -135,5 +190,18 @@
 
   .mesh-self-healing-stage {
     min-height: 380px;
+  }
+
+  .mesh-reset-button {
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .mesh-reset-icon {
+    width: 16px;
+    height: 16px;
   }
 }

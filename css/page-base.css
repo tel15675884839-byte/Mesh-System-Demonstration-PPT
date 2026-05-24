@@ -239,7 +239,8 @@ p {
 .mode-button,
 .scene-toggle,
 .stage-control-button,
-.response-reset-button {
+.response-reset-button,
+.mesh-reset-button {
   font-family: var(--font-body);
   font-size: var(--fs-button);
   font-weight: var(--fw-semibold);
@@ -247,7 +248,8 @@ p {
 }
 
 .stage-control-button,
-.response-reset-button {
+.response-reset-button,
+.mesh-reset-button {
   display: grid;
   place-items: center;
   width: 34px;
@@ -268,20 +270,23 @@ p {
 }
 
 .stage-control-button:hover,
-.response-reset-button:hover {
+.response-reset-button:hover,
+.mesh-reset-button:hover {
   transform: translateY(-1px);
   border-color: rgba(112, 240, 255, 0.28);
   background: rgba(8, 20, 34, 0.9);
 }
 
 .stage-control-button:focus-visible,
-.response-reset-button:focus-visible {
+.response-reset-button:focus-visible,
+.mesh-reset-button:focus-visible {
   outline: 2px solid rgba(112, 240, 255, 0.65);
   outline-offset: 3px;
 }
 
 .stage-control-button:active,
-.response-reset-button:active {
+.response-reset-button:active,
+.mesh-reset-button:active {
   transform: translateY(0);
 }
 

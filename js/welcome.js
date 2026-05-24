@@ -189,5 +189,24 @@
     });
   }
 
+  /* Expose restart function for app.js to call when returning to welcome */
+  window.restartWelcomeCanvas = function () {
+    isEntering = false;
+    hasSignaledPresentationEntry = false;
+
+    /* Hide content layer again */
+    contentLayer.setAttribute("aria-hidden", "true");
+
+    /* Restart canvas animation */
+    if (!rafId) {
+      resize();
+      createStars();
+      animate();
+    }
+
+    /* Re-bind one-time entry listener */
+    window.addEventListener("pointerdown", enterPresentation, { once: true });
+  };
+
   init();
 }());
