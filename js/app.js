@@ -1,7 +1,7 @@
 (function () {
   const STAGE_HEIGHT = 1080;
   const DISTANCE_SLIDE_INDEX = 5;
-  const PRODUCT_SLIDE_INDEX = 9;
+  const PRODUCT_SLIDE_INDEX = 10;
   const PRODUCT_BACKGROUND_TRANSITION_MS = 720;
   const FRAME_PRELOAD_RADIUS = 1;
   const ALWAYS_PRELOADED_SLIDE_INDICES = [PRODUCT_SLIDE_INDEX];
@@ -14,6 +14,7 @@
     "distance",
     "battery",
     "installation",
+    "installation-cost",
     "capacity",
     "products"
   ];

@@ -135,6 +135,23 @@
         { label: "Communication", value: "Mesh topology" },
         { label: "Open-area Range", value: "Up to 500m" }
       ]
+    },
+    {
+      slug: "switched-supply-input",
+      name: "625-005 Input Module",
+      category: "Wireless Switched Supply Input Module",
+      title: "Wireless Switched Supply Input Module",
+      image: "../assets/images/products/node.png",
+      fallbackImage: "../assets/icons/leader-node.svg",
+      accentRgb: "106, 234, 198",
+      accentSoftRgb: "112, 240, 255",
+      beamConnection: true,
+      stats: [
+        { label: "Model", value: "625-005" },
+        { label: "Power Source", value: "External 24 V DC" },
+        { label: "Device Reset", value: "Supply switches to 0 V on reset" },
+        { label: "Open-area Range", value: "Up to 500 m" }
+      ]
     }
   ];
 
@@ -224,6 +241,18 @@
     return html;
   }
 
+  function renderBeamConnectionHTML(product) {
+    return "<div class=\"beam-arrangement\" role=\"group\" aria-label=\"625-005 module connected to a beam detector by switched supply and a dry-contact alarm input\">" +
+      "<figure class=\"beam-module\">" +
+      "<div class=\"beam-module-photo\"><img class=\"product-image\" src=\"" + product.image + "\" alt=\"625-005 wireless switched supply input module\"></div>" +
+      "<figcaption>625-005</figcaption></figure>" +
+      "<div class=\"beam-connections\" aria-hidden=\"true\">" +
+      "<span>Switched supply</span><span class=\"beam-wire beam-wire-out\"></span>" +
+      "<span class=\"beam-wire beam-wire-in\"></span><span>Alarm input</span></div>" +
+      "<figure class=\"beam-detector\"><img src=\"../assets/images/products/beam-detector.png\" alt=\"Beam smoke detector\">" +
+      "<figcaption>Beam detector</figcaption></figure></div>";
+  }
+
   function updateAria(slide, index) {
     const detailsPanel = slide.querySelector(".product-details-panel");
     if (detailsPanel) {
@@ -260,6 +289,9 @@
     // Create new slide
     const newSlide = document.createElement("div");
     newSlide.className = "product-slide";
+    if (product.beamConnection) {
+      newSlide.classList.add("product-slide--beam");
+    }
     
     let detailsHTML = "";
     if (index > 0) {
@@ -273,16 +305,16 @@
     newSlide.innerHTML =
       "<section class=\"product-visual-panel\" aria-live=\"polite\">" +
       "<div class=\"product-aura\" aria-hidden=\"true\"></div>" +
-      "<div class=\"product-image-shell\">" +
+      (product.beamConnection ? renderBeamConnectionHTML(product) : "<div class=\"product-image-shell\">" +
       "<img class=\"product-image\" src=\"" + product.image + "\" alt=\"" + product.name + "\">" +
       "<img class=\"product-fallback is-hidden\" src=\"" + product.fallbackImage + "\" alt=\"\">" +
-      "</div>" +
+      "</div>") +
       renderBatteryHTML(product.battery) +
       "</section>" +
       detailsHTML;
 
     const imageEl = newSlide.querySelector(".product-image");
-    if (imageEl) {
+    if (imageEl && !product.beamConnection) {
       imageEl.style.setProperty("--image-scale", String(product.imageScale || 1.3));
       imageEl.style.setProperty("--image-offset-y", "-3%");
     }

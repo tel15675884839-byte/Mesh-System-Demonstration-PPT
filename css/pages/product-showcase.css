@@ -407,3 +407,143 @@
     transition: none;
   }
 }
+
+/* The final product keeps the same stage, with its connected beam detector. */
+.beam-arrangement {
+  position: absolute;
+  inset: 32px 96px 310px;
+  max-width: 920px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(130px, 0.85fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  z-index: 2;
+}
+
+.beam-arrangement figure {
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.beam-module-photo {
+  width: 300px;
+  max-width: 100%;
+  /* The original's physical housing ends at 198px; everything below is a reflection. */
+  aspect-ratio: 280 / 198;
+  overflow: hidden;
+}
+
+.beam-module-photo .product-image {
+  display: block;
+  width: 100%;
+  max-height: none;
+  transform: none;
+  filter: none;
+}
+
+.beam-detector img {
+  display: block;
+  height: 310px;
+  max-height: 34vh;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.6));
+}
+
+.beam-arrangement figcaption,
+.beam-connections {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.beam-connections {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+  font-size: 12px;
+  margin-top: -42px;
+}
+
+.beam-wire {
+  position: relative;
+  display: block;
+  height: 2px;
+  background: rgba(var(--product-accent-rgb), 0.72);
+}
+
+.beam-wire::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgb(var(--product-accent-rgb));
+  border-right: 2px solid rgb(var(--product-accent-rgb));
+}
+
+.beam-wire-out::after {
+  right: 0;
+  transform: rotate(45deg);
+}
+
+.beam-wire-in::after {
+  left: 0;
+  transform: rotate(-135deg);
+}
+
+.product-slide--beam .product-details-panel {
+  width: calc(100% - 80px);
+}
+
+.product-slide--beam .product-title {
+  font-size: clamp(1.8rem, 2.7vw, 3.2rem);
+  white-space: normal;
+}
+
+.product-slide--beam .product-stat-value {
+  text-transform: none;
+}
+
+@media (max-width: 900px) {
+  .page-product-showcase .product-layout:has(.product-slide--beam) {
+    height: calc(100vh - 36px);
+  }
+
+  .beam-arrangement {
+    inset: 48px 48px 310px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(75px, 0.8fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .beam-arrangement figcaption,
+  .beam-connections {
+    font-size: 10px;
+  }
+
+  .product-slide--beam .product-details-panel {
+    left: 20px;
+    bottom: 24px;
+    width: calc(100% - 40px);
+  }
+
+  .product-slide--beam .product-stat-card {
+    gap: 12px;
+    white-space: normal;
+  }
+
+  .product-slide--beam .product-stat-label {
+    width: 130px;
+    font-size: 11px;
+  }
+
+  .product-slide--beam .product-stat-value {
+    font-size: 13px;
+  }
+}

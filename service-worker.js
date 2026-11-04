@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "mesh-presentation-offline-v20260505-rev2";
+const CACHE_NAME = "mesh-presentation-offline-v20261104-beam-rev5";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -59,6 +59,7 @@ const PRECACHE_URLS = [
   "./assets/images/products/all.png",
   "./assets/images/products/wireless loop expansion card.png",
   "./assets/images/products/node.png",
+  "./assets/images/products/beam-detector.png",
   "./assets/images/products/smoke.png",
   "./assets/images/products/17450.png",
   "./assets/images/products/mcp.png",
@@ -94,7 +95,9 @@ self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function (cache) {
-        return cache.addAll(PRECACHE_URLS);
+        return cache.addAll(PRECACHE_URLS.map(function (url) {
+          return new Request(url, { cache: "reload" });
+        }));
       })
       .then(function () {
         return self.skipWaiting();
