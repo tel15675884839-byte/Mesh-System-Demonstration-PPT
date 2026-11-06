@@ -80,13 +80,10 @@
     };
     this.connectionGrid = new Map();
 
-    const forceActive = Boolean(
-      this.root
-      && typeof this.root.hasAttribute === "function"
-      && this.root.hasAttribute("data-cyber-bg-force-active")
-    );
-
-    this.isSlideActive = forceActive || window.parent === window;
+    this.isStageBackground = this.root.hasAttribute("data-stage-background");
+    this.isSlideActive = this.isStageBackground
+      ? window.meshStageBackgroundActive === true
+      : window.parent === window;
     this.isPageVisible = !document.hidden;
     this.lastTimestamp = 0;
     this.hasPaintedFirstFrame = false;
@@ -95,6 +92,7 @@
     this.handleResize = this.handleResize.bind(this);
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     this.handleMessage = this.handleMessage.bind(this);
+    this.handleStageActivity = this.handleStageActivity.bind(this);
     this.handlePointerMove = this.handlePointerMove.bind(this);
     this.handlePointerLeave = this.handlePointerLeave.bind(this);
     this.handlePageHide = this.handlePageHide.bind(this);
@@ -157,6 +155,8 @@
     window.addEventListener("resize", this.handleResize);
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
     window.addEventListener("message", this.handleMessage);
+    window.addEventListener("stageBackgroundActive", this.handleStageActivity);
+    window.addEventListener("pageshow", this.handleVisibilityChange);
     window.addEventListener("pointermove", this.handlePointerMove);
     window.addEventListener("pointerleave", this.handlePointerLeave);
     window.addEventListener("pagehide", this.handlePageHide);
@@ -166,6 +166,8 @@
     window.removeEventListener("resize", this.handleResize);
     document.removeEventListener("visibilitychange", this.handleVisibilityChange);
     window.removeEventListener("message", this.handleMessage);
+    window.removeEventListener("stageBackgroundActive", this.handleStageActivity);
+    window.removeEventListener("pageshow", this.handleVisibilityChange);
     window.removeEventListener("pointermove", this.handlePointerMove);
     window.removeEventListener("pointerleave", this.handlePointerLeave);
     window.removeEventListener("pagehide", this.handlePageHide);
@@ -259,11 +261,17 @@
   };
 
   CyberPageBackground.prototype.handleMessage = function (event) {
-    if (!event || !event.data || event.data.type !== "slideVisibility") {
+    if (this.isStageBackground || !event || !event.data || event.data.type !== "slideVisibility") {
       return;
     }
 
     this.isSlideActive = Boolean(event.data.active);
+    this.syncAnimationState();
+  };
+
+  CyberPageBackground.prototype.handleStageActivity = function (event) {
+    if (!this.isStageBackground) return;
+    this.isSlideActive = Boolean(event.detail && event.detail.active);
     this.syncAnimationState();
   };
 

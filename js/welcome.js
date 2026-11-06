@@ -21,6 +21,7 @@
   let rafId = 0;
   let isEntering = false;
   let hasSignaledPresentationEntry = false;
+  let entryTimer = 0;
 
   function resize() {
     width = canvas.width = window.innerWidth;
@@ -120,10 +121,21 @@
   }
 
   function animate() {
+    rafId = 0;
+    if (isEntering || document.hidden) return;
     ctx.clearRect(0, 0, width, height);
     drawNebula(Date.now() * 0.00045);
     drawStars();
     rafId = window.requestAnimationFrame(animate);
+  }
+
+  function stopAnimation() {
+    window.cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  function startAnimation() {
+    if (!rafId && !isEntering && !document.hidden) animate();
   }
 
   function signalPresentationEntry() {
@@ -143,7 +155,7 @@
     }
 
     isEntering = true;
-    window.cancelAnimationFrame(rafId);
+    stopAnimation();
 
     if (prefersReducedMotion) {
       contentLayer.removeAttribute("aria-hidden");
@@ -155,7 +167,8 @@
 
     contentLayer.removeAttribute("aria-hidden");
     document.body.classList.add("mode-parallax");
-    window.setTimeout(() => {
+    entryTimer = window.setTimeout(() => {
+      entryTimer = 0;
       document.body.classList.add("mode-entered");
       signalPresentationEntry();
     }, PARALLAX_DURATION_MS);
@@ -185,12 +198,19 @@
     });
 
     window.addEventListener("pagehide", () => {
-      window.cancelAnimationFrame(rafId);
+      stopAnimation();
+    });
+    window.addEventListener("pageshow", startAnimation);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopAnimation();
+      else startAnimation();
     });
   }
 
   /* Expose restart function for app.js to call when returning to welcome */
   window.restartWelcomeCanvas = function () {
+    window.clearTimeout(entryTimer);
+    entryTimer = 0;
     isEntering = false;
     hasSignaledPresentationEntry = false;
 
@@ -198,11 +218,7 @@
     contentLayer.setAttribute("aria-hidden", "true");
 
     /* Restart canvas animation */
-    if (!rafId) {
-      resize();
-      createStars();
-      animate();
-    }
+    startAnimation();
 
     /* Re-bind one-time entry listener */
     window.addEventListener("pointerdown", enterPresentation, { once: true });

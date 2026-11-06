@@ -1,6 +1,5 @@
 (function () {
-  const PRODUCT_SWITCH_EXIT_MS = 320;
-  const PRODUCT_SWITCH_SETTLE_MS = 1120;
+  const PRODUCT_SWITCH_MS = 800;
 
   function createSearchParams(search) {
     const SearchParams = window.URLSearchParams || (typeof URLSearchParams === "function" ? URLSearchParams : null);
@@ -162,9 +161,10 @@
   const counterEl = document.getElementById("product-counter");
   const presentationMessaging = window.meshPresentationMessaging || null;
   let activeIndex = -1;
-  let transitionExitTimer = 0;
-  let transitionSettleTimer = 0;
-  let isInitializing = true;
+  const productSlides = new Map();
+  let currentSlide = null;
+  let outgoingSlide = null;
+  let switchAnimations = [];
 
   function prefersReducedMotion() {
     return Boolean(
@@ -174,27 +174,13 @@
     );
   }
 
-  function clearTransitionTimers() {
-    if (transitionExitTimer) {
-      window.clearTimeout(transitionExitTimer);
-      transitionExitTimer = 0;
+  function finishProductTransition() {
+    switchAnimations.forEach(animation => animation.cancel());
+    switchAnimations = [];
+    if (outgoingSlide) {
+      outgoingSlide.remove();
+      outgoingSlide = null;
     }
-
-    if (transitionSettleTimer) {
-      window.clearTimeout(transitionSettleTimer);
-      transitionSettleTimer = 0;
-    }
-  }
-
-  function resetTransitionState() {
-    if (!stage) {
-      return;
-    }
-
-    stage.classList.remove("is-transitioning");
-    stage.classList.remove("is-exiting");
-    stage.classList.remove("is-enter-prep");
-    stage.removeAttribute("data-product-direction");
   }
 
   function getInitialProductIndex() {
@@ -260,33 +246,9 @@
     }
   }
 
-  function renderProduct(index, options) {
-    if (!stageMain) {
-      stageMain = document.getElementById("product-stage-main");
-      if (!stageMain) return;
-    }
-
-    if (index === activeIndex) return;
-
+  function getProductSlide(index) {
+    if (productSlides.has(index)) return productSlides.get(index);
     const product = products[index];
-    if (!product) return;
-
-    const config = options || {};
-
-    // Mark previous slide
-    const currentSlide = stageMain.querySelector(".product-slide.active");
-    if (currentSlide) {
-      currentSlide.classList.remove("active");
-      currentSlide.classList.add("prev");
-      // Clean up after animation
-      setTimeout(() => {
-        if (currentSlide.parentNode) {
-          currentSlide.parentNode.removeChild(currentSlide);
-        }
-      }, 1000);
-    }
-
-    // Create new slide
     const newSlide = document.createElement("div");
     newSlide.className = "product-slide";
     if (product.beamConnection) {
@@ -319,82 +281,86 @@
       imageEl.style.setProperty("--image-offset-y", "-3%");
     }
 
-    stageMain.appendChild(newSlide);
+    updateAria(newSlide, index);
+    productSlides.set(index, newSlide);
+    return newSlide;
+  }
 
-    // Set accent colors
-    if (!stage) {
-      stage = document.getElementById("product-stage");
+  function renderProduct(index, options) {
+    if (!stageMain || index === activeIndex || !products[index]) return;
+    const config = options || {};
+    const product = products[index];
+    // Read the interrupted presentation once, before cancelling or mutating nodes.
+    const previousStyle = currentSlide ? window.getComputedStyle(currentSlide) : null;
+    const previousPose = previousStyle
+      ? {transform: previousStyle.transform, opacity: previousStyle.opacity}
+      : null;
+    const cachedTarget = productSlides.get(index);
+    const targetStyle = cachedTarget && cachedTarget.isConnected ? window.getComputedStyle(cachedTarget) : null;
+    const targetPose = targetStyle ? {transform: targetStyle.transform, opacity: targetStyle.opacity} : null;
+    finishProductTransition();
+    const previous = currentSlide;
+    const newSlide = getProductSlide(index);
+    // Commit the target before any animation: every click advances from this state.
+    activeIndex = index;
+    currentSlide = newSlide;
+    if (previous) {
+      previous.classList.remove("active");
+      previous.classList.add("prev");
+      previous.setAttribute("aria-hidden", "true");
+      outgoingSlide = previous;
     }
-
+    newSlide.classList.remove("prev");
+    newSlide.classList.add("active");
+    newSlide.removeAttribute("aria-hidden");
+    stageMain.appendChild(newSlide);
     if (stage) {
       stage.style.setProperty("--product-accent-rgb", product.accentRgb);
       stage.style.setProperty("--product-accent-soft-rgb", product.accentSoftRgb);
     }
-
-    // Force reflow to ensure the browser registers the initial state
-    void newSlide.offsetWidth;
-
-    // Trigger animation
-    if (isInitializing) {
-      setTimeout(() => {
-        newSlide.classList.add("active");
-      }, 50);
-      isInitializing = false;
-    } else {
-      setTimeout(() => {
-        newSlide.classList.add("active");
-      }, 40);
-    }
-
-    activeIndex = index;
-    updateAria(newSlide, index);
-
     if (counterEl) {
       counterEl.textContent = String(index + 1).padStart(2, "0") + " / " + String(products.length).padStart(2, "0");
     }
-
-    if (config.syncUrl && presentationMessaging && typeof presentationMessaging.syncPresentationState === "function") {
-      presentationMessaging.syncPresentationState({
-        product: product.slug
-      });
+    if (config.syncUrl && presentationMessaging) {
+      presentationMessaging.syncPresentationState({product: product.slug});
     }
+    if (prefersReducedMotion() || typeof newSlide.animate !== "function" || document.hidden || document.documentElement.dataset.slideActive === "false") {
+      finishProductTransition();
+      return;
+    }
+    const backward = config.direction === "backward";
+    const enterTransform = backward ? "translateX(-50%) scale(0.85)" : "translateX(50%) scale(1.15)";
+    const exitTransform = backward ? "translateX(50%) scale(1.15)" : "translateX(-50%) scale(0.85)";
+    const timing = {duration: PRODUCT_SWITCH_MS, easing: "cubic-bezier(0.65, 0, 0.35, 1)"};
+    const enter = newSlide.animate([
+      targetPose || {transform: enterTransform, opacity: 0},
+      {transform: "translateX(0) scale(1)", opacity: 1}
+    ], timing);
+    switchAnimations.push(enter);
+    if (previous) {
+      const exit = previous.animate([
+        previousPose,
+        {transform: exitTransform, opacity: 0}
+      ], timing);
+      switchAnimations.push(exit);
+    }
+    enter.onfinish = finishProductTransition;
   }
 
   function animateProductSwitch(index, direction, options) {
-    const config = options || {};
-
-    if (!stage || prefersReducedMotion()) {
-      clearTransitionTimers();
-      resetTransitionState();
-      renderProduct(index, config);
-      return;
-    }
-
-    clearTransitionTimers();
-    stage.setAttribute("data-product-direction", direction);
-    stage.classList.add("is-transitioning");
-    stage.classList.add("is-exiting");
-    stage.classList.remove("is-enter-prep");
-
-    transitionExitTimer = window.setTimeout(function () {
-      transitionExitTimer = 0;
-      renderProduct(index, config);
-      stage.classList.remove("is-exiting");
-      stage.classList.add("is-enter-prep");
-
-      const scheduleFrame = window.requestAnimationFrame || function (callback) {
-        return window.setTimeout(callback, 16);
-      };
-      scheduleFrame(function () {
-        stage.classList.remove("is-enter-prep");
-      });
-    }, PRODUCT_SWITCH_EXIT_MS);
-
-    transitionSettleTimer = window.setTimeout(function () {
-      transitionSettleTimer = 0;
-      resetTransitionState();
-    }, PRODUCT_SWITCH_SETTLE_MS);
+    renderProduct(index, Object.assign({}, options, {direction: direction}));
   }
+
+  window.addEventListener("slideActivityChange", function (event) {
+    if (!event.detail.active) finishProductTransition();
+    else if (activeIndex >= 0 && presentationMessaging) {
+      presentationMessaging.syncPresentationState({product: products[activeIndex].slug});
+    }
+  });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) finishProductTransition();
+  });
+  window.addEventListener("pagehide", finishProductTransition);
 
   if (btnPrev) {
     btnPrev.addEventListener("click", () => {

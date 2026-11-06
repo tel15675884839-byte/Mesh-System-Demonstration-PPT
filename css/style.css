@@ -173,6 +173,10 @@ button {
   display: block;
 }
 
+.app-shell[data-background-active="false"] .stage-slide {
+  animation-play-state: paused;
+}
+
 .stage-slide-1 {
   background-image: none;
   animation-delay: 0s;

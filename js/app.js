@@ -4,6 +4,7 @@
   const PRODUCT_SLIDE_INDEX = 10;
   const PRODUCT_BACKGROUND_TRANSITION_MS = 720;
   const FRAME_PRELOAD_RADIUS = 1;
+  const FRAME_CACHE_LIMIT = 6;
   const ALWAYS_PRELOADED_SLIDE_INDICES = [PRODUCT_SLIDE_INDEX];
   const slideSlugs = [
     "opening",
@@ -40,6 +41,9 @@
   let currentSlide = 0;
   let wheelLock = false;
   let productBackgroundTransitionTimer = 0;
+  const frameRecency = new Map();
+  const frameActivity = new WeakMap();
+  let frameUseSequence = 0;
 
   function getFrameSource(frame) {
     if (!frame) {
@@ -195,9 +199,14 @@
 
   function syncBackgroundActivity() {
     const eventDetail = {
-      active: currentSlide <= 1,
+      active: !isIntroPending && !document.hidden && (currentSlide <= 1 || currentSlide === PRODUCT_SLIDE_INDEX),
       slide: currentSlide
     };
+    // Also expose the initial state: background bootstrap can run after this event.
+    window.meshStageBackgroundActive = eventDetail.active;
+    if (appShell) {
+      appShell.dataset.backgroundActive = eventDetail.active ? "true" : "false";
+    }
     const BackgroundEvent = typeof CustomEvent === "function"
       ? CustomEvent
       : function FallbackEvent(type, init) {
@@ -209,14 +218,19 @@
     }));
   }
 
-  function syncFrameVisibility() {
+  function syncFrameVisibility(options) {
+    const config = options || {};
     slideFrames.forEach((frame, frameIndex) => {
-      if (!frame.contentWindow) {
+      if (!frame.contentWindow || !getLoadedFrameSource(frame)) {
         return;
       }
+      const active = !isIntroPending && !document.hidden && frameIndex === currentSlide;
+      if (frameActivity.get(frame) === active) return;
+      frameActivity.set(frame, active);
       frame.contentWindow.postMessage({
         type: "slideVisibility",
-        active: frameIndex === currentSlide
+        active: active,
+        resume: Boolean(config.resume)
       }, "*");
     });
   }
@@ -229,18 +243,31 @@
       return;
     }
 
+    const required = new Set();
     slideFrames.forEach((frame, frameIndex) => {
       if (
         isBrowserMode ||
         Math.abs(frameIndex - currentSlide) <= FRAME_PRELOAD_RADIUS ||
         ALWAYS_PRELOADED_SLIDE_INDICES.includes(frameIndex)
       ) {
+        required.add(frameIndex);
+        frameRecency.set(frameIndex, ++frameUseSequence);
         loadFrame(frame);
-        return;
       }
-
-      unloadFrame(frame);
     });
+    // Keep recently visited documents paused, rather than rebuilding on every turn.
+    // Six instances cap retained scenes; only the current page may animate.
+    const retained = Array.from(slideFrames, (frame, index) => index)
+      .filter(index => getLoadedFrameSource(slideFrames[index]));
+    const candidates = retained.filter(index => !required.has(index))
+      .sort((a, b) => (frameRecency.get(a) || 0) - (frameRecency.get(b) || 0));
+    while (retained.length > FRAME_CACHE_LIMIT && candidates.length) {
+      const index = candidates.shift();
+      unloadFrame(slideFrames[index]);
+      frameActivity.delete(slideFrames[index]);
+      frameRecency.delete(index);
+      retained.splice(retained.indexOf(index), 1);
+    }
   }
 
   function clearProductBackgroundTransitionTimer() {
@@ -444,7 +471,14 @@
   updateNavControls();
 
   slideFrames.forEach((frame) => {
-    frame.addEventListener("load", syncFrameVisibility);
+    frame.addEventListener("load", function () {
+      frameActivity.delete(frame);
+      syncFrameVisibility();
+    });
+  });
+  document.addEventListener("visibilitychange", function () {
+    syncFrameVisibility({ resume: true });
+    syncBackgroundActivity();
   });
 
   if (!isBrowserMode) {
@@ -471,6 +505,7 @@
     isIntroPending = false;
     syncFrameLoading();
     syncFrameVisibility();
+    syncBackgroundActivity();
   });
 
   /* ── Back to Welcome Screen ── */
@@ -486,6 +521,8 @@
     slideFrames.forEach(function (frame) {
       unloadFrame(frame);
     });
+    frameRecency.clear();
+    syncBackgroundActivity();
 
     /* Reset slide position */
     if (slidesContainer) {

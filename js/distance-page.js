@@ -765,8 +765,10 @@
     }
 
     if (event.data.active) {
-      resetInteractiveState();
-      enterStageState();
+      if (!event.data.resume) {
+        resetInteractiveState();
+        enterStageState();
+      }
       scheduleOpenGeometrySync();
       scheduleRelayGeometrySync();
     }

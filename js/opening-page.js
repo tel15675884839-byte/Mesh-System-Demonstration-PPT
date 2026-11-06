@@ -481,7 +481,7 @@
       isSlideActive = true;
       
       // Always reset to 2D view when switching to this slide
-      setView("2d");
+      if (!event.data.resume) setView("2d");
 
       if (player) {
         syncPlayerVisibility();

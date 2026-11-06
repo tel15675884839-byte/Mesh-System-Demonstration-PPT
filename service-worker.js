@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "mesh-presentation-offline-v20261104-beam-rev5";
+const CACHE_NAME = "mesh-presentation-offline-v20261106-performance-r3";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -53,7 +53,7 @@ const PRECACHE_URLS = [
   "./assets/images/mesh2D.png",
   "./assets/images/fast-f-transparent.png",
   "./assets/images/System Capacity.png",
-  "./assets/images/installation-cost-comparison-rounded.png",
+  "./assets/images/installation-cost-comparison-2560.webp",
   "./assets/images/wiring.jpg",
   "./assets/images/wireless.jpg",
   "./assets/images/products/all.png",
@@ -76,6 +76,7 @@ const PRECACHE_URLS = [
   "./assets/icons/panel.svg",
   "./assets/icons/smoke.svg",
   "./assets/icons/sounder.svg",
+  "./assets/icons/wired_vs_wireless.svg",
   "./assets/mesh-states/blocked.json",
   "./assets/mesh-states/normal.json",
   "./assets/mesh-states/opening.json",
@@ -91,17 +92,29 @@ const PRECACHE_URLS = [
   "./Mesh System Demonstration/assets/icons/sounder.svg"
 ];
 
+const STARTUP_URLS = [
+  "./", "./index.html", "./manifest.webmanifest",
+  "./css/style.css", "./css/welcome.css", "./css/page-base.css",
+  "./js/fixed-stage.js", "./js/app.js", "./js/welcome.js",
+  "./js/cyber-page-background.js", "./js/page-messaging.js"
+];
+
+async function cacheOfflinePresentation() {
+  const cache = await caches.open(CACHE_NAME);
+  const reload = url => new Request(url, { cache: "reload" });
+  await cache.addAll(STARTUP_URLS.map(reload));
+  const remaining = PRECACHE_URLS.filter(url => !STARTUP_URLS.includes(url));
+  // Bound background downloads so the current page's requests can make progress.
+  for (let index = 0; index < remaining.length; index += 4) {
+    await cache.addAll(remaining.slice(index, index + 4).map(reload));
+  }
+  // Activation, and therefore Offline ready, still means the whole deck is cached.
+  return self.skipWaiting();
+}
+
 self.addEventListener("install", function (event) {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function (cache) {
-        return cache.addAll(PRECACHE_URLS.map(function (url) {
-          return new Request(url, { cache: "reload" });
-        }));
-      })
-      .then(function () {
-        return self.skipWaiting();
-      })
+    cacheOfflinePresentation()
   );
 });
 
